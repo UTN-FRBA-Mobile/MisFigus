@@ -1,4 +1,4 @@
-package com.example.misfigus
+package com.misfigus
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,7 +13,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
-import com.example.misfigus.ui.theme.MisFigusTheme
+import com.example.misfigus.R
+import com.misfigus.screens.AlbumScreen
+import com.misfigus.screens.IntercambioScreen
+import com.misfigus.screens.KioscoScreen
+import com.misfigus.screens.LoginScreen
+import com.misfigus.ui.theme.MisFigusTheme
 
 // Cada data class representa cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {

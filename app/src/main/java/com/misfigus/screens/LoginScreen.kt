@@ -1,4 +1,4 @@
-package com.example.misfigus
+package com.misfigus.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -7,6 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun KioscoScreen() {
-    Text("Pantalla de Perfil", modifier = Modifier.padding(32.dp))
+fun LoginScreen() {
+    Text("Pantalla de Buscar", modifier = Modifier.padding(32.dp))
 }

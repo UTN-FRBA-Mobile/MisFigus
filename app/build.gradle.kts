@@ -9,7 +9,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.misfigus"
+        applicationId = "com.misfigus"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -51,7 +51,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.navigation.compose)// Dependencia par la navegacion
+    implementation(libs.androidx.navigation.compose)// Dependencia para la navegacion
+    implementation(libs.androidx.material.icons.extended)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
