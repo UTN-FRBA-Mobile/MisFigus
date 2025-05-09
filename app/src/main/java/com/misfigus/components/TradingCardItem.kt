@@ -25,19 +25,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
+import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.CardColor
 
 
 @Composable
-fun FiguritaItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
+fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
     Box(modifier = Modifier.padding(2.dp)) {
         Card(
             modifier = Modifier.padding(8.dp).size(width = 100.dp, height = 150.dp)
                 .clickable { onClick },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (tradingCard.obtained) Color(0xFFCF0229) else Color.White
+                containerColor = if (tradingCard.obtained) CardColor else Color.White
             ),
-            border = BorderStroke(width = 2.dp, Color(0xFFCF0229))
+            border = BorderStroke(width = 2.dp, CardColor)
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
@@ -45,7 +47,7 @@ fun FiguritaItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     style = MaterialTheme.typography.headlineSmall.copy(
                         textDecoration = if (tradingCard.obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
-                    color = if (tradingCard.obtained) Color.White else Color(0xFFCF0229)
+                    color = if (tradingCard.obtained) Color.White else CardColor
                 )
             }
         }
@@ -55,13 +57,13 @@ fun FiguritaItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     .absoluteOffset(x = 85.dp, y = (-2).dp)
                     .size(30.dp)
                     .background(Color.White, shape = CircleShape)
-                    .border(width = 2.dp, Color(0xFFCF0229), CircleShape),
+                    .border(width = 2.dp, CardColor, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = tradingCard.repeatedQuantity.toString(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFFCF0229)
+                    color = CardColor
                 )
             }
 
@@ -69,8 +71,8 @@ fun FiguritaItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 modifier = Modifier
                     .absoluteOffset(x = 0.dp, y = (-2).dp)
                     .size(30.dp)
-                    .background(Color(0xFF500DBE), shape = CircleShape)
-                    .border(width = 2.dp, Color(0xFF500DBE), CircleShape),
+                    .background(EditColor, shape = CircleShape)
+                    .border(width = 2.dp, EditColor, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -84,8 +86,8 @@ fun FiguritaItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             modifier = Modifier
                 .absoluteOffset(x = 85.dp, y = 135.dp)
                 .size(30.dp)
-                .background(Color(0xFF500DBE), shape = CircleShape)
-                .border(width = 2.dp, Color(0xFF500DBE), CircleShape),
+                .background(EditColor, shape = CircleShape)
+                .border(width = 2.dp, EditColor, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
