@@ -54,19 +54,19 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
         ){
 
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = album.albumId, style = MaterialTheme.typography.titleMedium)
+                Text(text = album.albumId, style = MaterialTheme.typography.titleLarge)
 
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
                         text = "$obtained/$total",
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (obtained == total) "Completado" else "Incompleto",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyLarge,
                         color = if (obtained == total) EditColor else CardColor
                     )
                 }

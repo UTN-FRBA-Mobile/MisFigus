@@ -44,7 +44,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = tradingCard.number.toString(),
-                    style = MaterialTheme.typography.headlineSmall.copy(
+                    style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = if (tradingCard.obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
                     color = if (tradingCard.obtained) Color.White else CardColor
@@ -62,7 +62,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             ) {
                 Text(
                     text = tradingCard.repeatedQuantity.toString(),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = CardColor
                 )
             }
