@@ -1,0 +1,12 @@
+package com.misfigus.screens
+
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun LoginScreen() {
+    Text("Pantalla de Buscar", modifier = Modifier.padding(32.dp))
+}

@@ -1,4 +1,4 @@
-package com.example.misfigus.ui.theme
+package com.misfigus.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -56,3 +56,4 @@ fun MisFigusTheme(
         content = content
     )
 }
+
