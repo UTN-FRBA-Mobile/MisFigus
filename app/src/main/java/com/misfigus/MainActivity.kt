@@ -26,10 +26,11 @@ class MainActivity : ComponentActivity() {
 
 
 // Preview de como se ve
-/*@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainScreenPreview() {
     MisFigusTheme {
-        AppNavigation()
+        val navController = rememberNavController()
+                AppNavigation(navController)
     }
-}*/
+}
