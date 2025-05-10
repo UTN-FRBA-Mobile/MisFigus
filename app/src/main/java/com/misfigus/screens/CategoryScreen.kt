@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,9 +39,6 @@ fun CategoryScreen(navHostController: NavHostController){
         AlbumCategoryEnum.entries.forEach { category ->
 
             Card(
-                onClick = {
-                    navHostController.navigate("$category")
-                },
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
@@ -69,11 +67,13 @@ fun CategoryScreen(navHostController: NavHostController){
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(category.name, style = MaterialTheme.typography.bodyLarge)
                     }
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Ver categoria",
-                        tint = EditColor
-                    )
+                    IconButton(onClick = {navHostController.navigate("$category")}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Ver categoria",
+                            tint = EditColor
+                        )
+                    }
                 }
                 HorizontalDivider(
                     modifier = Modifier

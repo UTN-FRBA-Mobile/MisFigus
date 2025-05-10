@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,8 +42,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth()
-            .clickable { onClick() },
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Background
@@ -93,12 +93,14 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
 
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Ver álbum",
-                tint = EditColor,
-                modifier = Modifier.padding(end = 8.dp)
-            )
+            IconButton(onClick = {onClick()}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Ver álbum",
+                    tint = EditColor,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
 
         }
 
