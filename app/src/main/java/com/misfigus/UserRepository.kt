@@ -1,4 +1,4 @@
-package com.example.misfigus
+package com.misfigus
 
 object UserRepository {
     private val users = mutableListOf<User>()

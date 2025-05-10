@@ -26,6 +26,8 @@ import com.misfigus.screens.CategoryScreen
 import com.misfigus.screens.IntercambioScreen
 import com.misfigus.screens.KioscoScreen
 import com.misfigus.screens.LoginScreen
+import com.misfigus.screens.PresentationScreen
+import com.misfigus.screens.RegisterScreen
 
 
 // Cada data class representa cada pestaña de la barra de navegacion
@@ -94,10 +96,12 @@ fun AppNavigation(navController: NavHostController) {
         // Asocia las rutas con Composable para mostrar cada pantalla
         NavHost(
             navController = navController,
-            startDestination = Screen.Albums.route, // Primera pantalla que se muestra al abrir la app
+            startDestination = "presentation", // Primera pantalla que se muestra al abrir la app
             modifier = Modifier.padding(innerPadding) // Respeta el padding del Scaffold
         ) {
-            composable(Screen.Search.route) { LoginScreen() } // Mostrar pantalla de search
+            composable("presentation") {PresentationScreen(navController)}
+            composable("login") {LoginScreen(navController)}
+            composable("register") {RegisterScreen(navController)}
             composable(Screen.Albums.route) { CategoryScreen(navController) } // Muestra pantalla de álbum
             composable(Screen.Trading.route) { IntercambioScreen() } // Muestra pantalla de intercambio
             composable(Screen.Profile.route) { KioscoScreen() } // Muestra pantalla de perfil
