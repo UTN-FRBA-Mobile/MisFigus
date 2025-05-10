@@ -44,10 +44,11 @@ import com.misfigus.screens.KioscoScreen
 import com.misfigus.screens.LoginScreen
 import com.misfigus.screens.PresentationScreen
 import com.misfigus.screens.RegisterScreen
+import com.misfigus.screens.TraderOptionsScreen
 import com.misfigus.ui.theme.EditColor
 
 
-// Cada data class representa cada pestaña de la barra de navegacion
+// cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {
     data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
     data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.ic_menu_book))
@@ -57,15 +58,14 @@ sealed class Screen(val route: String, val iconType: IconType) {
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
 }
 
-// Clase con los dos tipos de iconos de la barra de navegacion
 sealed class IconType {
-    // Ícono vectorial (Los que ya estan disponibles de android)
+    // Íconos disponibles de android
     data class Vector(val icon: androidx.compose.ui.graphics.vector.ImageVector) : IconType()
-    // Ícono desde drawable (archivo XML/SVG en res/drawable)
+    // Ícono desde drawable
     data class Drawable(val resId: Int) : IconType()
 }
 
-// Lista de todas las pantallas que aparecen en la barra de navegación inferior
+// Todas las pantallas que aparecen en la barra de navegación
 val screens = listOf(
     Screen.Search,
     Screen.Albums,
@@ -110,7 +110,7 @@ fun AppNavigation(navController: NavHostController) {
                             }
 
                         },
-                        selected = isSelected, // Marca como seleccionada la pestaña actual
+                        selected = isSelected,
 
                         onClick = {
                             // Verifica si ya estás en la pantalla actual
@@ -141,7 +141,13 @@ fun AppNavigation(navController: NavHostController) {
             composable("login") {LoginScreen(navController)}
             composable("register") {RegisterScreen(navController)}
             composable(Screen.Albums.route) { CategoryScreen(navController) } // Muestra pantalla de álbum
-            composable(Screen.Trading.route) { IntercambioScreen() } // Muestra pantalla de intercambio
+            composable(Screen.Trading.route) { IntercambioScreen(navController) } // Muestra pantalla de intercambio
+            composable("trader/{id}") { backStackEntry ->
+                val id = backStackEntry.arguments?.getString("id")
+                id?.let {
+                    TraderOptionsScreen(id = it)
+                }
+            }
             composable(Screen.Profile.route) { KioscoScreen() } // Muestra pantalla de perfil
             composable(Screen.AlbumDetails.route) { backStackEntry ->  //Muestra detalles de un album
                 val albumId = backStackEntry.arguments?.getString("albumId")

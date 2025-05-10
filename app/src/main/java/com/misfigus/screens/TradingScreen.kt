@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.misfigus.ui.theme.CardColor
 import com.misfigus.ui.theme.EditColor
 import com.misfigus.ui.theme.Grey
@@ -69,7 +70,7 @@ fun TraddingBanner() {
 }
 
 @Composable
-fun TraderCard() {
+fun TraderCard(navHostController: NavHostController) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -127,20 +128,22 @@ fun TraderCard() {
                     color = Grey
                 )
             }
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Canjear",
-                tint = EditColor
-            )
+            IconButton(onClick = {navHostController.navigate("trader/{1}")}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Canjear",
+                    tint = EditColor
+                )
+            }
         }
     }
 }
 
 @Composable
-fun IntercambioScreen() {
+fun IntercambioScreen(navHostController: NavHostController) {
     Column() {
         TraddingBanner()
-        TraderCard()
+        TraderCard(navHostController)
     }
 
 }
