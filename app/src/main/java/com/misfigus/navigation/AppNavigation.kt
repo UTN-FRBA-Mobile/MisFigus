@@ -175,8 +175,8 @@ fun mockedAlbums(): List<Album>{
         )
 
     val albums = listOf(
-            Album("Qatar 2022", tradingCards, false, AlbumCategoryEnum.FUTBOL),
-            Album("Ice Age", emptyList(), false, AlbumCategoryEnum.PELICULAS)
+            Album("Qatar 2022", tradingCards, false, AlbumCategoryEnum.FOOTBALL),
+            Album("Ice Age", emptyList(), false, AlbumCategoryEnum.MOVIES)
         )
 
     return albums
