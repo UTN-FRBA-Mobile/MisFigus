@@ -65,7 +65,6 @@ fun CategoryScreen(navHostController: NavHostController){
                             contentDescription = "My Icon",
                             modifier = Modifier
                                 .size(40.dp),
-
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(category.name, style = MaterialTheme.typography.bodyLarge)
@@ -86,15 +85,4 @@ fun CategoryScreen(navHostController: NavHostController){
             }
         }
     }
-}
-
-@Composable
-fun MyCustomIcon(category: AlbumCategoryEnum) {
-    Image(
-        painter = painterResource(id = category.icon), // Replace with your PNG name
-        contentDescription = "My Icon",
-        modifier = Modifier
-            .size(24.dp), // Adjust size as needed
-        contentScale = ContentScale.Fit
-    )
 }

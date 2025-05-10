@@ -1,7 +1,7 @@
 package com.misfigus.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
+
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.CardColor
@@ -48,14 +53,30 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-
-            Column(modifier = Modifier.padding(16.dp)) {
+            val context = LocalContext.current
+            val resId = remember() {
+                context.resources.getIdentifier(
+                    album.cover.lowercase(),
+                    "drawable",
+                    context.packageName
+                )
+            }
+            Image(
+                painter = painterResource(id = resId),
+                contentDescription = "My Album",
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(100.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
                 Text(text = album.albumId, style = MaterialTheme.typography.titleLarge)
-
-
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
@@ -75,7 +96,8 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = "Ver álbum",
-                tint = EditColor
+                tint = EditColor,
+                modifier = Modifier.padding(end = 8.dp)
             )
 
         }
@@ -88,6 +110,4 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             color = Color.LightGray
         )
     }
-
-
 }
