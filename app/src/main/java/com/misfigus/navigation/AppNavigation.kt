@@ -1,17 +1,33 @@
 package com.misfigus.navigation
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.indicatorColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,16 +44,17 @@ import com.misfigus.screens.KioscoScreen
 import com.misfigus.screens.LoginScreen
 import com.misfigus.screens.PresentationScreen
 import com.misfigus.screens.RegisterScreen
+import com.misfigus.ui.theme.EditColor
 
 
 // Cada data class representa cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {
-    data object Search : Screen("search", IconType.Vector(Icons.Default.Search))
+    data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
     data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.ic_menu_book))
-    data object Trading : Screen("trading", IconType.Drawable(R.drawable.ic_swap))
-    data object Profile : Screen("profile", IconType.Vector(Icons.Default.Person))
+    data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
+    data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
     data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.ic_launcher_foreground))
-    data object Albums: Screen("album", IconType.Drawable(R.drawable.ic_menu_book))
+    data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
 }
 
 // Clase con los dos tipos de iconos de la barra de navegacion
@@ -65,19 +82,36 @@ fun AppNavigation(navController: NavHostController) {
     // Crea la estructura visual principal, incluyendo la barra inferior
     Scaffold(
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = Color.White) {
                 screens.forEach { screen -> // Recorre todas las pestañas
+                    val isSelected = currentRoute == screen.route
                     NavigationBarItem(
                         icon = {
-                            when (val icon = screen.iconType) {
-                                is IconType.Vector -> Icon(icon.icon, contentDescription = null)
-                                is IconType.Drawable -> Icon(
-                                    painter = painterResource(id = icon.resId),
-                                    contentDescription = null
-                                )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                when (val icon = screen.iconType) {
+                                    is IconType.Vector -> Icon(icon.icon, contentDescription = null)
+                                    is IconType.Drawable -> Icon(
+                                        painter = painterResource(id = icon.resId),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                        tint = if(isSelected) EditColor else Color.Gray
+                                    )
+                                }
+
+                                if(isSelected){
+                                    HorizontalDivider(
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .padding(top = 8.dp),
+                                        thickness = 2.dp,
+                                        color = EditColor
+                                    )
+                                }
                             }
+
                         },
-                        selected = currentRoute == screen.route, // Marca como seleccionada la pestaña actual
+                        selected = isSelected, // Marca como seleccionada la pestaña actual
+
                         onClick = {
                             // Verifica si ya estás en la pantalla actual
                             if (currentRoute != screen.route) {
@@ -87,7 +121,11 @@ fun AppNavigation(navController: NavHostController) {
                                 }
                             }
                         },
-                        alwaysShowLabel = false // Oculta el nombre abajo de los iconos
+                        alwaysShowLabel = false, // Oculta el nombre abajo de los iconos
+                        colors = NavigationBarItemDefaults.colors(
+                            indicatorColor = Color.Transparent // Evita el fondo redondo
+                        ),
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
