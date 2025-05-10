@@ -2,7 +2,6 @@ package com.misfigus.models
 
 import androidx.annotation.DrawableRes
 import com.example.misfigus.R
-import com.misfigus.navigation.IconType
 
 enum class AlbumCategoryEnum(val description: String, @DrawableRes val icon: Int) {
     FOOTBALL("Futbol", R.drawable.football_icon),

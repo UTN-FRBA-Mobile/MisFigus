@@ -22,8 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.misfigus.models.Album
+import com.misfigus.ui.theme.AlbumCompleted
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.CardColor
 import com.misfigus.ui.theme.EditColor
@@ -53,20 +55,21 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
         ){
 
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = album.albumId, style = MaterialTheme.typography.titleLarge)
+                Text(text = album.albumId, style = MaterialTheme.typography.bodyLarge)
 
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
                         text = "$obtained/$total",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (obtained == total) "Completado" else "Incompleto",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = if (obtained == total) EditColor else CardColor
+                        style = if (obtained == total) MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline) else MaterialTheme.typography.bodySmall,
+                        color = if (obtained == total) AlbumCompleted else CardColor
+
                     )
                 }
 

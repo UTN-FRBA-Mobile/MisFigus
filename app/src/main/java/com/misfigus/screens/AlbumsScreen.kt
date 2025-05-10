@@ -1,11 +1,9 @@
 package com.misfigus.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,21 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.misfigus.components.AlbumItem
+import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.navigation.BackButton
 import com.misfigus.navigation.mockedAlbums
 
 @Composable
-fun AlbumsScreen(navHostController: NavHostController, category: String) {
+fun AlbumsScreen(navHostController: NavHostController, category: AlbumCategoryEnum) {
 
-    val albums = mockedAlbums().filter {  category.equals(it.category.toString()) }
+    val albums = mockedAlbums().filter {  category.description.equals(it.category.description) }
     Scaffold(
         topBar = { BackButton(navHostController, "Categorias") }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             Text(
-                text = "Albumes - ${category}",
+                text = "${category.description}",
                 modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleMedium
             )
 
             LazyVerticalGrid(

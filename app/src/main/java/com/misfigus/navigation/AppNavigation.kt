@@ -1,30 +1,18 @@
 package com.misfigus.navigation
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.indicatorColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -50,10 +38,10 @@ import com.misfigus.ui.theme.EditColor
 // Cada data class representa cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {
     data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
-    data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.ic_menu_book))
+    data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.album_icon))
     data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
-    data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.ic_launcher_foreground))
+    data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
 }
 
@@ -152,8 +140,9 @@ fun AppNavigation(navController: NavHostController) {
             }
 
             composable(Screen.AlbumCategory.route) { backStackEntry ->  //Muestra albumes de una categoria
-                val category = backStackEntry.arguments?.getString("category")
-                category?.let {
+                val categoryName = backStackEntry.arguments?.getString("category")
+                val categoryEnum = categoryName?.let { AlbumCategoryEnum.valueOf(it) }
+                categoryEnum?.let {
                     AlbumsScreen(navController, it)
                 }
             }
@@ -170,12 +159,12 @@ fun getAlbumByName(name: String): Album? {
 fun mockedAlbums(): List<Album>{
     val tradingCards = listOf(
             TradingCard(1, "Qatar 2022", obtained = true, 3),
-            TradingCard(2, "Qatar 2022", obtained = false, repeatedQuantity = 0),
+            TradingCard(2, "Qatar 2022", obtained = true, repeatedQuantity = 0),
             TradingCard(3, "Qatar 2022", obtained = true, repeatedQuantity = 0)
         )
 
     val albums = listOf(
-            Album("Qatar 2022", tradingCards, false, AlbumCategoryEnum.FOOTBALL),
+            Album("Qatar 2022", tradingCards, true, AlbumCategoryEnum.FOOTBALL),
             Album("Ice Age", emptyList(), false, AlbumCategoryEnum.MOVIES)
         )
 
