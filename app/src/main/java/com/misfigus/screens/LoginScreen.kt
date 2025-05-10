@@ -36,7 +36,7 @@ import androidx.navigation.NavController
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import com.example.misfigus.R
-import com.misfigus.UserRepository
+import com.misfigus.models.UserRepository
 
 @Composable
 fun LoginScreen(navController: NavController) {

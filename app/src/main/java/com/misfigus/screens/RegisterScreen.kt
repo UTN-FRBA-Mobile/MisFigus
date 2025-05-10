@@ -38,8 +38,8 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.style.TextAlign
 import com.example.misfigus.R
-import com.misfigus.User
-import com.misfigus.UserRepository
+import com.misfigus.models.User
+import com.misfigus.models.UserRepository
 
 @Composable
 fun RegisterScreen(navController: NavController) {

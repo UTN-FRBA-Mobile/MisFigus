@@ -1,11 +1,9 @@
-package com.misfigus
+package com.misfigus.models
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import java.time.LocalDateTime
 import java.util.UUID
 
-data class User @RequiresApi(Build.VERSION_CODES.O) constructor(
+data class User(
     val id: String = UUID.randomUUID().toString(), // Unique user ID (UUID by default)
     val email: String,
     val username: String,
