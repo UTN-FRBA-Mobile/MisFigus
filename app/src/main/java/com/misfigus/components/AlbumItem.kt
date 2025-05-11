@@ -88,6 +88,4 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             color = Color.LightGray
         )
     }
-
-
 }

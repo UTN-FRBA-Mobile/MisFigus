@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,6 +39,7 @@ import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.TradingCard
 import com.misfigus.screens.AlbumDetailScreen
 import com.misfigus.screens.AlbumsScreen
+import com.misfigus.screens.AlbumsViewModel
 import com.misfigus.screens.CategoryScreen
 import com.misfigus.screens.IntercambioScreen
 import com.misfigus.screens.KioscoScreen
@@ -78,6 +80,7 @@ val screens = listOf(
 fun AppNavigation(navController: NavHostController) {
     val currentBackStack by navController.currentBackStackEntryAsState() // Historial de navegación para conseguir la pantalla actual
     val currentRoute = currentBackStack?.destination?.route // Obtiene la pantalla actual
+    val albumsViewModel: AlbumsViewModel = viewModel()
 
     // Crea la estructura visual principal, incluyendo la barra inferior
     Scaffold(
@@ -140,7 +143,7 @@ fun AppNavigation(navController: NavHostController) {
             composable("presentation") {PresentationScreen(navController)}
             composable("login") {LoginScreen(navController)}
             composable("register") {RegisterScreen(navController)}
-            composable(Screen.Albums.route) { CategoryScreen(navController) } // Muestra pantalla de álbum
+            composable(Screen.Albums.route) { CategoryScreen(navController, albumsViewModel.albumsUiState) } // Muestra pantalla de álbum
             composable(Screen.Trading.route) { IntercambioScreen() } // Muestra pantalla de intercambio
             composable(Screen.Profile.route) { KioscoScreen() } // Muestra pantalla de perfil
             composable(Screen.AlbumDetails.route) { backStackEntry ->  //Muestra detalles de un album

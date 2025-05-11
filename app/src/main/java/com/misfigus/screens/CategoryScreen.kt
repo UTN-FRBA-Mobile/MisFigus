@@ -5,10 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -17,6 +22,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,62 +33,80 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.misfigus.models.AlbumCategoryEnum
+import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.EditColor
 
+
 @Composable
-fun CategoryScreen(navHostController: NavHostController){
+fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUiState){
     Column(modifier = Modifier.padding(20.dp)) {
         Text("Categorías", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.padding(10.dp))
-        AlbumCategoryEnum.entries.forEach { category ->
 
-            Card(
-                onClick = {
-                    navHostController.navigate("$category")
-                },
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Background
-                )
-            )
-            {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ){
-                        Image(
-                            painter = painterResource(id = category.icon),
-                            contentDescription = "My Icon",
-                            modifier = Modifier
-                                .size(40.dp),
+        when (albumsUiState) {
+            is AlbumsUiState.Loading -> {
+                Text(text = "Api call loading... [GET ALBUMS]")
+            }
 
+            is AlbumsUiState.Error -> {
+                Text(text = "Api call error [GET ALBUMS]")
+            }
+            is AlbumsUiState.Success -> {
+                val albums = albumsUiState.albumCountByCategory
+
+                albums.forEach { item ->
+
+                    Card(
+                        onClick = {
+                            navHostController.navigate("${item.category}")
+                        },
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Background
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(category.name, style = MaterialTheme.typography.bodyLarge)
-                    }
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Ver categoria",
-                        tint = EditColor
                     )
+                    {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Image(
+                                    painter = painterResource(id = item.category.icon),
+                                    contentDescription = "My Icon",
+                                    modifier = Modifier
+                                        .size(40.dp),
+
+                                    )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(item.category.name, style = MaterialTheme.typography.bodyLarge)
+                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = "Ver categoria",
+                                tint = EditColor
+                            )
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            thickness = 1.dp,
+                            color = Color.LightGray
+                        )
+                    }
                 }
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    thickness = 1.dp,
-                    color = Color.LightGray
-                )
+
+
             }
         }
     }
