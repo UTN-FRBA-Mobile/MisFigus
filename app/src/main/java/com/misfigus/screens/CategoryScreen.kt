@@ -79,7 +79,7 @@ fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUi
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(item.category.name, style = MaterialTheme.typography.bodyLarge)
                             }
-                            IconButton(onClick = {navHostController.navigate("$item.category")}) {
+                            IconButton(onClick = {navHostController.navigate(item.category.description)}) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Ver categoria",

@@ -1,5 +1,6 @@
 package com.misfigus.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -96,7 +97,9 @@ fun NewTag() {
 @Composable
 fun AlbumsScreen(navHostController: NavHostController, category: String) {
     var searchQuery by remember { mutableStateOf("") }
-    val albums = mockedAlbums().filter {  category.equals(it.category.toString()) }
+    Log.d("Category parameter", category)
+
+    val albums = mockedAlbums().filter { category == it.category.description }
 
     Scaffold(
         topBar = { BackButton(navHostController, "Categorias") }
