@@ -1,7 +1,7 @@
 package com.misfigus.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,17 +16,24 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
+
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.CardColor
 import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Green
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
@@ -36,8 +43,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth()
-            .clickable { onClick() },
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Background
@@ -48,14 +54,30 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-
-            Column(modifier = Modifier.padding(16.dp)) {
+            val context = LocalContext.current
+            val resId = remember() {
+                context.resources.getIdentifier(
+                    album.cover.lowercase(),
+                    "drawable",
+                    context.packageName
+                )
+            }
+            Image(  // TODO arreglar que la imagen no queda bien cuando se filtra
+                painter = painterResource(id = resId),
+                contentDescription = "My Album",
+                modifier = Modifier
+                    .width(70.dp)
+                    .height(100.dp),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
                 Text(text = album.albumId, style = MaterialTheme.typography.titleLarge)
-
-
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
@@ -66,17 +88,20 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     Text(
                         text = if (obtained == total) "Completado" else "Incompleto",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (obtained == total) EditColor else CardColor
+                        color = if (obtained == total) Green else CardColor
                     )
                 }
 
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Ver álbum",
-                tint = EditColor
-            )
+            IconButton(onClick = {onClick()}) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Ver álbum",
+                    tint = EditColor,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+            }
 
         }
 
@@ -88,6 +113,4 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
             color = Color.LightGray
         )
     }
-
-
 }

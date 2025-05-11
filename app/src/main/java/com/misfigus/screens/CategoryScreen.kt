@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,9 +39,6 @@ fun CategoryScreen(navHostController: NavHostController){
         AlbumCategoryEnum.entries.forEach { category ->
 
             Card(
-                onClick = {
-                    navHostController.navigate("$category")
-                },
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth(),
@@ -65,16 +63,17 @@ fun CategoryScreen(navHostController: NavHostController){
                             contentDescription = "My Icon",
                             modifier = Modifier
                                 .size(40.dp),
-
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(category.name, style = MaterialTheme.typography.bodyLarge)
                     }
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Ver categoria",
-                        tint = EditColor
-                    )
+                    IconButton(onClick = {navHostController.navigate("$category")}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Ver categoria",
+                            tint = EditColor
+                        )
+                    }
                 }
                 HorizontalDivider(
                     modifier = Modifier
@@ -86,15 +85,4 @@ fun CategoryScreen(navHostController: NavHostController){
             }
         }
     }
-}
-
-@Composable
-fun MyCustomIcon(category: AlbumCategoryEnum) {
-    Image(
-        painter = painterResource(id = category.icon), // Replace with your PNG name
-        contentDescription = "My Icon",
-        modifier = Modifier
-            .size(24.dp), // Adjust size as needed
-        contentScale = ContentScale.Fit
-    )
 }
