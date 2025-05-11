@@ -133,7 +133,7 @@ fun AppNavigation(navController: NavHostController) {
             composable("trader/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 id?.let {
-                    TraderOptionsScreen(id = it)
+                    TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
             composable(Screen.Profile.route) { KioscoScreen() } // Muestra pantalla de perfil
