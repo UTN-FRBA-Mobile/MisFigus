@@ -33,6 +33,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
     val total = album.tradingCards.size //TODO: Habria que ver si es correcto
     val obtained = album.tradingCards.count { it.obtained }
 
+    
     Card(
         modifier = Modifier
             .padding(8.dp)
