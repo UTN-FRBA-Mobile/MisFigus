@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +40,16 @@ import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.CardColor
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.White
+
+var myStickers = listOf(
+    mapOf("name" to "AR", "number" to "1"),
+    mapOf("name" to "AR", "number" to "10")
+)
+
+var matiasStickers = listOf(
+    mapOf("name" to "AR", "number" to "3"),
+    mapOf("name" to "AR", "number" to "4")
+)
 
 @Composable
 fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: ImageVector) {
@@ -149,7 +158,7 @@ fun Sticker(name: String,number: String) {
 }
 
 @Composable
-fun ForYouSection() {
+fun TradeSection(traderName: String, albumName: String, message: String, stickers: List<Map<String, String>> = emptyList()) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -163,20 +172,20 @@ fun ForYouSection() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "PARA VOS",
+                text = "PARA ${traderName.uppercase()}",
                 fontSize = 20.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
             TextWithIcon(
-                text = "Fifa World Cup Qatar 2022",
+                text = albumName,
                 textColor = CardColor,
                 imageColor = CardColor,
                 image = Icons.AutoMirrored.Outlined.MenuBook
             )
             Text(
-                text = "Matías tiene 13 figuritas que te faltan",
+                text = message,
                 fontSize = 13.sp,
                 color = Grey,
                 modifier = Modifier.padding(bottom = 3.dp)
@@ -184,23 +193,36 @@ fun ForYouSection() {
             Row(
                 modifier = Modifier.padding(top = 10.dp)
             ) {
-                Sticker(
-                    name = "AR",
-                    number = "3"
-                )
-                Spacer(modifier = Modifier.width(5.dp))
-                Sticker(
-                    name = "AR",
-                    number = "4"
-                )
+                stickers.forEach { sticker ->
+                    Sticker(
+                        name = sticker["name"].toString(),
+                        number = sticker["number"].toString()
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                }
             }
         }
     }
 }
 
 @Composable
-fun ForTraderSection() {
+fun ForYouSection() {
+    TradeSection(
+        traderName = "Vos",
+        albumName = "Fifa World Cup Qatar 2022",
+        message = "Matías tiene 13 figuritas que te faltan",
+        stickers = matiasStickers
+    )
+}
 
+@Composable
+fun ForTraderSection() {
+    TradeSection(
+        traderName = "Matías",
+        albumName = "Fifa World Cup Qatar 2022",
+        message = "Tenés 6 figuritas que Matías necesita",
+        stickers = myStickers
+    )
 }
 
 @Composable
@@ -243,7 +265,7 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String) {
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             TraderBanner()
             ForYouSection()
-//            ForTraderSection()
+            ForTraderSection()
             MoreAlbums()
         }
     }
