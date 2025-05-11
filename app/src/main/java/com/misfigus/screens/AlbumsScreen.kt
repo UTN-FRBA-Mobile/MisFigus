@@ -107,7 +107,7 @@ fun AlbumsScreen(navHostController: NavHostController, category: String) {
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SearchBar( // TODO agregar funcionalidad
+                SearchBar(
                     query = searchQuery,
                     onQueryChange = { searchQuery = it },
                     modifier = Modifier.weight(1f)
@@ -124,7 +124,10 @@ fun AlbumsScreen(navHostController: NavHostController, category: String) {
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
             ) {
-                items(albums) { abm ->
+                val filteredAlbums = albums.filter {
+                    it.albumId.contains(searchQuery, ignoreCase = true)
+                }
+                items(filteredAlbums) { abm ->
                     AlbumItem(
                         album = abm,
                         onClick = { navHostController.navigate("details/${abm.albumId}") })

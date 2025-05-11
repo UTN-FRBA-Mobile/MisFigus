@@ -33,6 +33,7 @@ import com.misfigus.models.Album
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.CardColor
 import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Green
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
@@ -63,7 +64,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     context.packageName
                 )
             }
-            Image(
+            Image(  // TODO arreglar que la imagen no queda bien cuando se filtra
                 painter = painterResource(id = resId),
                 contentDescription = "My Album",
                 modifier = Modifier
@@ -87,7 +88,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     Text(
                         text = if (obtained == total) "Completado" else "Incompleto",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (obtained == total) EditColor else CardColor
+                        color = if (obtained == total) Green else CardColor
                     )
                 }
 
