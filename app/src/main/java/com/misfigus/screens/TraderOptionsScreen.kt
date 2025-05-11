@@ -2,6 +2,7 @@ package com.misfigus.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.LocalShipping
@@ -191,7 +194,9 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
                 modifier = Modifier.padding(bottom = 3.dp)
             )
             Row(
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .horizontalScroll(rememberScrollState())
             ) {
                 stickers.forEach { sticker ->
                     Sticker(
@@ -262,11 +267,16 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String) {
     Scaffold(
         topBar = { BackButton(navHostController, "Canje") }
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize().padding(innerPadding)
+                .verticalScroll(rememberScrollState())
+        ) {
             TraderBanner()
             ForYouSection()
             ForTraderSection()
             MoreAlbums()
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
