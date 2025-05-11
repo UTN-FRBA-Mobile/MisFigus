@@ -205,7 +205,33 @@ fun ForTraderSection() {
 
 @Composable
 fun MoreAlbums() {
-
+    Card(
+        modifier = Modifier
+            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = White
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "Otros álbumes",
+                fontSize = 30.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 3.dp)
+            )
+            Text(
+                text = "Matías tiene figuritas de otros álbumes que te faltan, ¡mirá!",
+                fontSize = 13.sp,
+                color = Grey,
+                modifier = Modifier.padding(bottom = 3.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -217,8 +243,8 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String) {
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             TraderBanner()
             ForYouSection()
+//            ForTraderSection()
+            MoreAlbums()
         }
     }
-//    ForTraderSection()
-//    MoreAlbums()
 }
