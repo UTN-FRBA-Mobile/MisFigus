@@ -25,8 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.misfigus.models.TradingCard
-import com.misfigus.ui.theme.CardColor
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
+import com.misfigus.ui.theme.Red
 
 
 @Composable
@@ -37,9 +37,9 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 .clickable { onClick },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (tradingCard.obtained) CardColor else Color.White
+                containerColor = if (tradingCard.obtained) Red else Color.White
             ),
-            border = BorderStroke(width = 2.dp, CardColor)
+            border = BorderStroke(width = 2.dp, Red)
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
@@ -47,7 +47,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     style = MaterialTheme.typography.bodyLarge.copy(
                         textDecoration = if (tradingCard.obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
-                    color = if (tradingCard.obtained) Color.White else CardColor
+                    color = if (tradingCard.obtained) Color.White else Red
                 )
             }
         }
@@ -57,13 +57,13 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     .absoluteOffset(x = 85.dp, y = (-2).dp)
                     .size(30.dp)
                     .background(Color.White, shape = CircleShape)
-                    .border(width = 2.dp, CardColor, CircleShape),
+                    .border(width = 2.dp, Red, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = tradingCard.repeatedQuantity.toString(),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = CardColor
+                    color = Red
                 )
             }
 
@@ -71,8 +71,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 modifier = Modifier
                     .absoluteOffset(x = 0.dp, y = (-2).dp)
                     .size(30.dp)
-                    .background(EditColor, shape = CircleShape)
-                    .border(width = 2.dp, EditColor, CircleShape),
+                    .background(Purple, shape = CircleShape)
+                    .border(width = 2.dp, Purple, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -86,8 +86,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             modifier = Modifier
                 .absoluteOffset(x = 85.dp, y = 135.dp)
                 .size(30.dp)
-                .background(EditColor, shape = CircleShape)
-                .border(width = 2.dp, EditColor, CircleShape),
+                .background(Purple, shape = CircleShape)
+                .border(width = 2.dp, Purple, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(

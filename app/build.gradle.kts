@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 android {
@@ -53,6 +54,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.datastore.preferences)
 
 
 
@@ -63,5 +68,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Retrofit
+    implementation(libs.retrofit)
+
+    // Retrofit with Kotlin serialization Converter
+
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.okhttp.v4110)
+
+    // Kotlin serialization
+    implementation(libs.kotlinx.serialization.json)
 
 }

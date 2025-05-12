@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -40,7 +41,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.misfigus.R
-import com.misfigus.models.UserRepository
+import com.misfigus.dto.UserLoginDto
+import com.misfigus.navigation.Screen
+import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
+import com.misfigus.session.UserSessionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -50,7 +60,7 @@ fun LoginScreen(navController: NavController) {
     var loginError by remember { mutableStateOf<String?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves(navController = navController)
+        TopBackgroundCurves()
     }
     Column(
         modifier = Modifier
@@ -134,16 +144,31 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val context = LocalContext.current
         // Login button
         Button(
             onClick = {
-                if (UserRepository.login(email, password)) {
-                    loginError = null
-                    navController.navigate("albumes") {
-                        popUpTo("login") { inclusive = true }
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val loginDto = UserLoginDto(email = email, password = password)
+                        val response = AuthApi.retrofitService.login(loginDto)
+
+                        // Guardar el token globalmente
+                        TokenProvider.token = response.token
+                        UserSessionManager.saveToken(context, response.token) // ✅ contexto ya guardado
+
+                        // Volver al hilo principal para navegar
+                        withContext(Dispatchers.Main) {
+                            loginError = null
+                            navController.navigate(Screen.Albums.route) {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            loginError = "Login fallido: ${e.message ?: "error desconocido"}"
+                        }
                     }
-                } else {
-                    loginError = "Correo o contraseña incorrectos."
                 }
             },
             modifier = Modifier
