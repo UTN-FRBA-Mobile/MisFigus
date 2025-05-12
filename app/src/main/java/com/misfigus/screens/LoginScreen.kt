@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import com.example.misfigus.R
 import com.misfigus.models.UserRepository
+import com.misfigus.navigation.Screen
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -46,7 +47,7 @@ fun LoginScreen(navController: NavController) {
     var loginError by remember { mutableStateOf<String?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves(navController = navController)
+        TopBackgroundCurves()
     }
     Column(
         modifier = Modifier
@@ -135,7 +136,7 @@ fun LoginScreen(navController: NavController) {
             onClick = {
                 if (UserRepository.login(email, password)) {
                     loginError = null
-                    navController.navigate("albumes") {
+                    navController.navigate(Screen.Albums.route) {
                         popUpTo("login") { inclusive = true }
                     }
                 } else {

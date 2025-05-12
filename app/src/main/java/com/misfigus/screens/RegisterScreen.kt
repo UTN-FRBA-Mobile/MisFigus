@@ -52,7 +52,7 @@ fun RegisterScreen(navController: NavController) {
 
 
     Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves(navController = navController)
+        TopBackgroundCurves()
 
         Column(
             modifier = Modifier
