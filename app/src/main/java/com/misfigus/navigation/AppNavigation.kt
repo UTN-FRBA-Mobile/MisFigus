@@ -25,6 +25,7 @@ import com.example.misfigus.R
 import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.TradingCard
+import com.misfigus.network.TokenProvider
 import com.misfigus.screens.AlbumDetailScreen
 import com.misfigus.screens.AlbumsFromCategory
 import com.misfigus.screens.AlbumsViewModel
@@ -36,6 +37,7 @@ import com.misfigus.screens.PresentationScreen
 import com.misfigus.screens.RegisterScreen
 import com.misfigus.screens.TraderOptionsScreen
 import com.misfigus.screens.albums.MyAlbums
+import com.misfigus.screens.ProfileScreen
 import com.misfigus.ui.theme.Purple
 
 // cada pestaña de la barra de navegacion
@@ -131,7 +133,7 @@ fun AppNavigation(navController: NavHostController) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Presentation.route,
+            startDestination = if (TokenProvider.token != null) Screen.Albums.route else "login",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Presentation.route) { PresentationScreen(navController) }
@@ -146,7 +148,15 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
-            composable(Screen.Profile.route) { KioscoScreen() }
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onLogout = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true } // Limpiar la backstack
+                        }
+                    }
+                )
+            }
             composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
