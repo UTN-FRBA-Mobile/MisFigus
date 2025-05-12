@@ -28,6 +28,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.misfigus.models.KioskDTO
+import com.misfigus.network.KioskApi
 
 @Composable
 fun MapScreen() {
@@ -66,6 +69,8 @@ fun MapScreen() {
         }
     }
 
+    var selectedKiosk by remember { mutableStateOf<KioskDTO?>(null) }
+
     DisposableEffect(mapView) {
         mapView.onCreate(Bundle())
         mapView.onStart()
@@ -80,22 +85,26 @@ fun MapScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }) {
             mapView.getMapAsync { googleMap: GoogleMap ->
-                // Lista de kioscos simulados
-                val kiosks = listOf(
-                    LatLng(-34.6030, -58.3820),
-                    LatLng(-34.6050, -58.3800),
-                    LatLng(-34.6070, -58.3840)
-                )
-                // Centrado inicial por defecto (CABA)
+                val kiosks = KioskApi.getKiosks()
+
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-34.6037, -58.3816), 12f))
-                // Agregar marcadores de kioscos
-                kiosks.forEach { kioskLocation ->
+
+                kiosks.forEach { kiosk ->
+                    val position = LatLng(kiosk.coordinates.latitude, kiosk.coordinates.longitude)
                     googleMap.addMarker(
-                        com.google.android.gms.maps.model.MarkerOptions()
-                            .position(kioskLocation)
-                            .title("Kiosco disponible")
+                        MarkerOptions()
+                            .position(position)
+                            .title(kiosk.name)
+                            .snippet("${kiosk.address} | ⭐ ${kiosk.rating} | \$${kiosk.price}")
                     )
                 }
+
+                googleMap.setOnMarkerClickListener { marker ->
+                    selectedKiosk = kiosks.find { it.name == marker.title }
+                    marker.showInfoWindow()
+                    true
+                }
+
                 if (hasLocationPermission) {
                     try {
                         googleMap.isMyLocationEnabled = true
@@ -141,6 +150,29 @@ fun MapScreen() {
             Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray)
             Spacer(modifier = Modifier.width(8.dp))
             Text("Buscar kiosco...", color = Color.Gray)
+        }
+
+        // Card detallada del kiosco seleccionado
+        selectedKiosk?.let { kiosk ->
+            Card(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(8.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(kiosk.name, style = MaterialTheme.typography.titleLarge)
+                    Text(kiosk.address, style = MaterialTheme.typography.bodySmall)
+                    Text("⭐ ${kiosk.rating} | Hasta ${kiosk.openUntil}")
+                    Text("Disponible: ${kiosk.availableUnits} unidades")
+                    Text("Precio: \$${kiosk.price}", color = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { /* Acción futura */ }) {
+                        Text("Ver más")
+                    }
+                }
+            }
         }
     }
 }
