@@ -39,13 +39,17 @@ import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.ui.theme.Purple
 
 // cada pestaña de la barra de navegacion
-sealed class Screen(val route: String, val iconType: IconType) {
+sealed class Screen(val route: String, val iconType: IconType? = null) {
+    data object Presentation : Screen("presentation")
+    data object Login : Screen("login")
+    data object Register : Screen("register")
     data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
     data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.ic_menu_book))
     data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
     data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.ic_launcher_foreground))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
+
 }
 
 sealed class IconType {
@@ -66,63 +70,74 @@ fun AppNavigation(navController: NavHostController) {
     val currentRoute = currentBackStack?.destination?.route
     val albumsViewModel: AlbumsViewModel = viewModel()
 
+    val bottomBarRoutes = listOf(
+        Screen.Search.route,
+        Screen.Albums.route,
+        Screen.Trading.route,
+        Screen.Profile.route
+    )
+
+
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = Color.White) {
-                screens.forEach { screen ->
-                    val isSelected = currentRoute == screen.route
-                    NavigationBarItem(
-                        icon = {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                when (val icon = screen.iconType) {
-                                    is IconType.Vector -> Icon(icon.icon, contentDescription = null)
-                                    is IconType.Drawable -> Icon(
-                                        painter = painterResource(id = icon.resId),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp),
-                                        tint = if(isSelected) Purple else Color.Gray
-                                    )
-                                }
+            if (currentRoute in bottomBarRoutes) {
+                NavigationBar(containerColor = Color.White) {
+                    screens.forEach { screen ->
+                        val isSelected = currentRoute == screen.route
+                        NavigationBarItem(
+                            icon = {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    when (val icon = screen.iconType) {
+                                        is IconType.Vector -> Icon(icon.icon, contentDescription = null)
+                                        is IconType.Drawable -> Icon(
+                                            painter = painterResource(id = icon.resId),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                            tint = if (isSelected) Purple else Color.Gray
+                                        )
+                                        null -> {}
+                                    }
 
-                                if(isSelected){
-                                    HorizontalDivider(
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .padding(top = 8.dp),
-                                        thickness = 2.dp,
-                                        color = Purple
-                                    )
+                                    if (isSelected) {
+                                        HorizontalDivider(
+                                            modifier = Modifier
+                                                .size(20.dp)
+                                                .padding(top = 8.dp),
+                                            thickness = 2.dp,
+                                            color = Purple
+                                        )
+                                    }
                                 }
-                            }
-                        },
-                        selected = isSelected,
-                        onClick = {
-                            if (currentRoute != screen.route) {
-                                navController.navigate(screen.route) {
-                                    launchSingleTop = true
-                                    restoreState = true
+                            },
+                            selected = isSelected,
+                            onClick = {
+                                if (currentRoute != screen.route) {
+                                    navController.navigate(screen.route) {
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
                                 }
-                            }
-                        },
-                        alwaysShowLabel = false,
-                        colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = Color.Transparent
-                        ),
-                        modifier = Modifier.size(20.dp)
-                    )
+                            },
+                            alwaysShowLabel = false,
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = Color.Transparent
+                            ),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "presentation",
+            startDestination = Screen.Presentation.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("presentation") {PresentationScreen(navController)}
-            composable("login") {LoginScreen(navController)}
-            composable("register") {RegisterScreen(navController)}
-            composable(Screen.Search.route) { MapScreen() } // <- ACÁ se muestra la pantalla con mapa
+            composable(Screen.Presentation.route) { PresentationScreen(navController) }
+            composable(Screen.Login.route) { LoginScreen(navController) }
+            composable(Screen.Register.route) { RegisterScreen(navController) }
+            composable(Screen.Search.route) { MapScreen() }
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
             composable("trader/{id}") { backStackEntry ->
