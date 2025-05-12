@@ -31,12 +31,12 @@ import com.misfigus.screens.AlbumsViewModel
 import com.misfigus.screens.IntercambioScreen
 import com.misfigus.screens.KioscoScreen
 import com.misfigus.screens.LoginScreen
+import com.misfigus.screens.MapScreen
 import com.misfigus.screens.PresentationScreen
 import com.misfigus.screens.RegisterScreen
 import com.misfigus.screens.TraderOptionsScreen
 import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.ui.theme.Purple
-
 
 // cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {
@@ -49,13 +49,10 @@ sealed class Screen(val route: String, val iconType: IconType) {
 }
 
 sealed class IconType {
-    // Íconos disponibles de android
     data class Vector(val icon: androidx.compose.ui.graphics.vector.ImageVector) : IconType()
-    // Ícono desde drawable
     data class Drawable(val resId: Int) : IconType()
 }
 
-// Todas las pantallas que aparecen en la barra de navegación
 val screens = listOf(
     Screen.Search,
     Screen.Albums,
@@ -63,17 +60,16 @@ val screens = listOf(
     Screen.Profile
 )
 
-// Función Composable con la lógica de navegación y la barra inferior
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    val currentBackStack by navController.currentBackStackEntryAsState() // Historial de navegación para conseguir la pantalla actual
-    val currentRoute = currentBackStack?.destination?.route // Obtiene la pantalla actual
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStack?.destination?.route
     val albumsViewModel: AlbumsViewModel = viewModel()
-    // Crea la estructura visual principal, incluyendo la barra inferior
+
     Scaffold(
         bottomBar = {
             NavigationBar(containerColor = Color.White) {
-                screens.forEach { screen -> // Recorre todas las pestañas
+                screens.forEach { screen ->
                     val isSelected = currentRoute == screen.route
                     NavigationBarItem(
                         icon = {
@@ -98,22 +94,19 @@ fun AppNavigation(navController: NavHostController) {
                                     )
                                 }
                             }
-
                         },
                         selected = isSelected,
-
                         onClick = {
-                            // Verifica si ya estás en la pantalla actual
                             if (currentRoute != screen.route) {
-                                navController.navigate(screen.route) { // Navega a la pantalla correspondiente
-                                    launchSingleTop = true // Evita crear múltiples instancias de la misma pantalla
-                                    restoreState = true // Restaura el estado previo si volvés a esa pantalla
+                                navController.navigate(screen.route) {
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
                         },
-                        alwaysShowLabel = false, // Oculta el nombre abajo de los iconos
+                        alwaysShowLabel = false,
                         colors = NavigationBarItemDefaults.colors(
-                            indicatorColor = Color.Transparent // Evita el fondo redondo
+                            indicatorColor = Color.Transparent
                         ),
                         modifier = Modifier.size(20.dp)
                     )
@@ -121,15 +114,15 @@ fun AppNavigation(navController: NavHostController) {
             }
         }
     ) { innerPadding ->
-        // Asocia las rutas con Composable para mostrar cada pantalla
         NavHost(
             navController = navController,
-            startDestination = "presentation", // Primera pantalla que se muestra al abrir la app
-            modifier = Modifier.padding(innerPadding) // Respeta el padding del Scaffold
+            startDestination = "presentation",
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable("presentation") {PresentationScreen(navController)}
             composable("login") {LoginScreen(navController)}
             composable("register") {RegisterScreen(navController)}
+            composable(Screen.Search.route) { MapScreen() } // <- ACÁ se muestra la pantalla con mapa
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
             composable("trader/{id}") { backStackEntry ->
@@ -138,16 +131,15 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
-            composable(Screen.Profile.route) { KioscoScreen() } // Muestra pantalla de perfil
-            composable(Screen.AlbumDetails.route) { backStackEntry ->  //Muestra detalles de un album
+            composable(Screen.Profile.route) { KioscoScreen() }
+            composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
                     val albumDetailed = getAlbumByName(it)
                     if(albumDetailed != null) AlbumDetailScreen(navController, album = albumDetailed)
                 }
             }
-
-            composable(Screen.AlbumCategory.route) { backStackEntry ->  //Muestra albumes de una categoria
+            composable(Screen.AlbumCategory.route) { backStackEntry ->
                 val category = backStackEntry.arguments?.getString("category")
                 category?.let {
                     AlbumsFromCategory(navController, it)
@@ -159,26 +151,24 @@ fun AppNavigation(navController: NavHostController) {
 
 @Composable
 fun getAlbumByName(name: String): Album? {
-    return mockedAlbums().find{ it.albumId == name }
+    return mockedAlbums().find { it.albumId == name }
 }
 
 @Composable
-fun mockedAlbums(): List<Album>{
+fun mockedAlbums(): List<Album> {
     val tradingCardsQatar = listOf(
-            TradingCard(1, "Qatar 2022", obtained = true, 3),
-            TradingCard(2, "Qatar 2022", obtained = false, repeatedQuantity = 0),
-            TradingCard(3, "Qatar 2022", obtained = true, repeatedQuantity = 0)
-        )
+        TradingCard(1, "Qatar 2022", obtained = true, 3),
+        TradingCard(2, "Qatar 2022", obtained = false, repeatedQuantity = 0),
+        TradingCard(3, "Qatar 2022", obtained = true, repeatedQuantity = 0)
+    )
     val tradingCardsSouthAfrica = listOf(
         TradingCard(1, "South Africa 2010", obtained = true, 2),
         TradingCard(2, "South Africa 2010", obtained = true, repeatedQuantity = 0),
     )
 
-    val albums = listOf(
-            Album("Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 0),
-            Album("South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 0),
-            Album("Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 0)
-        )
-
-    return albums
+    return listOf(
+        Album("Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 0),
+        Album("South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 0),
+        Album("Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 0)
+    )
 }
