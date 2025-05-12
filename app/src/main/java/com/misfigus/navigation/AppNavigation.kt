@@ -26,9 +26,8 @@ import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.TradingCard
 import com.misfigus.screens.AlbumDetailScreen
-import com.misfigus.screens.AlbumsScreen
+import com.misfigus.screens.AlbumsFromCategory
 import com.misfigus.screens.AlbumsViewModel
-import com.misfigus.screens.CategoryScreen
 import com.misfigus.screens.IntercambioScreen
 import com.misfigus.screens.KioscoScreen
 import com.misfigus.screens.LoginScreen
@@ -36,7 +35,8 @@ import com.misfigus.screens.MapScreen
 import com.misfigus.screens.PresentationScreen
 import com.misfigus.screens.RegisterScreen
 import com.misfigus.screens.TraderOptionsScreen
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.screens.albums.MyAlbums
+import com.misfigus.ui.theme.Purple
 
 // cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType) {
@@ -80,7 +80,7 @@ fun AppNavigation(navController: NavHostController) {
                                         painter = painterResource(id = icon.resId),
                                         contentDescription = null,
                                         modifier = Modifier.size(20.dp),
-                                        tint = if(isSelected) EditColor else Color.Gray
+                                        tint = if(isSelected) Purple else Color.Gray
                                     )
                                 }
 
@@ -90,7 +90,7 @@ fun AppNavigation(navController: NavHostController) {
                                             .size(20.dp)
                                             .padding(top = 8.dp),
                                         thickness = 2.dp,
-                                        color = EditColor
+                                        color = Purple
                                     )
                                 }
                             }
@@ -119,11 +119,11 @@ fun AppNavigation(navController: NavHostController) {
             startDestination = "presentation",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("presentation") { PresentationScreen(navController) }
-            composable("login") { LoginScreen(navController) }
-            composable("register") { RegisterScreen(navController) }
+            composable("presentation") {PresentationScreen(navController)}
+            composable("login") {LoginScreen(navController)}
+            composable("register") {RegisterScreen(navController)}
             composable(Screen.Search.route) { MapScreen() } // <- ACÁ se muestra la pantalla con mapa
-            composable(Screen.Albums.route) { CategoryScreen(navController, albumsViewModel.albumsUiState) }
+            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
             composable("trader/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
@@ -142,7 +142,7 @@ fun AppNavigation(navController: NavHostController) {
             composable(Screen.AlbumCategory.route) { backStackEntry ->
                 val category = backStackEntry.arguments?.getString("category")
                 category?.let {
-                    AlbumsScreen(navController, it)
+                    AlbumsFromCategory(navController, it)
                 }
             }
         }
@@ -167,8 +167,8 @@ fun mockedAlbums(): List<Album> {
     )
 
     return listOf(
-        Album("Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar"),
-        Album("South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa"),
-        Album("Ice Age", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age")
+        Album("Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 0),
+        Album("South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 0),
+        Album("Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 0)
     )
 }

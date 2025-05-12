@@ -1,6 +1,5 @@
 package com.misfigus.screens
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.misfigus.components.AlbumItem
 import com.misfigus.navigation.BackButton
 import com.misfigus.navigation.mockedAlbums
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.White
 
 @Composable
@@ -73,7 +72,7 @@ fun NewTag() {
         modifier = Modifier
             .padding(end = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(EditColor)
+            .background(Purple)
             .padding(horizontal = 12.dp, vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -95,14 +94,13 @@ fun NewTag() {
 }
 
 @Composable
-fun AlbumsScreen(navHostController: NavHostController, category: String) {
+fun AlbumsFromCategory(navHostController: NavHostController, category: String) {
     var searchQuery by remember { mutableStateOf("") }
-    Log.d("Category parameter", category)
 
     val albums = mockedAlbums().filter { category == it.category.description }
 
     Scaffold(
-        topBar = { BackButton(navHostController, "Categorias") }
+        topBar = { BackButton(navHostController, "My albums") }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             Row(
@@ -117,12 +115,6 @@ fun AlbumsScreen(navHostController: NavHostController, category: String) {
                 )
                 NewTag()
             }
-
-            Text(
-                text = category.first().uppercaseChar() + category.drop(1).lowercase(),
-                modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.titleLarge
-            )
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)

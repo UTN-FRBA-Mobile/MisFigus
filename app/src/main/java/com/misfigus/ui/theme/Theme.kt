@@ -10,16 +10,16 @@ import androidx.compose.ui.graphics.Color
 private val DarkColorScheme = darkColorScheme(
     background = Background,
     surface = Color.White,
-    primary = EditColor,
-    secondary = CardColor,
+    primary = Purple,
+    secondary = Red,
     tertiary = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
     background = Background,
     surface = Color.White,
-    primary = EditColor,
-    secondary = CardColor,
+    primary = Purple,
+    secondary = Red,
     tertiary = Color.White
 
     /* Other default colors to override
