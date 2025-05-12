@@ -46,10 +46,10 @@ sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object Login : Screen("login")
     data object Register : Screen("register")
     data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
-    data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.ic_menu_book))
+    data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.album_icon))
     data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
-    data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.ic_launcher_foreground))
+    data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
 
 }
@@ -165,8 +165,9 @@ fun AppNavigation(navController: NavHostController) {
                 }
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->
-                val category = backStackEntry.arguments?.getString("category")
-                category?.let {
+                val categoryName = backStackEntry.arguments?.getString("category")
+                val categoryEnum = categoryName?.let { AlbumCategoryEnum.valueOf(it) }
+                categoryEnum?.let {
                     AlbumsFromCategory(navController, it)
                 }
             }

@@ -27,7 +27,6 @@ import androidx.navigation.NavHostController
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
-import com.misfigus.ui.theme.White
 
 @Composable
 fun TraddingBanner() {
@@ -37,7 +36,7 @@ fun TraddingBanner() {
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = Color.White
         )
     ) {
         Column {
@@ -77,7 +76,7 @@ fun TraderCard(navHostController: NavHostController) {
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = Color.White
         )
     ) {
         Row(

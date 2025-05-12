@@ -12,34 +12,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+import androidx.navigation.NavHostController
 import com.misfigus.components.AlbumItem
+import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.navigation.BackButton
 import com.misfigus.navigation.mockedAlbums
 import com.misfigus.ui.theme.Purple
-import com.misfigus.ui.theme.White
 
 @Composable
 fun SearchBar(
@@ -80,24 +78,24 @@ fun NewTag() {
         Text(
             text = "Nuevo",
             fontSize = 15.sp,
-            color = White
+            color = Color.White
         )
         Spacer(modifier = Modifier.width(6.dp))
         IconButton(onClick = {}) { // TODO add screen
             Icon(
                 imageVector = Icons.Outlined.Add,
                 contentDescription = "Add",
-                tint = White
+                tint = Color.White
             )
         }
     }
 }
 
 @Composable
-fun AlbumsFromCategory(navHostController: NavHostController, category: String) {
+fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCategoryEnum) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val albums = mockedAlbums().filter { category == it.category.description }
+    val albums = mockedAlbums().filter {  category.description.equals(it.category.description) }
 
     Scaffold(
         topBar = { BackButton(navHostController, "My albums") }

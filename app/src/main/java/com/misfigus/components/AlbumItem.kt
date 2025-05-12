@@ -19,20 +19,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.runtime.remember
-
 import com.misfigus.models.Album
+import com.misfigus.ui.theme.AlbumCompleted
 import com.misfigus.ui.theme.Background
-import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
-import com.misfigus.ui.theme.Green
+import com.misfigus.ui.theme.Red
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
@@ -76,18 +76,18 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     .padding(16.dp)
                     .weight(1f)
             ) {
-                Text(text = album.name, style = MaterialTheme.typography.headlineMedium)
+                Text(text = album.name, style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
                         text = "$obtained/$total",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (obtained == total) "completo" else "incompleto",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = if (obtained == total) Green else Red
+                        text = if (obtained == total) "Completado" else "Incompleto",
+                        style = if (obtained == total) MaterialTheme.typography.bodySmall.copy(textDecoration = TextDecoration.Underline) else MaterialTheme.typography.bodySmall,
+                        color = if (obtained == total) AlbumCompleted else Red
                     )
                 }
 

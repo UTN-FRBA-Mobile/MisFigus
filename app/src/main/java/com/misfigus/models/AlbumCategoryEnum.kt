@@ -2,7 +2,6 @@ package com.misfigus.models
 
 import androidx.annotation.DrawableRes
 import com.example.misfigus.R
-import com.misfigus.navigation.IconType
 import kotlinx.serialization.Serializable
 
 @Serializable
