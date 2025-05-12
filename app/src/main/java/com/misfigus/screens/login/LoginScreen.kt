@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import com.example.misfigus.R
 import com.misfigus.models.UserRepository
+import com.misfigus.screens.TopBackgroundCurves
 
 @Composable
 fun LoginScreen(navController: NavController) {

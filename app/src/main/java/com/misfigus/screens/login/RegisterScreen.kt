@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.example.misfigus.R
 import com.misfigus.models.User
 import com.misfigus.models.UserRepository
+import com.misfigus.screens.TopBackgroundCurves
 
 @Composable
 fun RegisterScreen(navController: NavController) {

@@ -25,16 +25,16 @@ import com.example.misfigus.R
 import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.TradingCard
-import com.misfigus.screens.AlbumDetailScreen
-import com.misfigus.screens.AlbumsFromCategory
-import com.misfigus.screens.AlbumsViewModel
-import com.misfigus.screens.IntercambioScreen
-import com.misfigus.screens.KioscoScreen
-import com.misfigus.screens.LoginScreen
-import com.misfigus.screens.MapScreen
-import com.misfigus.screens.PresentationScreen
-import com.misfigus.screens.RegisterScreen
-import com.misfigus.screens.TraderOptionsScreen
+import com.misfigus.screens.album.AlbumDetailScreen
+import com.misfigus.screens.album.AlbumsFromCategory
+import com.misfigus.screens.album.AlbumsViewModel
+import com.misfigus.screens.trades.IntercambioScreen
+import com.misfigus.screens.profile.ProfileScreen
+import com.misfigus.screens.login.LoginScreen
+import com.misfigus.screens.map.MapScreen
+import com.misfigus.screens.login.PresentationScreen
+import com.misfigus.screens.login.RegisterScreen
+import com.misfigus.screens.trades.TraderOptionsScreen
 import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.ui.theme.Purple
 
@@ -119,10 +119,10 @@ fun AppNavigation(navController: NavHostController) {
             startDestination = "presentation",
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("presentation") {PresentationScreen(navController)}
-            composable("login") {LoginScreen(navController)}
-            composable("register") {RegisterScreen(navController)}
-            composable(Screen.Search.route) { MapScreen() } // <- ACÁ se muestra la pantalla con mapa
+            composable("presentation") { PresentationScreen(navController) }
+            composable("login") { LoginScreen(navController) }
+            composable("register") { RegisterScreen(navController) }
+            composable(Screen.Search.route) { MapScreen() }
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
             composable("trader/{id}") { backStackEntry ->
@@ -131,7 +131,7 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
-            composable(Screen.Profile.route) { KioscoScreen() }
+            composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {

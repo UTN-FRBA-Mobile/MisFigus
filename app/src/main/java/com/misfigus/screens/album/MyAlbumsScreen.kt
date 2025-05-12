@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.misfigus.screens.AlbumsUiState
+import com.misfigus.screens.album.AlbumsUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey

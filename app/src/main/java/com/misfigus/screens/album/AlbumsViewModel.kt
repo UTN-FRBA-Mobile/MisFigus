@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.album
 
 import android.util.Log
 import androidx.compose.runtime.getValue
