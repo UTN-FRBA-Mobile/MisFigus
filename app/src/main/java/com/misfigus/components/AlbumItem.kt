@@ -1,7 +1,6 @@
 package com.misfigus.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +31,7 @@ import androidx.compose.runtime.remember
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.CardColor
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Green
 
 @Composable
@@ -98,7 +97,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Ver álbum",
-                    tint = EditColor,
+                    tint = Purple,
                     modifier = Modifier.padding(end = 8.dp)
                 )
             }

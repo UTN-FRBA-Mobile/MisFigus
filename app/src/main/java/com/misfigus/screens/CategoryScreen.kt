@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.albums
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,14 +25,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.misfigus.screens.AlbumsUiState
 import com.misfigus.ui.theme.Background
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
+import com.misfigus.ui.theme.Grey
 
 
 @Composable
-fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUiState){
+fun MyAlbums(navHostController: NavHostController, albumsUiState: AlbumsUiState) {
     Column(modifier = Modifier.padding(20.dp)) {
-        Text("Categorías", style = MaterialTheme.typography.titleLarge)
+        Text("My albums", style = MaterialTheme.typography.titleLarge, color = Grey)
+        MyCollectionStats()
+        CategoryScreen(navHostController, albumsUiState)
+    }
+}
+
+@Composable
+fun MyCollectionStats() {
+//    Card(colors = CardDefaults.cardColors(containerColor = White)) {
+//        Column(modifier = Modifier.padding(20.dp)) {
+//            Text("My collections", style = MaterialTheme.typography.headlineMedium, color = Grey)
+//            // TO-DO
+//        }
+//    }
+}
+
+@Composable
+fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUiState){
+    Column(modifier = Modifier.padding(vertical = 20.dp)) {
+        Text("Categories", style = MaterialTheme.typography.titleMedium, color = Grey)
         Spacer(modifier = Modifier.padding(10.dp))
 
         when (albumsUiState) {
@@ -51,7 +71,7 @@ fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUi
 
                     Card(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(horizontal = 8.dp)
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
@@ -61,8 +81,7 @@ fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUi
                     {
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp),
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -74,23 +93,26 @@ fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUi
                                     contentDescription = "My Icon",
                                     modifier = Modifier
                                         .size(40.dp),
+                                )
+                                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                                    Text(item.category.name.lowercase().capitalize(), style = MaterialTheme.typography.bodyLarge)
+                                    Text(item.count.toString() + if (item.count > 1) " álbumes" else " álbum"
+                                        , style = MaterialTheme.typography.bodyLarge, color = Grey)
 
-                                    )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(item.category.name, style = MaterialTheme.typography.bodyLarge)
+                                }
                             }
                             IconButton(onClick = {navHostController.navigate(item.category.description)}) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Ver categoria",
-                                    tint = EditColor
+                                    tint = Purple
                                 )
                             }
                         }
                         HorizontalDivider(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp),
+                                .padding(vertical = 6.dp),
                             thickness = 1.dp,
                             color = Color.LightGray
                         )

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.misfigus.ui.theme.CardColor
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.White
 
@@ -132,7 +132,7 @@ fun TraderCard(navHostController: NavHostController) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Canjear",
-                    tint = EditColor
+                    tint = Purple
                 )
             }
         }

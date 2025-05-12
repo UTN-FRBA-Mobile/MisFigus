@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 private val DarkColorScheme = darkColorScheme(
     background = Background,
     surface = Color.White,
-    primary = EditColor,
+    primary = Purple,
     secondary = CardColor,
     tertiary = Color.White
 )
@@ -18,7 +18,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     background = Background,
     surface = Color.White,
-    primary = EditColor,
+    primary = Purple,
     secondary = CardColor,
     tertiary = Color.White
 

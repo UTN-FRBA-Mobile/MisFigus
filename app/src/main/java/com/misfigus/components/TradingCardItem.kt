@@ -25,7 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
-import com.misfigus.ui.theme.EditColor
+import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.CardColor
 
 
@@ -71,8 +71,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 modifier = Modifier
                     .absoluteOffset(x = 0.dp, y = (-2).dp)
                     .size(30.dp)
-                    .background(EditColor, shape = CircleShape)
-                    .border(width = 2.dp, EditColor, CircleShape),
+                    .background(Purple, shape = CircleShape)
+                    .border(width = 2.dp, Purple, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -86,8 +86,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             modifier = Modifier
                 .absoluteOffset(x = 85.dp, y = 135.dp)
                 .size(30.dp)
-                .background(EditColor, shape = CircleShape)
-                .border(width = 2.dp, EditColor, CircleShape),
+                .background(Purple, shape = CircleShape)
+                .border(width = 2.dp, Purple, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(

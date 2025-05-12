@@ -11,7 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val CardColor = Color(0xFFCF0229)
-val EditColor = Color(0xFF500DBE)
+val Purple = Color(0xFF500DBE)
 val Background = Color(0xFFF3F5FD)
 val White = Color(0xFFFFFFFF)
 val Grey = Color(0xFF534B4B)
