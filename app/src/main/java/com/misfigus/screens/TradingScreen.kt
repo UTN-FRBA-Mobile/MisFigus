@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.ui.theme.CardColor
+import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.White
@@ -56,13 +56,13 @@ fun TraddingBanner() {
                 Icon(
                     imageVector = Icons.Outlined.Error,
                     contentDescription = "Error Icon",
-                    tint = CardColor
+                    tint = Red
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "Hay 15 personas de tu zona que quieren canjear",
                     fontSize = 13.sp,
-                    color = CardColor
+                    color = Red
                 )
             }
         }
@@ -119,7 +119,7 @@ fun TraderCard(navHostController: NavHostController) {
                 Text(
                     text = "Fifa World Cup Qatar 2022",
                     fontSize = 13.sp,
-                    color = CardColor,
+                    color = Red,
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
                 Text(

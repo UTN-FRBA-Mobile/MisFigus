@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.misfigus.R
 import com.misfigus.navigation.BackButton
-import com.misfigus.ui.theme.CardColor
+import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.White
 
@@ -136,7 +136,7 @@ fun TraderBanner() {
 fun Sticker(name: String,number: String) {
     Box(
         modifier = Modifier
-            .border(width = 1.dp, color = CardColor, shape = RoundedCornerShape(8.dp))
+            .border(width = 1.dp, color = Red, shape = RoundedCornerShape(8.dp))
             .padding(6.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -147,13 +147,13 @@ fun Sticker(name: String,number: String) {
             Text(
                 text = name,
                 fontSize = 13.sp,
-                color = CardColor,
+                color = Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
             Text(
                 text = number,
                 fontSize = 13.sp,
-                color = CardColor,
+                color = Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
         }
@@ -183,8 +183,8 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
             )
             TextWithIcon(
                 text = albumName,
-                textColor = CardColor,
-                imageColor = CardColor,
+                textColor = Red,
+                imageColor = Red,
                 image = Icons.AutoMirrored.Outlined.MenuBook
             )
             Text(

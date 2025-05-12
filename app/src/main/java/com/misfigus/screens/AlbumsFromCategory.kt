@@ -115,12 +115,6 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: String) {
                 )
                 NewTag()
             }
-
-            Text(
-                text = category.first().uppercaseChar() + category.drop(1).lowercase(),
-                modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.titleLarge
-            )
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)

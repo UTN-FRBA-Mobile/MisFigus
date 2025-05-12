@@ -30,13 +30,13 @@ import androidx.compose.runtime.remember
 
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.Background
-import com.misfigus.ui.theme.CardColor
+import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Green
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
-    val total = album.tradingCards.size //TODO: Habria que ver si es correcto
+    val total = album.tradingCards.size //TODO: Habria que ver si es correcto. Usar variable nueva totalCards (ahora asignada a 0)
     val obtained = album.tradingCards.count { it.obtained }
 
     Card(
@@ -76,7 +76,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     .padding(16.dp)
                     .weight(1f)
             ) {
-                Text(text = album.albumId, style = MaterialTheme.typography.titleLarge)
+                Text(text = album.name, style = MaterialTheme.typography.headlineMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row() {
                     Text(
@@ -85,9 +85,9 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (obtained == total) "Completado" else "Incompleto",
+                        text = if (obtained == total) "completo" else "incompleto",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = if (obtained == total) Green else CardColor
+                        color = if (obtained == total) Green else Red
                     )
                 }
 
