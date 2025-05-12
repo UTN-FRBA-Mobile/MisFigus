@@ -34,7 +34,7 @@ fun ProfileScreen(
         val token = UserSessionManager.getToken(context)
         if (!token.isNullOrBlank()) {
             try {
-                user = AuthApi.retrofitService.getCurrentUser("Bearer $token")
+                user = AuthApi.retrofitService.getCurrentUser()
             } catch (e: Exception) {
                 error = "No se pudo obtener el perfil: ${e.message}"
             }
