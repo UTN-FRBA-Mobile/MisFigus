@@ -8,21 +8,25 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 
 object AlbumsApi {
-    private const val BASE_URL = "http://10.0.2.2:8080/albums/"
+    private const val BASE_URL = "http://10.0.2.2:8080/"
+
+    private val client = okhttp3.OkHttpClient.Builder()
+        .addInterceptor(AuthInterceptor())
+        .build()
 
     private val retrofit = Retrofit.Builder()
         .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
         .baseUrl(BASE_URL)
+        .client(client)
         .build()
 
     val retrofitService: AlbumsApiService by lazy {
         retrofit.create(AlbumsApiService::class.java)
     }
-
 }
 
 interface AlbumsApiService {
-    @GET("count-by-category")
+    @GET("albums/count-by-category")
     suspend fun getData(): List<AlbumCategoryCountDto>
 }
 

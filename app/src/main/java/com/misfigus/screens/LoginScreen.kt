@@ -35,9 +35,19 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.platform.LocalContext
 import com.example.misfigus.R
 import com.misfigus.models.UserRepository
 import com.misfigus.navigation.Screen
+import com.misfigus.dto.UserLoginDto
+import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
+import com.misfigus.session.UserSessionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -131,16 +141,31 @@ fun LoginScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val context = LocalContext.current
         // Login button
         Button(
             onClick = {
-                if (UserRepository.login(email, password)) {
-                    loginError = null
-                    navController.navigate(Screen.Albums.route) {
-                        popUpTo("login") { inclusive = true }
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val loginDto = UserLoginDto(email = email, password = password)
+                        val response = AuthApi.retrofitService.login(loginDto)
+
+                        // Guardar el token globalmente
+                        TokenProvider.token = response.token
+                        UserSessionManager.saveToken(context, response.token) // ✅ contexto ya guardado
+
+                        // Volver al hilo principal para navegar
+                        withContext(Dispatchers.Main) {
+                            loginError = null
+                            navController.navigate(Screen.Albums.route) {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            loginError = "Login fallido: ${e.message ?: "error desconocido"}"
+                        }
                     }
-                } else {
-                    loginError = "Correo o contraseña incorrectos."
                 }
             },
             modifier = Modifier
