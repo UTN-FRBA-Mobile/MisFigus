@@ -119,7 +119,7 @@ fun MapScreen() {
                                 val location = locationResult.lastLocation ?: return
                                 val userLocation = LatLng(location.latitude, location.longitude)
                                 Log.d("MapScreen", "Ubicación actualizada: ${location.latitude}, ${location.longitude}")
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 17f))
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15f))
                                 fusedLocationClient.removeLocationUpdates(this)
                             }
                         }
