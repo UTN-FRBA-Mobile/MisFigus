@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.misfigus.models.User
-import com.misfigus.models.UserRepository
 import com.misfigus.navigation.AppNavigation
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager

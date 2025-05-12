@@ -148,7 +148,15 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onLogout = {
+                        navController.navigate("login") {
+                            popUpTo(0) { inclusive = true } // Limpiar la backstack
+                        }
+                    }
+                )
+            }
             composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {

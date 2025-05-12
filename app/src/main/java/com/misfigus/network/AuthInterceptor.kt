@@ -6,12 +6,14 @@ import okhttp3.Response
 class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
+        val url = originalRequest.url.toString()
 
-        val token = TokenProvider.token
+        // Excluir endpoints públicos
+        val isPublicEndpoint = url.contains("/users/login") || url.contains("/users/register")
 
-        return if (token != null) {
+        return if (!isPublicEndpoint && TokenProvider.token != null) {
             val newRequest = originalRequest.newBuilder()
-                .addHeader("Authorization", "Bearer $token")
+                .addHeader("Authorization", "Bearer ${TokenProvider.token}")
                 .build()
             chain.proceed(newRequest)
         } else {
@@ -19,3 +21,4 @@ class AuthInterceptor : Interceptor {
         }
     }
 }
+

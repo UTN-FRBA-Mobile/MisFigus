@@ -17,9 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.misfigus.dto.UserDto
-import com.misfigus.models.UserRepository
 import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -102,10 +103,15 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        val coroutineScope = rememberCoroutineScope()
+
         Button(
             onClick = {
-                UserRepository.logout()
-                onLogout()
+                coroutineScope.launch {
+                    TokenProvider.token = null
+                    UserSessionManager.clearToken(context)
+                    onLogout()
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
             modifier = Modifier.fillMaxWidth()
@@ -120,7 +126,7 @@ fun ProfileScreen(
             onDismissRequest = { showEditDialog = false },
             confirmButton = {
                 TextButton(onClick = {
-                    UserRepository.updateNameAndUsername(fullName, username)
+                    // editar fullname y username
                     showEditDialog = false
                 }) {
                     Text("Guardar")

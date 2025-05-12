@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import com.example.misfigus.R
 import com.misfigus.models.User
-import com.misfigus.models.UserRepository
 import com.misfigus.dto.UserRegisterDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
