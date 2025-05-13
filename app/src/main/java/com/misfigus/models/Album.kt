@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Album(
+    var id: Int,
     var albumId: String,
     var name: String,
     var tradingCards: List<TradingCard>,

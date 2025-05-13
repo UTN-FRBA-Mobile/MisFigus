@@ -36,7 +36,7 @@ import com.misfigus.ui.theme.Green
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
-    val total = album.tradingCards.size //TODO: Habria que ver si es correcto. Usar variable nueva totalCards (ahora asignada a 0)
+    val total = album.totalCards
     val obtained = album.tradingCards.count { it.obtained }
 
     Card(
