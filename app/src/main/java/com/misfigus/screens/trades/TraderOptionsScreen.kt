@@ -42,7 +42,6 @@ import com.example.misfigus.R
 import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
-import com.misfigus.ui.theme.White
 
 var myStickers = listOf(
     mapOf("name" to "AR", "number" to "1"),
@@ -82,7 +81,7 @@ fun TraderBanner() {
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = Color.White
         )
     ) {
         Column(
@@ -168,7 +167,7 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = Color.White
         )
     ) {
         Column(
@@ -238,7 +237,7 @@ fun MoreAlbums() {
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = Color.White
         )
     ) {
         Column(

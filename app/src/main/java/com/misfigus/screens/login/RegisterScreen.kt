@@ -17,43 +17,55 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.ui.text.style.TextAlign
 import com.example.misfigus.R
-import com.misfigus.models.User
-import com.misfigus.models.UserRepository
 import com.misfigus.screens.TopBackgroundCurves
+import com.misfigus.dto.UserRegisterDto
+import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
+import com.misfigus.session.UserSessionManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 @Composable
 fun RegisterScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var registrationError by remember { mutableStateOf<String?>(null) }
     var registrationSuccess by remember { mutableStateOf(false) }
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves(navController = navController)
+        TopBackgroundCurves()
 
         Column(
             modifier = Modifier
@@ -91,12 +103,12 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Name
+            // Nombre completo
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Nombre*") },
-                placeholder = { Text("Ingresá tu nombre") },
+                value = fullName,
+                onValueChange = { fullName = it },
+                label = { Text("Nombre completo*") },
+                placeholder = { Text("Ej: Pedro Gómez") },
                 singleLine = true,
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth()
@@ -104,7 +116,20 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Password
+            // Nombre de usuario
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Nombre de usuario*") },
+                placeholder = { Text("Ej: pedro123") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Contraseña
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -124,7 +149,7 @@ fun RegisterScreen(navController: NavController) {
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Password requirements
+            // Requisitos de contraseña
             Text(
                 text = "Debe contener al menos un número y más de 5 letras",
                 fontSize = 12.sp,
@@ -136,26 +161,45 @@ fun RegisterScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Register button
+            val context = LocalContext.current
+            // Botón de registro
             Button(
                 onClick = {
-                    // Validation
                     if (!email.contains("@")) {
                         registrationError = "Correo inválido."
                     } else if (!password.any { it.isDigit() } || password.count { it.isLetter() } <= 5) {
                         registrationError = "La contraseña debe tener al menos un número y más de 5 letras."
+                    } else if (fullName.isBlank() || username.isBlank()) {
+                        registrationError = "Completá todos los campos obligatorios."
                     } else {
-                        val newUser = User(email = email, username = name, password = password)
-                        val success = UserRepository.register(newUser)
-                        if (success) {
-                            registrationError = null
-                            registrationSuccess = true
-                            // Go to login.
-                            navController.navigate("login") {
-                                popUpTo("register") { inclusive = true }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val newUser = UserRegisterDto(
+                                    email = email,
+                                    fullName = fullName,
+                                    username = username,
+                                    password = password
+                                )
+
+                                val response = AuthApi.retrofitService.register(newUser)
+                                TokenProvider.token = response.token
+
+                                UserSessionManager.saveToken(context, response.token) // ✅ uso correcto
+
+                                registrationSuccess = true
+                                registrationError = null
+
+                                withContext(Dispatchers.Main) {
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = true }
+                                    }
+                                }
+
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    registrationError = "Error al registrarse: ${e.message}"
+                                }
                             }
-                        } else {
-                            registrationError = "Ya existe un usuario con ese correo."
                         }
                     }
                 },
@@ -169,6 +213,7 @@ fun RegisterScreen(navController: NavController) {
             ) {
                 Text("Registrarme", color = Color.White)
             }
+
             registrationError?.let {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -195,7 +240,7 @@ fun RegisterScreen(navController: NavController) {
                 Text("¿Tenés una cuenta?", color = colorResource(id = R.color.regular), fontSize = 16.sp)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Inicia Sesión",
+                    text = "Iniciá sesión",
                     color = colorResource(id = R.color.purple),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,

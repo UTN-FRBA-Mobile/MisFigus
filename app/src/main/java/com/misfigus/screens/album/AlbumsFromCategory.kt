@@ -27,18 +27,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-
 import com.misfigus.components.AlbumItem
+import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.navigation.BackButton
 import com.misfigus.navigation.mockedAlbums
 import com.misfigus.ui.theme.Purple
-import com.misfigus.ui.theme.White
 
 @Composable
 fun SearchBar(
@@ -79,24 +79,24 @@ fun NewTag() {
         Text(
             text = "Nuevo",
             fontSize = 15.sp,
-            color = White
+            color = Color.White
         )
         Spacer(modifier = Modifier.width(6.dp))
         IconButton(onClick = {}) { // TODO add screen
             Icon(
                 imageVector = Icons.Outlined.Add,
                 contentDescription = "Add",
-                tint = White
+                tint = Color.White
             )
         }
     }
 }
 
 @Composable
-fun AlbumsFromCategory(navHostController: NavHostController, category: String) {
+fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCategoryEnum) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val albums = mockedAlbums().filter { category == it.category.description }
+    val albums = mockedAlbums().filter {  category.description.equals(it.category.description) }
 
     Scaffold(
         topBar = { BackButton(navHostController, "My albums") }
@@ -118,9 +118,7 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: String) {
                 columns = GridCells.Fixed(1),
                 modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
             ) {
-                val filteredAlbums = albums.filter {
-                    it.albumId.contains(searchQuery, ignoreCase = true)
-                }
+                val filteredAlbums = albums.filter { it.albumId.contains(searchQuery, ignoreCase = true) }
                 items(filteredAlbums) { abm ->
                     AlbumItem(
                         album = abm,
