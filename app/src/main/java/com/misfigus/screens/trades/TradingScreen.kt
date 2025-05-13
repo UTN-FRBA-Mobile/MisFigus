@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.trades
 
 import com.example.misfigus.R
 import androidx.compose.foundation.Image

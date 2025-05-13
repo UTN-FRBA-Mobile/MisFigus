@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.misfigus.R
+import com.misfigus.screens.TopBackgroundCurves
 import com.misfigus.dto.UserRegisterDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider

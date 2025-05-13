@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.map
 
 import android.Manifest
 import android.content.pm.PackageManager

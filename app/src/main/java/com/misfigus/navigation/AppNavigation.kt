@@ -25,17 +25,17 @@ import com.example.misfigus.R
 import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.TradingCard
+import com.misfigus.screens.album.AlbumDetailScreen
+import com.misfigus.screens.album.AlbumsFromCategory
+import com.misfigus.screens.album.AlbumsViewModel
+import com.misfigus.screens.trades.IntercambioScreen
+import com.misfigus.screens.profile.ProfileScreen
+import com.misfigus.screens.login.LoginScreen
+import com.misfigus.screens.map.MapScreen
+import com.misfigus.screens.login.PresentationScreen
+import com.misfigus.screens.login.RegisterScreen
+import com.misfigus.screens.trades.TraderOptionsScreen
 import com.misfigus.network.TokenProvider
-import com.misfigus.screens.AlbumDetailScreen
-import com.misfigus.screens.AlbumsFromCategory
-import com.misfigus.screens.AlbumsViewModel
-import com.misfigus.screens.IntercambioScreen
-import com.misfigus.screens.KioscoScreen
-import com.misfigus.screens.LoginScreen
-import com.misfigus.screens.MapScreen
-import com.misfigus.screens.PresentationScreen
-import com.misfigus.screens.RegisterScreen
-import com.misfigus.screens.TraderOptionsScreen
 import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.screens.ProfileScreen
 import com.misfigus.ui.theme.Purple
@@ -148,6 +148,7 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
+            composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     onLogout = {
@@ -165,7 +166,7 @@ fun AppNavigation(navController: NavHostController) {
                 }
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->
-                val categoryName = backStackEntry.arguments?.getString("category")
+                val categoryName = backStackEntry.arguments?.getString("category") // @Orne
                 val categoryEnum = categoryName?.let { AlbumCategoryEnum.valueOf(it) }
                 categoryEnum?.let {
                     AlbumsFromCategory(navController, it)
@@ -193,8 +194,8 @@ fun mockedAlbums(): List<Album> {
     )
 
     return listOf(
-        Album("Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 0),
-        Album("South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 0),
-        Album("Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 0)
+        Album(1, "Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 670),
+        Album(2, "South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 638),
+        Album(3, "Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 332)
     )
 }

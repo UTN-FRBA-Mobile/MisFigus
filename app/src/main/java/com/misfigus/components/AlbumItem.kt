@@ -36,12 +36,12 @@ import com.misfigus.ui.theme.Red
 
 @Composable
 fun AlbumItem(album: Album, onClick: () -> Unit = {}){
-    val total = album.tradingCards.size //TODO: Habria que ver si es correcto. Usar variable nueva totalCards (ahora asignada a 0)
+    val total = album.totalCards
     val obtained = album.tradingCards.count { it.obtained }
 
     Card(
         modifier = Modifier
-            .padding(8.dp)
+            .padding(vertical = 2.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -52,7 +52,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(2.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
             val context = LocalContext.current
@@ -67,8 +67,8 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                 painter = painterResource(id = resId),
                 contentDescription = "My Album",
                 modifier = Modifier
-                    .width(70.dp)
-                    .height(100.dp),
+                    .width(50.dp)
+                    .height(59.dp),
                 contentScale = ContentScale.Crop
             )
             Column(

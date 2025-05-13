@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

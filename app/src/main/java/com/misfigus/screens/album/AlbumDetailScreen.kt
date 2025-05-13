@@ -1,4 +1,4 @@
-package com.misfigus.screens
+package com.misfigus.screens.album
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
