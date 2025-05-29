@@ -1,8 +1,12 @@
 package com.misfigus.network
 
+import android.content.Context
+
 object AuthApi {
-    val retrofitService: AuthApiService by lazy {
-        RetrofitClient.create(AuthApiService::class.java)
+    fun getService(context: Context): AuthApiService {
+        return RetrofitClient.create(AuthApiService::class.java, context)
     }
 }
+
+
 

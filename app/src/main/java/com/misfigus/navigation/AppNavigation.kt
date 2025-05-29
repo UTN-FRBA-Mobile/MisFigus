@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,7 +30,6 @@ import com.misfigus.screens.album.AlbumDetailScreen
 import com.misfigus.screens.album.AlbumsFromCategory
 import com.misfigus.screens.album.AlbumsViewModel
 import com.misfigus.screens.trades.IntercambioScreen
-import com.misfigus.screens.profile.ProfileScreen
 import com.misfigus.screens.login.LoginScreen
 import com.misfigus.screens.map.MapScreen
 import com.misfigus.screens.login.PresentationScreen
@@ -37,8 +37,8 @@ import com.misfigus.screens.login.RegisterScreen
 import com.misfigus.screens.trades.TraderOptionsScreen
 import com.misfigus.network.TokenProvider
 import com.misfigus.screens.albums.MyAlbums
-import com.misfigus.screens.ProfileScreen
 import com.misfigus.ui.theme.Purple
+import com.misfigus.screens.profile.ProfileScreen
 
 // cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType? = null) {
@@ -71,6 +71,7 @@ fun AppNavigation(navController: NavHostController) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
     val albumsViewModel: AlbumsViewModel = viewModel()
+
 
     val bottomBarRoutes = listOf(
         Screen.Search.route,

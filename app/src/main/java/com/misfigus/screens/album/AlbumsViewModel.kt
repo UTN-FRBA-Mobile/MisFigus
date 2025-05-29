@@ -1,9 +1,13 @@
 package com.misfigus.screens.album
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.misfigus.dto.AlbumCategoryCountDto
@@ -18,8 +22,8 @@ sealed interface AlbumsUiState {
     object Loading : AlbumsUiState
 }
 
-class AlbumsViewModel : ViewModel() {
-    /** The mutable State that stores the status of the most recent request */
+class AlbumsViewModel(application: Application) : AndroidViewModel(application) {
+
     var albumsUiState: AlbumsUiState by mutableStateOf(AlbumsUiState.Loading)
         private set
 
@@ -30,10 +34,12 @@ class AlbumsViewModel : ViewModel() {
     fun getAlbumCountByCategory() {
         viewModelScope.launch {
             albumsUiState = try {
-                val listResult = AlbumApi.retrofitService.getAlbums()
+                val context = getApplication<Application>().applicationContext
+                val listResult = AlbumApi.getService(context).getAlbums()
                 Log.d("API_RESPONSE", listResult.toString())
-                AlbumsUiState.Success(listResult);
-            } catch (e: IOException) {
+                AlbumsUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
                 AlbumsUiState.Error
             }
         }

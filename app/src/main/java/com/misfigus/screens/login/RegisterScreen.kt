@@ -181,7 +181,7 @@ fun RegisterScreen(navController: NavController) {
                                     password = password
                                 )
 
-                                val response = AuthApi.retrofitService.register(newUser)
+                                val response = AuthApi.getService(context).register(newUser)
                                 TokenProvider.token = response.token
 
                                 UserSessionManager.saveToken(context, response.token) // ✅ uso correcto

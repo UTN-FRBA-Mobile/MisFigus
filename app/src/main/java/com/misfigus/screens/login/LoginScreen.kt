@@ -152,7 +152,7 @@ fun LoginScreen(navController: NavController) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val loginDto = UserLoginDto(email = email, password = password)
-                        val response = AuthApi.retrofitService.login(loginDto)
+                        val response = AuthApi.getService(context).login(loginDto)
 
                         // Guardar el token globalmente
                         TokenProvider.token = response.token

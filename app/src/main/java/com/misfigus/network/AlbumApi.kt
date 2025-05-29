@@ -1,7 +1,9 @@
 package com.misfigus.network
 
+import android.content.Context
+
 object AlbumApi {
-    val retrofitService: AlbumApiService by lazy {
-        RetrofitClient.create(AlbumApiService::class.java)
+    fun getService(context: Context): AlbumApiService {
+        return RetrofitClient.create(AlbumApiService::class.java, context)
     }
 }
