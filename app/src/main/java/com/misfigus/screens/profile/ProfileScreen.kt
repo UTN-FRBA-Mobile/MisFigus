@@ -1,11 +1,12 @@
 package com.misfigus.screens.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,14 +17,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.media3.common.util.Log
+import coil.compose.AsyncImage
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.launch
-import coil.compose.AsyncImage
-
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
 fun ProfileScreen(
@@ -31,8 +33,35 @@ fun ProfileScreen(
     onLogout: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     var user by remember { mutableStateOf<UserDto?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    var showImageDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            coroutineScope.launch {
+                val token = UserSessionManager.getToken(context) ?: return@launch
+                val stream = context.contentResolver.openInputStream(uri) ?: return@launch
+                val requestBody = stream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                val multipart = MultipartBody.Part.createFormData("image", "profile.jpg", requestBody)
+
+                try {
+                    val response = AuthApi.getService(context).uploadProfileImage("Bearer $token", multipart)
+                    user = user?.copy(profileImageUrl = response.imageUrl)
+                    showImageDialog = false
+                } catch (e: Exception) {
+                    error = "Error al subir imagen: ${e.message}"
+                }
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         val token = UserSessionManager.getToken(context)
@@ -58,10 +87,8 @@ fun ProfileScreen(
     }
 
     val currentUser = user!!
-
     var fullName by remember { mutableStateOf(currentUser.fullName) }
     var username by remember { mutableStateOf(currentUser.username) }
-    var showEditDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -69,13 +96,12 @@ fun ProfileScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Foto de perfil
         Box(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
                 .background(Color.Gray)
-                .clickable { /* cambiar foto más adelante */ },
+                .clickable { showImageDialog = true },
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
@@ -84,8 +110,6 @@ fun ProfileScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color.Gray)
-                    .clickable { /* cambiar foto más adelante */ }
             )
         }
 
@@ -109,8 +133,6 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val coroutineScope = rememberCoroutineScope()
-
         Button(
             onClick = {
                 coroutineScope.launch {
@@ -126,13 +148,40 @@ fun ProfileScreen(
         }
     }
 
-    // Diálogo para editar nombre y username
+    if (showImageDialog) {
+        AlertDialog(
+            onDismissRequest = { showImageDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    launcher.launch("image/*")
+                }) {
+                    Text("Cambiar imagen")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showImageDialog = false }) {
+                    Text("Cerrar")
+                }
+            },
+            title = { Text("Foto de perfil") },
+            text = {
+                AsyncImage(
+                    model = currentUser.profileImageUrl,
+                    contentDescription = "Imagen actual",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                )
+            }
+        )
+    }
+
     if (showEditDialog) {
         AlertDialog(
             onDismissRequest = { showEditDialog = false },
             confirmButton = {
                 TextButton(onClick = {
-                    // editar fullname y username
+                    user = user?.copy(fullName = fullName, username = username)
                     showEditDialog = false
                 }) {
                     Text("Guardar")
