@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
 import com.misfigus.models.User
 import com.misfigus.navigation.AppNavigation
+import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
 import com.misfigus.ui.theme.MisFigusTheme
@@ -20,8 +21,17 @@ class MainActivity : ComponentActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val token = UserSessionManager.getToken(this@MainActivity)
+
             if (!token.isNullOrBlank()) {
-                TokenProvider.token = token
+                try {
+                    // Verificás si sigue siendo válido antes de usarlo
+                    AuthApi.getService(this@MainActivity).getCurrentUser()
+                    TokenProvider.token = token
+                } catch (e: Exception) {
+                    // Si está vencido o inválido, lo limpiás
+                    UserSessionManager.clearToken(this@MainActivity)
+                    TokenProvider.token = null
+                }
             }
 
             withContext(Dispatchers.Main) {

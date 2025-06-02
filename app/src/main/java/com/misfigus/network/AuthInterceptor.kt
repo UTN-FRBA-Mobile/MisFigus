@@ -13,7 +13,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
 
         val token = runBlocking { UserSessionManager.getToken(context) }
 
-        val isPublicEndpoint = url.contains("/users/login") || url.contains("/users/register")
+        val isPublicEndpoint = url.endsWith("/users/login") || url.endsWith("/users/register")
 
         return if (!isPublicEndpoint && !token.isNullOrBlank()) {
             val newRequest = originalRequest.newBuilder()

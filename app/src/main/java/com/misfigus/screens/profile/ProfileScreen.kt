@@ -1,8 +1,10 @@
 package com.misfigus.screens.profile
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,14 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.misfigus.dto.ChangePasswordDto
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.network.fetchProtectedImageBytes
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -28,10 +34,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
-fun ProfileScreen(
-    onChangePassword: () -> Unit = {},
-    onLogout: () -> Unit = {}
-) {
+fun ProfileScreen(onLogout: () -> Unit = {}) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -39,21 +42,22 @@ fun ProfileScreen(
     var error by remember { mutableStateOf<String?>(null) }
     var showImageDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
+    var showChangePasswordDialog by remember { mutableStateOf(false) }
+    var showIncorrectPasswordDialog by remember { mutableStateOf(false) }
 
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
             coroutineScope.launch {
-                val token = UserSessionManager.getToken(context) ?: return@launch
                 val stream = context.contentResolver.openInputStream(uri) ?: return@launch
                 val requestBody = stream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
-                val multipart = MultipartBody.Part.createFormData("image", "profile.jpg", requestBody)
+                val fileName = (user?.fullName ?: "imagen") + ".jpg"
+                val multipart = MultipartBody.Part.createFormData("image", fileName, requestBody)
 
                 try {
-                    val response = AuthApi.getService(context).uploadProfileImage("Bearer $token", multipart)
+                    val response = AuthApi.getService(context).uploadProfileImage(multipart)
                     user = user?.copy(profileImageUrl = response.imageUrl)
                     showImageDialog = false
                 } catch (e: Exception) {
@@ -90,6 +94,13 @@ fun ProfileScreen(
     var fullName by remember { mutableStateOf(currentUser.fullName) }
     var username by remember { mutableStateOf(currentUser.username) }
 
+    var profileImageBytes by remember { mutableStateOf<ByteArray?>(null) }
+
+    LaunchedEffect(currentUser.profileImageUrl) {
+        profileImageBytes = fetchProtectedImageBytes(context, currentUser.profileImageUrl!!);
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -104,13 +115,18 @@ fun ProfileScreen(
                 .clickable { showImageDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = currentUser.profileImageUrl,
-                contentDescription = "Foto de perfil",
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-            )
+            if (profileImageBytes != null) {
+                Image(
+                    bitmap = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes!!.size).asImageBitmap(),
+                    contentDescription = "Foto de perfil",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                )
+            } else {
+                CircularProgressIndicator()
+            }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -127,7 +143,7 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        OutlinedButton(onClick = onChangePassword, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(onClick = { showChangePasswordDialog = true }, modifier = Modifier.fillMaxWidth()) {
             Text("Cambiar contraseña")
         }
 
@@ -165,13 +181,17 @@ fun ProfileScreen(
             },
             title = { Text("Foto de perfil") },
             text = {
-                AsyncImage(
-                    model = currentUser.profileImageUrl,
-                    contentDescription = "Imagen actual",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                )
+                if (profileImageBytes != null) {
+                    Image(
+                        bitmap = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes!!.size).asImageBitmap(),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                    )
+                } else {
+                    CircularProgressIndicator()
+                }
             }
         )
     }
@@ -181,8 +201,22 @@ fun ProfileScreen(
             onDismissRequest = { showEditDialog = false },
             confirmButton = {
                 TextButton(onClick = {
-                    user = user?.copy(fullName = fullName, username = username)
-                    showEditDialog = false
+                    coroutineScope.launch {
+                        val updated = UserDto(currentUser.email, fullName, username, currentUser.profileImageUrl)
+                        val hasChanges = updated.fullName != currentUser.fullName || updated.username != currentUser.username
+
+                        if (!hasChanges) {
+                            showEditDialog = false // Cierra el diálogo sin hacer nada
+                            return@launch
+                        }
+                        try {
+                            val response = AuthApi.getService(context).updateCurrentUser(updated)
+                            user = response
+                            showEditDialog = false
+                        } catch (e: Exception) {
+                            error = "Error al actualizar perfil: ${e.message}"
+                        }
+                    }
                 }) {
                     Text("Guardar")
                 }
@@ -214,4 +248,73 @@ fun ProfileScreen(
             }
         )
     }
+
+    if (showChangePasswordDialog) {
+        var currentPassword by remember { mutableStateOf("") }
+        var newPassword by remember { mutableStateOf("") }
+        AlertDialog(
+            onDismissRequest = { showChangePasswordDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    coroutineScope.launch {
+                        try {
+                            val dto = ChangePasswordDto(currentPassword, newPassword)
+                            AuthApi.getService(context).changePassword(dto)
+                            showChangePasswordDialog = false
+                            currentPassword = ""
+                            newPassword = ""
+                        }
+                        catch (e: Exception) {
+                            if (e.message?.contains("400") == true || e.message?.contains("contraseña actual") == true) {
+                                showIncorrectPasswordDialog = true
+                            } else {
+                                error = "Error al cambiar contraseña: ${e.message}"
+                            }
+                        }
+                    }
+                }) {
+                    Text("Cambiar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showChangePasswordDialog = false }) {
+                    Text("Cancelar")
+                }
+            },
+            title = { Text("Cambiar contraseña") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = currentPassword,
+                        onValueChange = { currentPassword = it },
+                        label = { Text("Contraseña actual") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = newPassword,
+                        onValueChange = { newPassword = it },
+                        label = { Text("Nueva contraseña") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        )
+    }
+
+    if (showIncorrectPasswordDialog) {
+        AlertDialog(
+            onDismissRequest = { showIncorrectPasswordDialog = false },
+            title = { Text("Contraseña incorrecta") },
+            text = { Text("La contraseña actual ingresada no es correcta. Inténtalo de nuevo.") },
+            confirmButton = {
+                TextButton(onClick = { showIncorrectPasswordDialog = false }) {
+                    Text("Entendido")
+                }
+            }
+        )
+    }
+
 }

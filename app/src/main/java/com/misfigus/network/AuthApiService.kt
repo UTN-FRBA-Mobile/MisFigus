@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 
 interface AuthApiService {
@@ -21,8 +22,12 @@ interface AuthApiService {
 
     @Multipart
     @POST("users/upload-profile-image")
-    suspend fun uploadProfileImage(
-        @Header("Authorization") token: String,
-        @Part image: MultipartBody.Part
-    ): ImageUploadResponseDto
+    suspend fun uploadProfileImage(@Part image: MultipartBody.Part): ImageUploadResponseDto
+
+    @PUT("users/me")
+    suspend fun updateCurrentUser(@Body updatedUser: UserDto): UserDto
+
+    @PUT("users/change-password")
+    suspend fun changePassword(@Body dto: ChangePasswordDto)
+
 }

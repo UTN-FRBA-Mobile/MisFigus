@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.example.misfigus.R
 import com.misfigus.screens.TopBackgroundCurves
 import com.misfigus.dto.UserRegisterDto
+import com.misfigus.navigation.Screen
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
@@ -184,13 +185,13 @@ fun RegisterScreen(navController: NavController) {
                                 val response = AuthApi.getService(context).register(newUser)
                                 TokenProvider.token = response.token
 
-                                UserSessionManager.saveToken(context, response.token) // ✅ uso correcto
+                                UserSessionManager.saveToken(context, response.token)
 
                                 registrationSuccess = true
                                 registrationError = null
 
                                 withContext(Dispatchers.Main) {
-                                    navController.navigate("login") {
+                                    navController.navigate(Screen.Albums.route) {
                                         popUpTo("register") { inclusive = true }
                                     }
                                 }
