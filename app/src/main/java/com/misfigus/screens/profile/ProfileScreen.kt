@@ -27,6 +27,7 @@ import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.network.fetchProtectedImageBytes
+import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -34,17 +35,50 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
-fun ProfileScreen(onLogout: () -> Unit = {}) {
+fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {}) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
-    var user by remember { mutableStateOf<UserDto?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    var profileImageBytes by remember { mutableStateOf<ByteArray?>(null) }
+
     var showImageDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var showIncorrectPasswordDialog by remember { mutableStateOf(false) }
 
+    val user = sessionViewModel.user
+
+    LaunchedEffect(Unit) {
+        try {
+            if (user == null) {
+                sessionViewModel.loadUserIfNotLoaded(context)
+            }
+        } catch (e: Exception) {
+            error = "Error al cargar usuario: ${e.message}"
+        }
+    }
+
+    if (sessionViewModel.user == null) {
+        if (error != null) {
+            Text(error!!, color = Color.Red)
+        } else {
+            CircularProgressIndicator(modifier = Modifier.padding(32.dp))
+        }
+        return
+    }
+
+    if (error != null) {
+        Text(error!!, color = Color.Red)
+        return
+    }
+
+    val currentUser = sessionViewModel.user!!
+    var fullName by remember { mutableStateOf(currentUser.fullName) }
+    var username by remember { mutableStateOf(currentUser.username) }
+
+    LaunchedEffect(currentUser.profileImageUrl) {
+        profileImageBytes = fetchProtectedImageBytes(context, currentUser.profileImageUrl!!)
+    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -53,12 +87,12 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
             coroutineScope.launch {
                 val stream = context.contentResolver.openInputStream(uri) ?: return@launch
                 val requestBody = stream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
-                val fileName = (user?.fullName ?: "imagen") + ".jpg"
+                val fileName = (currentUser.fullName ?: "imagen") + ".jpg"
                 val multipart = MultipartBody.Part.createFormData("image", fileName, requestBody)
 
                 try {
                     val response = AuthApi.getService(context).uploadProfileImage(multipart)
-                    user = user?.copy(profileImageUrl = response.imageUrl)
+                    sessionViewModel.updateUser(currentUser.copy(profileImageUrl = response.imageUrl))
                     showImageDialog = false
                 } catch (e: Exception) {
                     error = "Error al subir imagen: ${e.message}"
@@ -66,40 +100,6 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
             }
         }
     }
-
-    LaunchedEffect(Unit) {
-        val token = UserSessionManager.getToken(context)
-        if (!token.isNullOrBlank()) {
-            try {
-                user = AuthApi.getService(context).getCurrentUser()
-            } catch (e: Exception) {
-                error = "No se pudo obtener el perfil: ${e.message}"
-            }
-        } else {
-            error = "No hay sesión activa"
-        }
-    }
-
-    if (error != null) {
-        Text(error!!, color = Color.Red)
-        return
-    }
-
-    if (user == null) {
-        CircularProgressIndicator()
-        return
-    }
-
-    val currentUser = user!!
-    var fullName by remember { mutableStateOf(currentUser.fullName) }
-    var username by remember { mutableStateOf(currentUser.username) }
-
-    var profileImageBytes by remember { mutableStateOf<ByteArray?>(null) }
-
-    LaunchedEffect(currentUser.profileImageUrl) {
-        profileImageBytes = fetchProtectedImageBytes(context, currentUser.profileImageUrl!!);
-    }
-
 
     Column(
         modifier = Modifier
@@ -126,7 +126,6 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
             } else {
                 CircularProgressIndicator()
             }
-
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -154,6 +153,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                 coroutineScope.launch {
                     TokenProvider.token = null
                     UserSessionManager.clearToken(context)
+                    sessionViewModel.logout(context)
                     onLogout()
                 }
             },
@@ -211,7 +211,7 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                         }
                         try {
                             val response = AuthApi.getService(context).updateCurrentUser(updated)
-                            user = response
+                            sessionViewModel.updateUser(response)
                             showEditDialog = false
                         } catch (e: Exception) {
                             error = "Error al actualizar perfil: ${e.message}"
@@ -252,15 +252,24 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
     if (showChangePasswordDialog) {
         var currentPassword by remember { mutableStateOf("") }
         var newPassword by remember { mutableStateOf("") }
+        var passwordValidationError by remember { mutableStateOf<String?>(null) }
+
         AlertDialog(
             onDismissRequest = { showChangePasswordDialog = false },
             confirmButton = {
                 TextButton(onClick = {
+                    // Validación frontend
+                    if (!newPassword.any { it.isDigit() } || newPassword.count { it.isLetter() } <= 5) {
+                        passwordValidationError = "La contraseña debe tener al menos un número y más de 5 letras."
+                        return@TextButton
+                    }
+
                     coroutineScope.launch {
                         try {
                             val dto = ChangePasswordDto(currentPassword, newPassword)
                             AuthApi.getService(context).changePassword(dto)
                             showChangePasswordDialog = false
+                            passwordValidationError = null
                             currentPassword = ""
                             newPassword = ""
                         }
@@ -299,6 +308,10 @@ fun ProfileScreen(onLogout: () -> Unit = {}) {
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    passwordValidationError?.let {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = it, color = Color.Red, fontSize = 12.sp)
+                    }
                 }
             }
         )

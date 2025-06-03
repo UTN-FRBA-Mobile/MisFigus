@@ -25,7 +25,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.misfigus.R
 import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
-import com.misfigus.models.TradingCard
+import com.misfigus.models.trades.TradingCard
+import com.misfigus.network.AuthApi
 import com.misfigus.screens.album.AlbumDetailScreen
 import com.misfigus.screens.album.AlbumsFromCategory
 import com.misfigus.screens.album.AlbumsViewModel
@@ -39,6 +40,11 @@ import com.misfigus.network.TokenProvider
 import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.ui.theme.Purple
 import com.misfigus.screens.profile.ProfileScreen
+import com.misfigus.screens.trades.requests.TradeRequestDetailScreen
+import com.misfigus.screens.trades.requests.TradeRequestsScreen
+import com.misfigus.session.SessionViewModel
+import com.misfigus.session.UserSessionManager
+
 
 // cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType? = null) {
@@ -51,6 +57,8 @@ sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
     data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
+    data object TradeRequests : Screen("trade_requests")
+    data object TradeRequestDetail : Screen("trade_request_detail/{requestId}")
 
 }
 
@@ -67,11 +75,14 @@ val screens = listOf(
 )
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController, sessionViewModel: SessionViewModel) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
     val albumsViewModel: AlbumsViewModel = viewModel()
 
+    val context = LocalContext.current
+    val authService = AuthApi.getService(context)
+    val sessionManager = UserSessionManager
 
     val bottomBarRoutes = listOf(
         Screen.Search.route,
@@ -79,7 +90,6 @@ fun AppNavigation(navController: NavHostController) {
         Screen.Trading.route,
         Screen.Profile.route
     )
-
 
     Scaffold(
         bottomBar = {
@@ -134,12 +144,12 @@ fun AppNavigation(navController: NavHostController) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = if (TokenProvider.token != null) Screen.Albums.route else "login",
+            startDestination = if (TokenProvider.token != null) Screen.Albums.route else "presentation",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Presentation.route) { PresentationScreen(navController) }
-            composable(Screen.Login.route) { LoginScreen(navController) }
-            composable(Screen.Register.route) { RegisterScreen(navController) }
+            composable(Screen.Login.route) { LoginScreen(navController, sessionViewModel) }
+            composable(Screen.Register.route) { RegisterScreen(navController, sessionViewModel) }
             composable(Screen.Search.route) { MapScreen() }
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
@@ -149,16 +159,17 @@ fun AppNavigation(navController: NavHostController) {
                     TraderOptionsScreen(navHostController = navController, id = it)
                 }
             }
-            composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.Profile.route) {
                 ProfileScreen(
+                    sessionViewModel = sessionViewModel,
                     onLogout = {
                         navController.navigate("login") {
-                            popUpTo(0) { inclusive = true } // Limpiar la backstack
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 )
             }
+
             composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
@@ -173,6 +184,16 @@ fun AppNavigation(navController: NavHostController) {
                     AlbumsFromCategory(navController, it)
                 }
             }
+            composable(Screen.TradeRequests.route) {
+                TradeRequestsScreen(navController, sessionViewModel)
+            }
+            composable(Screen.TradeRequestDetail.route) { backStackEntry ->
+                val requestId = backStackEntry.arguments?.getString("requestId")
+                requestId?.let {
+                    TradeRequestDetailScreen(requestId = it, navController = navController)
+                }
+            }
+
         }
     }
 }

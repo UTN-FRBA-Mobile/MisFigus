@@ -2,7 +2,6 @@ package com.misfigus.network
 
 import com.misfigus.dto.AlbumCategoryCountDto
 import retrofit2.http.GET
-import retrofit2.http.Header
 
 interface AlbumApiService {
 

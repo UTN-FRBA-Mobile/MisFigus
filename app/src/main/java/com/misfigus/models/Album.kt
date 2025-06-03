@@ -1,5 +1,6 @@
 package com.misfigus.models
 
+import com.misfigus.models.trades.TradingCard
 import kotlinx.serialization.Serializable
 
 @Serializable

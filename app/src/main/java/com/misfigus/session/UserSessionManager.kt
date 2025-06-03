@@ -11,6 +11,7 @@ private val Context.dataStore by preferencesDataStore("user_prefs")
 
 object UserSessionManager {
     private val TOKEN_KEY = stringPreferencesKey("jwt_token")
+    private val EMAIL_KEY = stringPreferencesKey("user_email")
 
     suspend fun saveToken(context: Context, token: String) {
         context.dataStore.edit { prefs ->
@@ -29,5 +30,4 @@ object UserSessionManager {
             prefs.remove(TOKEN_KEY)
         }
     }
-
 }

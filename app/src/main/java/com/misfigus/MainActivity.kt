@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.compose.rememberNavController
-import com.misfigus.models.User
 import com.misfigus.navigation.AppNavigation
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import com.misfigus.ui.theme.MisFigusTheme
 import kotlinx.coroutines.CoroutineScope
@@ -19,16 +19,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val sessionViewModel = SessionViewModel(
+            authService = AuthApi.getService(this),
+            sessionManager = UserSessionManager
+        )
+
         CoroutineScope(Dispatchers.IO).launch {
             val token = UserSessionManager.getToken(this@MainActivity)
 
             if (!token.isNullOrBlank()) {
                 try {
-                    // Verificás si sigue siendo válido antes de usarlo
-                    AuthApi.getService(this@MainActivity).getCurrentUser()
+                    val user = AuthApi.getService(this@MainActivity).getCurrentUser()
                     TokenProvider.token = token
+                    sessionViewModel.updateUser(user)
                 } catch (e: Exception) {
-                    // Si está vencido o inválido, lo limpiás
                     UserSessionManager.clearToken(this@MainActivity)
                     TokenProvider.token = null
                 }
@@ -38,23 +42,10 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     MisFigusTheme {
                         val navController = rememberNavController()
-                        AppNavigation(navController)
+                        AppNavigation(navController, sessionViewModel)
                     }
                 }
             }
         }
     }
 }
-
-
-
-
-// Preview de como se ve
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun MainScreenPreview() {
-//    MisFigusTheme {
-//        val navController = rememberNavController()
-//                AppNavigation(navController)
-//    }
-//}
