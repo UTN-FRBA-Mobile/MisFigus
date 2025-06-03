@@ -29,40 +29,45 @@ import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
 
 @Composable
-fun TraddingBanner() {
+fun TraddingBanner(onNavigateToSolicitudes: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Column {
-            Text(
-                "Canje",
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 35.sp,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Canje",
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 35.sp,
+                    modifier = Modifier.padding(start = 16.dp).weight(1f)
+                )
+                Button(
+                    onClick = onNavigateToSolicitudes,
+                    colors = ButtonDefaults.buttonColors(containerColor = Purple),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Text("Solicitudes", color = Color.White, fontSize = 13.sp)
+                }
+            }
 
             Row(
                 modifier = Modifier.padding(start = 16.dp, bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Outlined.Error,
-                    contentDescription = "Error Icon",
-                    tint = Red
-                )
+                Icon(Icons.Outlined.Error, contentDescription = null, tint = Red)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Hay 15 personas de tu zona que quieren canjear",
-                    fontSize = 13.sp,
-                    color = Red
-                )
+                Text("Hay 15 personas de tu zona que quieren canjear", fontSize = 13.sp, color = Red)
             }
         }
     }
@@ -140,9 +145,10 @@ fun TraderCard(navHostController: NavHostController) {
 
 @Composable
 fun IntercambioScreen(navHostController: NavHostController) {
-    Column() {
-        TraddingBanner()
+    Column {
+        TraddingBanner {
+            navHostController.navigate("trade_requests")
+        }
         TraderCard(navHostController)
     }
-
 }

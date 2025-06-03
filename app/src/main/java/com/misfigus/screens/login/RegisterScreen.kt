@@ -48,15 +48,17 @@ import com.misfigus.dto.UserRegisterDto
 import com.misfigus.navigation.Screen
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, sessionViewModel: SessionViewModel) {
     var email by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -166,12 +168,14 @@ fun RegisterScreen(navController: NavController) {
             // Botón de registro
             Button(
                 onClick = {
-                    if (!email.contains("@")) {
+                    if (!email.contains("@") || !email.contains(".")) {
                         registrationError = "Correo inválido."
                     } else if (!password.any { it.isDigit() } || password.count { it.isLetter() } <= 5) {
                         registrationError = "La contraseña debe tener al menos un número y más de 5 letras."
                     } else if (fullName.isBlank() || username.isBlank()) {
                         registrationError = "Completá todos los campos obligatorios."
+                    } else if (username.contains(" ")) {
+                        registrationError = "El nombre de usuario no puede tener espacios."
                     } else {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
@@ -187,18 +191,30 @@ fun RegisterScreen(navController: NavController) {
 
                                 UserSessionManager.saveToken(context, response.token)
 
-                                registrationSuccess = true
-                                registrationError = null
+                                val currentUser = AuthApi.getService(context).getCurrentUser()
+
+                                sessionViewModel.updateUser(currentUser)
 
                                 withContext(Dispatchers.Main) {
+                                    registrationSuccess = true
                                     navController.navigate(Screen.Albums.route) {
                                         popUpTo("register") { inclusive = true }
                                     }
                                 }
+                            } catch (e: retrofit2.HttpException) {
+                                val errorBody = e.response()?.errorBody()?.string()
+                                val message = try {
+                                    JSONObject(errorBody).getString("message")
+                                } catch (_: Exception) {
+                                    "Error inesperado del servidor."
+                                }
 
+                                withContext(Dispatchers.Main) {
+                                    registrationError = message
+                                }
                             } catch (e: Exception) {
                                 withContext(Dispatchers.Main) {
-                                    registrationError = "Error al registrarse: ${e.message}"
+                                    registrationError = "Error de red: ${e.message}"
                                 }
                             }
                         }

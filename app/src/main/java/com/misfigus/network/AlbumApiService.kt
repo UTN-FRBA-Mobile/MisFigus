@@ -3,7 +3,7 @@ package com.misfigus.network
 import com.misfigus.dto.AlbumCategoryCountDto
 import com.misfigus.models.Album
 import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Header
 
 interface AlbumApiService {
 

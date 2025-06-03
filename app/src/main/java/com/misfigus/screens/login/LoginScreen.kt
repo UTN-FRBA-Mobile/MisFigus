@@ -46,15 +46,17 @@ import com.misfigus.dto.UserLoginDto
 import com.misfigus.navigation.Screen
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -156,18 +158,34 @@ fun LoginScreen(navController: NavController) {
 
                         // Guardar el token globalmente
                         TokenProvider.token = response.token
-                        UserSessionManager.saveToken(context, response.token) // ✅ contexto ya guardado
+                        UserSessionManager.saveToken(context, response.token) // contexto  guardado
+
+                        // Obtener usuario actual
+                        val currentUser = AuthApi.getService(context).getCurrentUser()
 
                         // Volver al hilo principal para navegar
                         withContext(Dispatchers.Main) {
+                            sessionViewModel.updateUser(currentUser)
                             loginError = null
                             navController.navigate(Screen.Albums.route) {
                                 popUpTo("login") { inclusive = true }
                             }
                         }
-                    } catch (e: Exception) {
+                    }
+                    catch (e: retrofit2.HttpException) {
                         withContext(Dispatchers.Main) {
-                            loginError = "Login fallido: ${e.message ?: "error desconocido"}"
+                            val errorBody = e.response()?.errorBody()?.string()
+                            val errorMessage = try {
+                                JSONObject(errorBody).getString("message")
+                            } catch (e: Exception) {
+                                "Error desconocido"
+                            }
+                            loginError = errorMessage
+                        }
+                    }
+                    catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            loginError = "Error de conexión: ${e.message}"
                         }
                     }
                 }

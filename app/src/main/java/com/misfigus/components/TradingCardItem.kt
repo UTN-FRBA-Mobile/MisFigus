@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.misfigus.models.TradingCard
+import com.misfigus.models.trades.TradingCard
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Red
 

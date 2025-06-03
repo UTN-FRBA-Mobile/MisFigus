@@ -1,4 +1,4 @@
-package com.misfigus.models
+package com.misfigus.models.trades
 
 import kotlinx.serialization.Serializable
 
