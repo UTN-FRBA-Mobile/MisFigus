@@ -101,7 +101,7 @@ fun CategoryScreen(navHostController: NavHostController, categoriesUiState: Cate
 
                                 }
                             }
-                            IconButton(onClick = {navHostController.navigate(item.category.description)}) {
+                            IconButton(onClick = {navHostController.navigate("category/" + item.category.description)}) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                                     contentDescription = "Ver categoria",

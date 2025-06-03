@@ -46,7 +46,7 @@ sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object Login : Screen("login")
     data object Register : Screen("register")
     data object Search : Screen("search", IconType.Drawable(R.drawable.search_icon))
-    data object AlbumCategory : Screen("{category}", IconType.Drawable(R.drawable.album_icon))
+    data object AlbumCategory : Screen("category/{category}", IconType.Drawable(R.drawable.album_icon))
     data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
     data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
@@ -66,6 +66,15 @@ val screens = listOf(
     Screen.Profile
 )
 
+fun matchesRoute(currentRoute: String?, baseRoute: String): Boolean {
+    if (currentRoute == null) return false
+    return when (baseRoute) {
+        "album" -> currentRoute.indexOf("album") == 0 || currentRoute.indexOf("category") == 0
+                || currentRoute.indexOf("details") == 0
+        else -> currentRoute.indexOf(baseRoute) == 0
+    }
+}
+
 @Composable
 fun AppNavigation(navController: NavHostController) {
     val currentBackStack by navController.currentBackStackEntryAsState()
@@ -73,20 +82,17 @@ fun AppNavigation(navController: NavHostController) {
     val albumsViewModel: AlbumsViewModel = viewModel()
 
 
-    val bottomBarRoutes = listOf(
-        Screen.Search.route,
-        Screen.Albums.route,
-        Screen.Trading.route,
-        Screen.Profile.route
+    val bottomBarBaseRoutes = listOf(
+        "search", "album", "trading", "profile", "details", "category"
     )
 
 
     Scaffold(
         bottomBar = {
-            if (currentRoute in bottomBarRoutes) {
+            if (bottomBarBaseRoutes.any { matchesRoute(currentRoute, it) }) {
                 NavigationBar(containerColor = Color.White) {
                     screens.forEach { screen ->
-                        val isSelected = currentRoute == screen.route
+                        val isSelected = matchesRoute(currentRoute, screen.route)
                         NavigationBarItem(
                             icon = {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
