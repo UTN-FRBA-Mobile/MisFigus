@@ -10,11 +10,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -141,7 +141,7 @@ fun AppNavigation(navController: NavHostController) {
             composable(Screen.Login.route) { LoginScreen(navController) }
             composable(Screen.Register.route) { RegisterScreen(navController) }
             composable(Screen.Search.route) { MapScreen() }
-            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.albumsUiState) }
+            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController) }
             composable("trader/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
@@ -163,14 +163,14 @@ fun AppNavigation(navController: NavHostController) {
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
                     val albumDetailed = getAlbumByName(it)
-                    if(albumDetailed != null) AlbumDetailScreen(navController, album = albumDetailed)
+                    if(albumDetailed != null) AlbumDetailScreen(navController, album = albumDetailed, albumsViewModel)
                 }
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->
                 val categoryName = backStackEntry.arguments?.getString("category") // @Orne
                 val categoryEnum = categoryName?.let { AlbumCategoryEnum.valueOf(it) }
                 categoryEnum?.let {
-                    AlbumsFromCategory(navController, it)
+                    AlbumsFromCategory(navController, it, albumsViewModel)
                 }
             }
         }

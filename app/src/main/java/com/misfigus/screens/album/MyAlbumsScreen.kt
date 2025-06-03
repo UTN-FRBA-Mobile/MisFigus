@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -26,18 +25,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.misfigus.screens.album.AlbumsUiState
+import com.misfigus.screens.album.CategoriesUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
 
 
 @Composable
-fun MyAlbums(navHostController: NavHostController, albumsUiState: AlbumsUiState) {
+fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState) {
     Column(modifier = Modifier.padding(20.dp)) {
         Text("My albums", style = MaterialTheme.typography.titleLarge, color = Grey)
         MyCollectionStats()
-        CategoryScreen(navHostController, albumsUiState)
+        CategoryScreen(navHostController, categoriesUiState)
     }
 }
 
@@ -52,21 +51,21 @@ fun MyCollectionStats() {
 }
 
 @Composable
-fun CategoryScreen(navHostController: NavHostController, albumsUiState: AlbumsUiState){
+fun CategoryScreen(navHostController: NavHostController, categoriesUiState: CategoriesUiState){
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
         Text("Categories", style = MaterialTheme.typography.titleMedium, color = Grey)
         Spacer(modifier = Modifier.padding(10.dp))
 
-        when (albumsUiState) {
-            is AlbumsUiState.Loading -> {
-                Text(text = "Api call loading... [GET ALBUMS]")
+        when (categoriesUiState) {
+            is CategoriesUiState.Loading -> {
+                Text(text = "Api call loading... [GET COUNT BY CATEGORIES]")
             }
 
-            is AlbumsUiState.Error -> {
-                Text(text = "Api call error [GET ALBUMS]")
+            is CategoriesUiState.Error -> {
+                Text(text = "Api call error [GET COUNT BY CATEGORIES]")
             }
-            is AlbumsUiState.Success -> {
-                val albums = albumsUiState.albumCountByCategory
+            is CategoriesUiState.Success -> {
+                val albums = categoriesUiState.albumCountByCategory
 
                 albums.forEach { item ->
 
