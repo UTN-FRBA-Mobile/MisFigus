@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -22,7 +23,13 @@ import com.misfigus.models.Album
 import com.misfigus.navigation.BackButton
 
 @Composable
-fun AlbumDetailScreen(navHostController: NavHostController, album: Album) {
+fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewModel: AlbumsViewModel) {
+
+    val albumUiState = viewModel.albumUiState
+
+    LaunchedEffect(album) {
+        viewModel.getAlbum(album.albumId)
+    }
 
     Scaffold(
         topBar = {BackButton(navHostController, "Albumes - ${album.category.description}")}
@@ -34,22 +41,36 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album) {
                 .padding(innerPadding)
                 .padding(20.dp)
         ) {
-            Text(
-                text = album.albumId,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            when (albumUiState) {
+                is AlbumUiState.Loading -> {
+                    Text(text = "Api call loading... [GET ALBUM BY ID]")
+                }
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(bottom = 16.dp)
-            ) {
-                items(album.tradingCards) { tradeCard ->
-                    TradingCardItem(tradingCard = tradeCard)
+                is AlbumUiState.Error -> {
+                    Text(text = "Api call error [GET ALBUM BY ID]")
+                }
+
+                is AlbumUiState.Success -> {
+                    val album = albumUiState.albumCategory
+                    Text(
+                        text = album.albumId,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        items(album.tradingCards) { tradeCard ->
+                            TradingCardItem(tradingCard = tradeCard)
+                        }
+                    }
                 }
             }
+
         }
     }
 }

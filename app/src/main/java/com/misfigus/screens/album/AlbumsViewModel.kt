@@ -1,30 +1,44 @@
 package com.misfigus.screens.album
 
 import android.app.Application
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.misfigus.dto.AlbumCategoryCountDto
+import com.misfigus.models.Album
 import com.misfigus.network.AlbumApi
-import com.misfigus.network.TokenProvider.token
 import kotlinx.coroutines.launch
-import java.io.IOException
+
+sealed interface CategoriesUiState {
+    data class Success(val albumCountByCategory: List<AlbumCategoryCountDto>) : CategoriesUiState
+    object Error : CategoriesUiState
+    object Loading : CategoriesUiState
+}
 
 sealed interface AlbumsUiState {
-    data class Success(val albumCountByCategory: List<AlbumCategoryCountDto>) : AlbumsUiState
+    data class Success(val albumsCategory: List<Album>) : AlbumsUiState
     object Error : AlbumsUiState
     object Loading : AlbumsUiState
 }
 
+sealed interface AlbumUiState {
+    data class Success(val albumCategory: Album) : AlbumUiState
+    object Error : AlbumUiState
+    object Loading : AlbumUiState
+}
+
 class AlbumsViewModel(application: Application) : AndroidViewModel(application) {
 
+    var categoriesUiState: CategoriesUiState by mutableStateOf(CategoriesUiState.Loading)
+        private set
+
     var albumsUiState: AlbumsUiState by mutableStateOf(AlbumsUiState.Loading)
+        private set
+
+    var albumUiState: AlbumUiState by mutableStateOf(AlbumUiState.Loading)
         private set
 
     init {
@@ -33,14 +47,42 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getAlbumCountByCategory() {
         viewModelScope.launch {
+            categoriesUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val listResult = AlbumApi.getService(context).getAlbumCountByCategory()
+                Log.d("API_RESPONSE", listResult.toString())
+                CategoriesUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                CategoriesUiState.Error
+            }
+        }
+    }
+
+    fun getAlbumsCategory(categoryId: String) {
+        viewModelScope.launch {
             albumsUiState = try {
                 val context = getApplication<Application>().applicationContext
-                val listResult = AlbumApi.getService(context).getAlbums()
+                val listResult = AlbumApi.getService(context).getAlbumsCategory(categoryId)
                 Log.d("API_RESPONSE", listResult.toString())
                 AlbumsUiState.Success(listResult)
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
                 AlbumsUiState.Error
+            }
+        }
+    }
+
+    fun getAlbum(albumId: String) {
+        viewModelScope.launch {
+            albumUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val listResult = AlbumApi.getService(context).getAlbum(albumId)
+                Log.d("API_RESPONSE", listResult.toString())
+                AlbumUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                AlbumUiState.Error
             }
         }
     }

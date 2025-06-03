@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,8 @@ import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.navigation.BackButton
 import com.misfigus.navigation.mockedAlbums
 import com.misfigus.ui.theme.Purple
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
 fun SearchBar(
@@ -93,38 +96,56 @@ fun NewTag() {
 }
 
 @Composable
-fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCategoryEnum) {
+fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCategoryEnum, viewModel: AlbumsViewModel) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val albums = mockedAlbums().filter {  category.description.equals(it.category.description) }
+    val albumsUiState = viewModel.albumsUiState
+
+    LaunchedEffect(category) {
+        viewModel.getAlbumsCategory(category.description)
+    }
 
     Scaffold(
         topBar = { BackButton(navHostController, "My albums") }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SearchBar(
-                    query = searchQuery,
-                    onQueryChange = { searchQuery = it },
-                    modifier = Modifier.weight(1f)
-                )
-                NewTag()
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(1),
-                modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
-            ) {
-                val filteredAlbums = albums.filter { it.albumId.contains(searchQuery, ignoreCase = true) }
-                items(filteredAlbums) { abm ->
-                    AlbumItem(
-                        album = abm,
-                        onClick = { navHostController.navigate("details/${abm.albumId}") })
+            when (albumsUiState) {
+                is AlbumsUiState.Loading -> {
+                    Text(text = "Api call loading... [GET ALBUMS BY CATEGORIES]")
+                }
+
+                is AlbumsUiState.Error -> {
+                    Text(text = "Api call error [GET ALBUMS BY CATEGORIES]")
+                }
+                is AlbumsUiState.Success -> {
+                    val albums = albumsUiState.albumsCategory
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SearchBar(
+                            query = searchQuery,
+                            onQueryChange = { searchQuery = it },
+                            modifier = Modifier.weight(1f)
+                        )
+                        NewTag()
+                    }
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(1),
+                        modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
+                    ) {
+                        val filteredAlbums = albums.filter { it.albumId?.contains(searchQuery, ignoreCase = true) == true}
+                        items(filteredAlbums) { abm ->
+                            AlbumItem(
+                                album = abm,
+                                onClick = { navHostController.navigate("details/${abm.albumId}") })
+                        }
+                    }
+
                 }
             }
+
         }
     }
 }
