@@ -4,6 +4,7 @@ import com.misfigus.dto.AlbumCategoryCountDto
 import com.misfigus.models.Album
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 
 interface AlbumApiService {
 

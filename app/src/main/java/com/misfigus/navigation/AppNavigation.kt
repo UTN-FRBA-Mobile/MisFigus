@@ -10,11 +10,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -27,23 +27,23 @@ import com.misfigus.models.Album
 import com.misfigus.models.AlbumCategoryEnum
 import com.misfigus.models.trades.TradingCard
 import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
 import com.misfigus.screens.album.AlbumDetailScreen
 import com.misfigus.screens.album.AlbumsFromCategory
 import com.misfigus.screens.album.AlbumsViewModel
-import com.misfigus.screens.trades.IntercambioScreen
+import com.misfigus.screens.albums.MyAlbums
 import com.misfigus.screens.login.LoginScreen
-import com.misfigus.screens.map.MapScreen
 import com.misfigus.screens.login.PresentationScreen
 import com.misfigus.screens.login.RegisterScreen
-import com.misfigus.screens.trades.TraderOptionsScreen
-import com.misfigus.network.TokenProvider
-import com.misfigus.screens.albums.MyAlbums
-import com.misfigus.ui.theme.Purple
+import com.misfigus.screens.map.MapScreen
 import com.misfigus.screens.profile.ProfileScreen
+import com.misfigus.screens.trades.IntercambioScreen
+import com.misfigus.screens.trades.TraderOptionsScreen
 import com.misfigus.screens.trades.requests.TradeRequestDetailScreen
 import com.misfigus.screens.trades.requests.TradeRequestsScreen
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
+import com.misfigus.ui.theme.Purple
 
 
 // cada pestaña de la barra de navegacion
