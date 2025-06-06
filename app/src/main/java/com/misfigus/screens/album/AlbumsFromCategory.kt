@@ -62,7 +62,6 @@ fun SearchBar(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(50)
             )
-            //.padding(horizontal = 2.dp) // margen interno entre borde y TextField
     ) {
         TextField(
             value = query,
