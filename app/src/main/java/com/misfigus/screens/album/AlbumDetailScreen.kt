@@ -51,7 +51,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
                 }
 
                 is AlbumUiState.Success -> {
-                    val album = albumUiState.albumCategory
+                    val album = albumUiState.album
                     Text(
                         text = album.albumId,
                         style = MaterialTheme.typography.titleLarge,

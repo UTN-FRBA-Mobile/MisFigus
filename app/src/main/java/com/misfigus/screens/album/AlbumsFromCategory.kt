@@ -126,7 +126,7 @@ fun NewTag() {
 fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCategoryEnum, viewModel: AlbumsViewModel) {
     var searchQuery by remember { mutableStateOf("") }
 
-    val albumsUiState = viewModel.albumsUiState
+    val albumsUiState = viewModel.albumsCategoryUiState
 
     LaunchedEffect(category) {
         viewModel.getAlbumsCategory(category.description)
@@ -137,14 +137,14 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCate
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (albumsUiState) {
-                is AlbumsUiState.Loading -> {
+                is AlbumsCategoryUiState.Loading -> {
                     Text(text = "Api call loading... [GET ALBUMS BY CATEGORIES]")
                 }
 
-                is AlbumsUiState.Error -> {
+                is AlbumsCategoryUiState.Error -> {
                     Text(text = "Api call error [GET ALBUMS BY CATEGORIES]")
                 }
-                is AlbumsUiState.Success -> {
+                is AlbumsCategoryUiState.Success -> {
                     val albums = albumsUiState.albumsCategory
                     Row(
                         modifier = Modifier

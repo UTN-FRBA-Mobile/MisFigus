@@ -14,6 +14,9 @@ interface AlbumApiService {
     @GET("albums/category")
     suspend fun getAlbumsCategory(@Query("categoryId") categoryId: String? = null): List<Album>
 
-    @GET("albums")
+    @GET("albums/{albumId}")
     suspend fun getAlbum(@Query("albumId") albumId: String? = null): Album
+
+    @GET("albums")
+    suspend fun getAlbums(): List<Album>
 }

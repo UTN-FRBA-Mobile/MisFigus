@@ -1,13 +1,18 @@
 package com.misfigus.screens.albums
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -21,10 +26,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.misfigus.models.Album
+import com.misfigus.screens.album.AlbumsUiState
 import com.misfigus.screens.album.CategoriesUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Grey
@@ -32,22 +42,125 @@ import com.misfigus.ui.theme.Purple
 
 
 @Composable
-fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState) {
+fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState, albumsUiState: AlbumsUiState) {
     Column(modifier = Modifier.padding(20.dp)) {
         Text("My albums", style = MaterialTheme.typography.titleLarge, color = Grey)
-        MyCollectionStats()
+        MyCollectionStats(albumsUiState)
         CategoryScreen(navHostController, categoriesUiState)
     }
 }
 
 @Composable
-fun MyCollectionStats() {
-//    Card(colors = CardDefaults.cardColors(containerColor = White)) {
-//        Column(modifier = Modifier.padding(20.dp)) {
-//            Text("My collections", style = MaterialTheme.typography.headlineMedium, color = Grey)
-//            // TO-DO
-//        }
-//    }
+fun MyCollectionStats(albumsUiState: AlbumsUiState) {
+    when (albumsUiState) {
+        is AlbumsUiState.Loading -> {
+            Text(text = "Api call loading... [GET COUNT BY CATEGORIES]")
+        }
+
+        is AlbumsUiState.Error -> {
+            Text(text = "Api call error [GET COUNT BY CATEGORIES]")
+        }
+
+        is AlbumsUiState.Success -> {
+
+            val albums = albumsUiState.albums
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xFFF7F9FE))
+                    .padding(16.dp)
+            ) {
+                Text(
+                    "Mi progreso de colección",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Barras horizontales
+                albums.forEachIndexed { index, item ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                            .padding(vertical = 4.dp)
+                    ) {
+                        // Número de orden
+                        Text("${index + 1}", modifier = Modifier.width(20.dp))
+
+                        // Barra de fondo
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(12.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.LightGray)
+                        ) {
+                            // Progreso
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    //.fillMaxWidth(item.percentage)
+                                    .clip(RoundedCornerShape(6.dp))
+                                //.background(item.color)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Porcentaje
+                        //Text("${(item.percentage * 100).toInt()}%", fontSize = 12.sp)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Detalle debajo del gráfico
+                albums.forEachIndexed { index, item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "${index + 1}",
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.width(20.dp)
+                        )
+                        Text(
+                            item.name,
+                            modifier = Modifier.weight(1f),
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            "text",
+                            //"${(item.percentage * 100).format(1)}%",
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "ver más ↓",
+                    color = Color(0xFF5118AC),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
+            fun Float.format(decimals: Int): String = "%.${decimals}f".format(this)
+
+        }
+
+    }
 }
 
 @Composable
