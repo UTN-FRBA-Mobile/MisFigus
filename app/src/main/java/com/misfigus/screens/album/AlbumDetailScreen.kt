@@ -32,7 +32,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
     }
 
     Scaffold(
-        topBar = {BackButton(navHostController, "Albumes - ${album.category.description}")}
+        topBar = {BackButton(navHostController, "Albumes - ${album.category.spanishDesc}")}
     ){ innerPadding ->
         Column(
             modifier = Modifier
@@ -53,7 +53,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
                 is AlbumUiState.Success -> {
                     val album = albumUiState.album
                     Text(
-                        text = album.albumId,
+                        text = album.name,
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )

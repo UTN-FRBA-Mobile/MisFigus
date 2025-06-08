@@ -133,7 +133,7 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCate
     }
 
     Scaffold(
-        topBar = { BackButton(navHostController, "My albums") }
+        topBar = { BackButton(navHostController, "Mis Álbumes") }
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
             when (albumsUiState) {

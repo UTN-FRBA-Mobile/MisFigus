@@ -240,9 +240,7 @@ fun CategoryScreen(navHostController: NavHostController, categoriesUiState: Cate
                                         .size(40.dp),
                                 )
                                 Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                                    Text(item.category.name.lowercase().replaceFirstChar {
-                                        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
-                                    }, style = MaterialTheme.typography.bodyLarge)
+                                    Text(item.category.spanishDesc, style = MaterialTheme.typography.bodyLarge)
                                     Text(item.count.toString() + if (item.count > 1) " álbumes" else " álbum"
                                         , style = MaterialTheme.typography.bodyLarge, color = Grey)
 
