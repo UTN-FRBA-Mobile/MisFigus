@@ -1,7 +1,9 @@
 package com.misfigus.screens.albums
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,26 +32,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.models.Album
 import com.misfigus.screens.album.AlbumsUiState
 import com.misfigus.screens.album.CategoriesUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
+import java.util.Locale
 
+val progressColors = listOf(
+    Color(0xFF6A1B9A), // púrpura
+    Color(0xFF00BFA5), // verde
+    Color(0xFFEC407A), // rosa
+    Color(0xFFD32F2F), // rojo
+)
 
 @Composable
 fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState, albumsUiState: AlbumsUiState) {
     Column(modifier = Modifier.padding(20.dp)) {
-        Text("My albums", style = MaterialTheme.typography.titleLarge, color = Grey)
+        Text("Mis Álbumes", style = MaterialTheme.typography.titleLarge, color = Grey)
         MyCollectionStats(albumsUiState)
         CategoryScreen(navHostController, categoriesUiState)
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun MyCollectionStats(albumsUiState: AlbumsUiState) {
     when (albumsUiState) {
@@ -62,14 +72,20 @@ fun MyCollectionStats(albumsUiState: AlbumsUiState) {
         }
 
         is AlbumsUiState.Success -> {
-
             val albums = albumsUiState.albums
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFF7F9FE))
+                    .background(Color.White.copy(alpha = 0.5f))
+
+
+                    .border(
+                        width = 1.dp,
+                        color = Color(0x33000000),
+                        shape = RoundedCornerShape(16.dp)
+                    )
                     .padding(16.dp)
             ) {
                 Text(
@@ -81,8 +97,32 @@ fun MyCollectionStats(albumsUiState: AlbumsUiState) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Barras horizontales
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Spacer(modifier = Modifier.width(20.dp))
+                    repeat(5) {
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "${it * 25}%",
+                                style = MaterialTheme.typography.bodySmall,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFFDDDDDD))
+                        .padding(start = 20.dp)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 albums.forEachIndexed { index, item ->
+                    val barColor = progressColors[index % progressColors.size]
+                    var percentage: Float = ((item.tradingCards.size.toFloat()/item.totalCards.toFloat()) * 100)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -90,38 +130,36 @@ fun MyCollectionStats(albumsUiState: AlbumsUiState) {
                             .height(24.dp)
                             .padding(vertical = 4.dp)
                     ) {
-                        // Número de orden
-                        Text("${index + 1}", modifier = Modifier.width(20.dp))
+                        Text("${index + 1}", modifier = Modifier.width(20.dp), style = MaterialTheme.typography.bodySmall)
 
-                        // Barra de fondo
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(12.dp)
+                                .fillMaxHeight()
+                                .fillMaxWidth(percentage / 100f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color.LightGray)
-                        ) {
-                            // Progreso
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    //.fillMaxWidth(item.percentage)
-                                    .clip(RoundedCornerShape(6.dp))
-                                //.background(item.color)
-                            )
-                        }
+                                .background(barColor)
+                        )
 
                         Spacer(modifier = Modifier.width(8.dp))
 
-                        // Porcentaje
-                        //Text("${(item.percentage * 100).toInt()}%", fontSize = 12.sp)
+                        Text(String.format("%.2f%%", percentage), fontSize = 12.sp)
                     }
                 }
 
+                // Línea inferior horizontal
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color(0xFFDDDDDD))
+                        .padding(start = 20.dp)
+                )
+
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Detalle debajo del gráfico
                 albums.forEachIndexed { index, item ->
+                    val percentage = (item.tradingCards.size.toFloat() / item.totalCards.toFloat()) * 100f
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -130,43 +168,37 @@ fun MyCollectionStats(albumsUiState: AlbumsUiState) {
                     ) {
                         Text(
                             "${index + 1}",
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.width(20.dp)
                         )
                         Text(
                             item.name,
                             modifier = Modifier.weight(1f),
-                            fontSize = 14.sp
+                            style = MaterialTheme.typography.bodySmall
                         )
-                        Text(
-                            "text",
-                            //"${(item.percentage * 100).format(1)}%",
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text(String.format("%.2f%%", percentage),  style = MaterialTheme.typography.bodySmall)
+
                     }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
+
                 Text(
                     text = "ver más ↓",
-                    color = Color(0xFF5118AC),
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
+                    color = Purple,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
-
-            fun Float.format(decimals: Int): String = "%.${decimals}f".format(this)
-
         }
-
     }
 }
+
 
 @Composable
 fun CategoryScreen(navHostController: NavHostController, categoriesUiState: CategoriesUiState){
     Column(modifier = Modifier.padding(vertical = 20.dp)) {
-        Text("Categories", style = MaterialTheme.typography.titleMedium, color = Grey)
+        Text("Categorías", style = MaterialTheme.typography.titleMedium, color = Grey)
         Spacer(modifier = Modifier.padding(10.dp))
 
         when (categoriesUiState) {
@@ -208,7 +240,9 @@ fun CategoryScreen(navHostController: NavHostController, categoriesUiState: Cate
                                         .size(40.dp),
                                 )
                                 Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                                    Text(item.category.name.lowercase().capitalize(), style = MaterialTheme.typography.bodyLarge)
+                                    Text(item.category.name.lowercase().replaceFirstChar {
+                                        if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString()
+                                    }, style = MaterialTheme.typography.bodyLarge)
                                     Text(item.count.toString() + if (item.count > 1) " álbumes" else " álbum"
                                         , style = MaterialTheme.typography.bodyLarge, color = Grey)
 
