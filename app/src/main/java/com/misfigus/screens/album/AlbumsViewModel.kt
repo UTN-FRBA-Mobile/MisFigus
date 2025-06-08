@@ -18,14 +18,20 @@ sealed interface CategoriesUiState {
     object Loading : CategoriesUiState
 }
 
+sealed interface AlbumsCategoryUiState {
+    data class Success(val albumsCategory: List<Album>) : AlbumsCategoryUiState
+    object Error : AlbumsCategoryUiState
+    object Loading : AlbumsCategoryUiState
+}
+
 sealed interface AlbumsUiState {
-    data class Success(val albumsCategory: List<Album>) : AlbumsUiState
+    data class Success(val albums: List<Album>) : AlbumsUiState
     object Error : AlbumsUiState
     object Loading : AlbumsUiState
 }
 
 sealed interface AlbumUiState {
-    data class Success(val albumCategory: Album) : AlbumUiState
+    data class Success(val album: Album) : AlbumUiState
     object Error : AlbumUiState
     object Loading : AlbumUiState
 }
@@ -33,6 +39,9 @@ sealed interface AlbumUiState {
 class AlbumsViewModel(application: Application) : AndroidViewModel(application) {
 
     var categoriesUiState: CategoriesUiState by mutableStateOf(CategoriesUiState.Loading)
+        private set
+
+    var albumsCategoryUiState: AlbumsCategoryUiState by mutableStateOf(AlbumsCategoryUiState.Loading)
         private set
 
     var albumsUiState: AlbumsUiState by mutableStateOf(AlbumsUiState.Loading)
@@ -43,6 +52,7 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         getAlbumCountByCategory()
+        getAlbums()
     }
 
     fun getAlbumCountByCategory() {
@@ -61,14 +71,14 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getAlbumsCategory(categoryId: String) {
         viewModelScope.launch {
-            albumsUiState = try {
+            albumsCategoryUiState = try {
                 val context = getApplication<Application>().applicationContext
                 val listResult = AlbumApi.getService(context).getAlbumsCategory(categoryId)
                 Log.d("API_RESPONSE", listResult.toString())
-                AlbumsUiState.Success(listResult)
+                AlbumsCategoryUiState.Success(listResult)
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
-                AlbumsUiState.Error
+                AlbumsCategoryUiState.Error
             }
         }
     }
@@ -83,6 +93,20 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
                 AlbumUiState.Error
+            }
+        }
+    }
+
+    fun getAlbums() {
+        viewModelScope.launch {
+            albumsUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val listResult = AlbumApi.getService(context).getAlbums()
+                Log.d("API_RESPONSE", listResult.toString())
+                AlbumsUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                AlbumsUiState.Error
             }
         }
     }
