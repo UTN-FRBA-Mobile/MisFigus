@@ -19,6 +19,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +37,18 @@ import com.misfigus.ui.theme.Red
 @Composable
 fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
     Box(modifier = Modifier.padding(2.dp)) {
+        var totalCartas by remember { mutableStateOf(tradingCard.repeatedQuantity) }
+        var obtained by remember { mutableStateOf(tradingCard.obtained) }
+
+        LaunchedEffect(totalCartas) {
+            obtained = totalCartas > 0
+        }
         Card(
             modifier = Modifier.padding(8.dp).size(width = 100.dp, height = 150.dp)
                 .clickable { onClick },
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
-                containerColor = if (tradingCard.obtained) Red else Color.White
+                containerColor = if (obtained) Red else Color.White
             ),
             border = BorderStroke(width = 2.dp, Red)
         ) {
@@ -45,13 +56,13 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 Text(
                     text = tradingCard.number.toString(),
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        textDecoration = if (tradingCard.obtained) TextDecoration.LineThrough else TextDecoration.None
+                        textDecoration = if (obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
-                    color = if (tradingCard.obtained) Color.White else Red
+                    color = if (obtained) Color.White else Red
                 )
             }
         }
-        if (tradingCard.repeatedQuantity > 0) {
+        if (totalCartas > 0) {
             Box(
                 modifier = Modifier
                     .absoluteOffset(x = 85.dp, y = (-2).dp)
@@ -61,7 +72,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = tradingCard.repeatedQuantity.toString(),
+                    text = totalCartas.toString(),
                     style = MaterialTheme.typography.bodyLarge,
                     color = Red
                 )
@@ -72,7 +83,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     .absoluteOffset(x = 0.dp, y = (-2).dp)
                     .size(30.dp)
                     .background(Purple, shape = CircleShape)
-                    .border(width = 2.dp, Purple, CircleShape),
+                    .border(width = 2.dp, Purple, CircleShape)
+                    .clickable { totalCartas -= 1 },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -80,6 +92,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                     contentDescription = "Delete",
                     tint = Color.White
                 )
+
             }
         }
         Box(
@@ -87,7 +100,8 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 .absoluteOffset(x = 85.dp, y = 135.dp)
                 .size(30.dp)
                 .background(Purple, shape = CircleShape)
-                .border(width = 2.dp, Purple, CircleShape),
+                .border(width = 2.dp, Purple, CircleShape)
+                .clickable { totalCartas += 1 },
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -95,7 +109,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 contentDescription = "Add",
                 tint = Color.White
             )
-        }
 
+        }
     }
 }
