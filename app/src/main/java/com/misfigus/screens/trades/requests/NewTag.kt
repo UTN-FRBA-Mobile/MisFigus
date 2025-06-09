@@ -15,12 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.misfigus.R
-import androidx.compose.ui.res.colorResource
-import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Purple
-import com.misfigus.ui.theme.Red
 
 @Composable
 fun NewTag(

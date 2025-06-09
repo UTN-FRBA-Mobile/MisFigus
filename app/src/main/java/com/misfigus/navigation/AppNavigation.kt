@@ -199,7 +199,6 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
                     TradeRequestDetailScreen(requestId = it, navController = navController)
                 }
             }
-
         }
     }
 }

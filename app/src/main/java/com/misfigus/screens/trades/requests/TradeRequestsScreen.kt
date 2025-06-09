@@ -15,7 +15,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.misfigus.dto.mappings.TradeRequestMapper
@@ -42,7 +41,6 @@ fun TradeRequestsScreen(
         try {
             val api = TradeRequestApi.getService(context)
             val fetched = api.getAllTradeRequests()
-            println("TRADE REQUESTS OBTENIDAS: ${fetched.size}")
             fetched.forEach { println(it) }
             allRequests = fetched.map(TradeRequestMapper::fromDto)
         } catch (e: Exception) {
@@ -54,6 +52,7 @@ fun TradeRequestsScreen(
     val filteredRequests = when (selectedTab) {
         "Recibidas" -> allRequests.filter { it.toUserEmail == currentUserEmail }
         "Enviadas" -> allRequests.filter { it.fromUserEmail == currentUserEmail }
+        "Todas" -> allRequests.filter { it.toUserEmail == currentUserEmail || it.fromUserEmail == currentUserEmail}
         else -> emptyList()
     }
 
@@ -123,6 +122,17 @@ fun TradeRequestsScreen(
                                 TradeRequestStatus.ACCEPTED -> "Aceptaste la solicitud de canje"
                                 TradeRequestStatus.REJECTED -> "Rechazaste la solicitud de canje"
                                 TradeRequestStatus.PENDING -> "Tienes una solicitud pendiente"
+                            }
+                            "Todas" -> {
+                                val isSender = request.fromUserEmail == currentUserEmail
+                                when (request.status) {
+                                    TradeRequestStatus.ACCEPTED ->
+                                        if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
+                                    TradeRequestStatus.REJECTED ->
+                                        if (isSender) "Rechazó mi solicitud de canje" else "Rechazaste la solicitud de canje"
+                                    TradeRequestStatus.PENDING ->
+                                        if (isSender) "La solicitud enviada está pendiente" else "Tienes una solicitud pendiente"
+                                }
                             }
                             else -> ""
                         }
