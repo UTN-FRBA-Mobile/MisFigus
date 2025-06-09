@@ -29,6 +29,16 @@ import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
 
 @Composable
+fun IntercambioScreen(navHostController: NavHostController) {
+    Column {
+        TraddingBanner {
+            navHostController.navigate("trade_requests")
+        }
+        TraderCard(navHostController)
+    }
+}
+
+@Composable
 fun TraddingBanner(onNavigateToSolicitudes: () -> Unit) {
     Card(
         modifier = Modifier
@@ -140,15 +150,5 @@ fun TraderCard(navHostController: NavHostController) {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun IntercambioScreen(navHostController: NavHostController) {
-    Column {
-        TraddingBanner {
-            navHostController.navigate("trade_requests")
-        }
-        TraderCard(navHostController)
     }
 }

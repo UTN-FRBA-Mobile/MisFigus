@@ -94,7 +94,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
     val sessionManager = UserSessionManager
 
     val bottomBarBaseRoutes = listOf(
-        "search", "album", "trading", "profile", "details", "category"
+        "search", "album", "trading", "profile", "details", "category", "trade_requests", "trade_request_detail"
     )
 
     Scaffold(
@@ -199,7 +199,6 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
                     TradeRequestDetailScreen(requestId = it, navController = navController)
                 }
             }
-
         }
     }
 }
