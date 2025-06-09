@@ -1,19 +1,23 @@
 package com.misfigus.screens.trades.requests
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.mappings.TradeRequestMapper
 import com.misfigus.models.trades.TradeRequest
 import com.misfigus.models.trades.TradeRequestStatus
@@ -21,6 +25,7 @@ import com.misfigus.navigation.BackButton
 import com.misfigus.network.TradeRequestApi
 import com.misfigus.screens.album.NewTag
 import com.misfigus.session.SessionViewModel
+import com.misfigus.ui.theme.LightPurple
 
 @Composable
 fun TradeRequestsScreen(
@@ -64,16 +69,31 @@ fun TradeRequestsScreen(
             Text("Solicitudes", fontSize = 28.sp, modifier = Modifier.padding(bottom = 16.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = LightPurple, shape = RoundedCornerShape(12.dp))
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(16.dp)),
                 horizontalArrangement = Arrangement.Center
             ) {
-                listOf("Recibidas", "Enviadas").forEach { tab ->
+                val tabs = listOf("Recibidas", "Enviadas", "Todas")
+
+                tabs.forEachIndexed { index, tab ->
                     NewTag(
                         text = tab,
-                        isSelected = tab == selectedTab,
-                        onClick = { selectedTab = tab }
+                        isSelected = selectedTab == tab,
+                        onClick = { selectedTab = tab },
+                        modifier = Modifier.weight(1f)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+
+                    if (index != tabs.lastIndex) {
+                        Box(
+                            modifier = Modifier
+                                .height(24.dp)
+                                .width(1.dp)
+                                .background(Color.LightGray)
+                        )
+                    }
                 }
             }
 
