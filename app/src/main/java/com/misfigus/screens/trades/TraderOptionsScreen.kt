@@ -1,7 +1,9 @@
 package com.misfigus.screens.trades
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,9 +30,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.colorspace.WhitePoint
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -40,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.misfigus.R
 import com.misfigus.navigation.BackButton
+import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 
@@ -133,10 +142,15 @@ fun TraderBanner() {
 
 @Composable
 fun Sticker(name: String,number: String) {
+    var isClicked by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
+            .background(color = if (isClicked) Red else Color.White, shape = RoundedCornerShape(8.dp))
             .border(width = 1.dp, color = Red, shape = RoundedCornerShape(8.dp))
-            .padding(6.dp),
+            .padding(6.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { isClicked = !isClicked },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -146,13 +160,13 @@ fun Sticker(name: String,number: String) {
             Text(
                 text = name,
                 fontSize = 13.sp,
-                color = Red,
+                color = if (isClicked) Color.White else Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
             Text(
                 text = number,
                 fontSize = 13.sp,
-                color = Red,
+                color = if (isClicked) Color.White else Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
         }

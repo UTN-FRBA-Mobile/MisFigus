@@ -1,5 +1,6 @@
 package com.misfigus.screens.trades
 
+import android.util.Log
 import com.example.misfigus.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
@@ -144,7 +146,10 @@ fun TraderCard(navHostController: NavHostController) {
 }
 
 @Composable
-fun IntercambioScreen(navHostController: NavHostController) {
+fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel) {
+    val currentUser = sessionViewModel.user
+    Log.d("", "current user iis")
+    Log.d("TAG", "IntercambioScreen: $currentUser")
     Column {
         TraddingBanner {
             navHostController.navigate("trade_requests")
