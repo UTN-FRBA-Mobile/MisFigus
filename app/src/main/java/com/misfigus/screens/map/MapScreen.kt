@@ -3,7 +3,6 @@ package com.misfigus.screens.map
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Canvas
@@ -31,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -59,6 +59,7 @@ fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Dou
     val c = 2 * atan2(sqrt(a), sqrt(1 - a))
     return earthRadius * c
 }
+
 @Composable
 fun MapScreen() {
     val context = LocalContext.current
@@ -98,6 +99,11 @@ fun MapScreen() {
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     var hasCenteredMap by remember { mutableStateOf(false) }
     var kioskDetailShown by remember { mutableStateOf<KioskDTO?>(null) }
+    var showFilterSheet by remember { mutableStateOf(false) }
+    var radius by remember { mutableStateOf(25f) }
+    var rating by remember { mutableStateOf(1f) }
+    var openNow by remember { mutableStateOf(true) }
+    var hasStock by remember { mutableStateOf(true) }
 
     DisposableEffect(mapView) {
         mapView.onCreate(Bundle())
@@ -115,21 +121,39 @@ fun MapScreen() {
         selectedKiosk = kiosks.firstOrNull()
     }
 
-    val filteredKiosks = remember(kiosks, searchText, userLocation) {
-        val filtered = kiosks.filter {
-            searchText.isBlank() || it.name.lowercase().removePrefix("kiosco ").contains(searchText.trim().lowercase())
-        }
-        val withStock = mutableListOf<Pair<KioskDTO, Double>>()
-        val withoutStock = mutableListOf<Pair<KioskDTO, Double>>()
-        for (kiosk in filtered) {
-            val dist = userLocation?.let {
+    val filteredKiosks = remember(kiosks, searchText, userLocation, radius, rating, openNow, hasStock) {
+        val now = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalTime()
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        kiosks.filter { kiosk ->
+            val distance = userLocation?.let {
                 distanceBetween(it.latitude, it.longitude, kiosk.coordinates.latitude, kiosk.coordinates.longitude)
             } ?: Double.MAX_VALUE
-            if (kiosk.availableUnits > 0) withStock.add(kiosk to dist)
-            else withoutStock.add(kiosk to dist)
+
+            val isOpen = try {
+                val openTime = LocalTime.parse(kiosk.openFrom, formatter)
+                val closeTime = LocalTime.parse(kiosk.openUntil, formatter)
+                !now.isBefore(openTime) && now.isBefore(closeTime)
+            } catch (e: Exception) {
+                false
+            }
+
+            val matchesSearch = searchText.isBlank() ||
+                    kiosk.name.lowercase().removePrefix("kiosco ").contains(searchText.trim().lowercase())
+
+            val withinRadius = distance / 1000 <= radius
+            val meetsRating = kiosk.rating >= rating
+            val meetsStock = !hasStock || kiosk.availableUnits > 0
+            val meetsOpen = !openNow || isOpen
+
+            matchesSearch && withinRadius && meetsRating && meetsStock && meetsOpen
+        }.sortedBy { kiosk ->
+            userLocation?.let {
+                distanceBetween(it.latitude, it.longitude, kiosk.coordinates.latitude, kiosk.coordinates.longitude)
+            } ?: Double.MAX_VALUE
         }
-        (withStock.sortedBy { it.second } + withoutStock.sortedBy { it.second }).map { it.first }
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }) {
             mapView.getMapAsync { googleMap: GoogleMap ->
@@ -186,16 +210,14 @@ fun MapScreen() {
                 Icon(Icons.Default.Search, contentDescription = "Buscar")
             },
             trailingIcon = {
-                IconButton(onClick = {
-                    // Acá podés abrir un modal, dropdown o filtrar
-                    Log.d("MapScreen", "Filtro presionado")
-                }) {
+                IconButton(onClick = { showFilterSheet = true }) {
                     Icon(
-                        imageVector = Icons.Default.FilterList, // Podés usar también Icons.Outlined.Tune si preferís
+                        imageVector = Icons.Default.FilterList,
                         contentDescription = "Filtrar"
                     )
                 }
-            },
+            }
+            ,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
@@ -397,7 +419,6 @@ fun MapScreen() {
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(12.dp))
 
                         Spacer(modifier = Modifier.height(12.dp))
                         Text("\uD83D\uDED2 Precio por paquete: \$${kiosk.price}", color = Color.Red)
@@ -407,4 +428,126 @@ fun MapScreen() {
             }
         }
     }
+    if (showFilterSheet) {
+        Dialog(onDismissRequest = { showFilterSheet = false }) {
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Filtro de búsqueda", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+
+                    Spacer(Modifier.height(12.dp))
+                    Text("Radio (km)", fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                    ) {
+                        val sliderWidth = maxWidth
+                        val thumbPosition = (radius - 1f) / 49f * sliderWidth.value
+
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            // Globito
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = thumbPosition.dp - 20.dp, y = (-10).dp)
+                                    .align(Alignment.TopStart)
+                                    .background(Color(0xFF6A1B9A), shape = RoundedCornerShape(50))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = radius.toInt().toString(),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+
+                        Slider(
+                            value = radius,
+                            onValueChange = { radius = it },
+                            valueRange = 1f..50f,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = Color(0xFF6A1B9A),
+                                activeTrackColor = Color(0xFF6A1B9A)
+                            )
+                        )
+
+                    }
+
+
+                    Spacer(Modifier.height(12.dp))
+                    Text("Puntuación", fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                    BoxWithConstraints(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                    ) {
+                        val sliderWidth = maxWidth
+                        val thumbPosition = (rating - 1f) / 4f * sliderWidth.value
+
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            // Globito con puntuación
+                            Box(
+                                modifier = Modifier
+                                    .offset(x = thumbPosition.dp - 20.dp, y = (-10).dp)
+                                    .align(Alignment.TopStart)
+                                    .background(Color(0xFF6A1B9A), shape = RoundedCornerShape(50))
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = rating.toInt().toString(),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp
+                                )
+                            }
+                        }
+
+                        Slider(
+                            value = rating,
+                            onValueChange = {
+                                // Redondeamos al valor más cercano
+                                rating = it.roundToInt().toFloat()
+                            },
+                            valueRange = 1f..5f,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = SliderDefaults.colors(
+                                thumbColor = Color(0xFF6A1B9A),
+                                activeTrackColor = Color(0xFF6A1B9A)
+                            )
+                        )
+                    }
+
+
+                    Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Ahora abierto", modifier = Modifier.weight(1f), color = Color.DarkGray)
+                        Switch(checked = openNow, onCheckedChange = { openNow = it })
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Tiene stock disponible", modifier = Modifier.weight(1f), color = Color.DarkGray)
+                        Switch(checked = hasStock, onCheckedChange = { hasStock = it })
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = { showFilterSheet = false },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text("Aplicar")
+                    }
+                }
+            }
+        }
+    }
+
 }
