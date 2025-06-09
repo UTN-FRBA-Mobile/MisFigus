@@ -443,43 +443,56 @@ fun MapScreen() {
 
                     Spacer(Modifier.height(12.dp))
                     Text("Radio (km)", fontWeight = FontWeight.Bold, color = Color.DarkGray)
-                    BoxWithConstraints(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                    ) {
+                     BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)) {
                         val sliderWidth = maxWidth
                         val thumbPosition = (radius - 1f) / 49f * sliderWidth.value
 
+                        // Globito
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            // Globito
                             Box(
                                 modifier = Modifier
-                                    .offset(x = thumbPosition.dp - 20.dp, y = (-10).dp)
+                                    .offset(x = thumbPosition.dp -15.dp, y = (-28).dp)
                                     .align(Alignment.TopStart)
                                     .background(Color(0xFF6A1B9A), shape = RoundedCornerShape(50))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
-                                Text(
-                                    text = radius.toInt().toString(),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
+                                Text(radius.toInt().toString(), color = Color.White, fontWeight = FontWeight.Bold)
                             }
                         }
 
+                        // Barra fina personalizada
+                        Box(modifier = Modifier.fillMaxWidth().height(8.dp).align(Alignment.Center)) {
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                val y = size.height / 2
+                                val barHeight = 5.dp.toPx()
+
+                                drawLine(Color(0x336A1B9A), Offset(0f, y), Offset(size.width, y), barHeight)
+                                drawLine(Color(0xFF6A1B9A), Offset(0f, y), Offset((radius - 1f) / 49f * size.width, y), barHeight)
+                            }
+                        }
+
+                        // Slider funcional
                         Slider(
                             value = radius,
                             onValueChange = { radius = it },
                             valueRange = 1f..50f,
                             modifier = Modifier.fillMaxWidth(),
                             colors = SliderDefaults.colors(
-                                thumbColor = Color(0xFF6A1B9A),
-                                activeTrackColor = Color(0xFF6A1B9A)
+                                thumbColor = Color.Transparent,
+                                activeTrackColor = Color.Transparent,
+                                inactiveTrackColor = Color.Transparent
                             )
                         )
 
+                        // Círculo visual del thumb
+                        Box(
+                            modifier = Modifier
+                                .offset(x = thumbPosition.dp - 12.dp, y = (12).dp)
+                                .size(24.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(Color(0xFF6A1B9A))
+                                .align(Alignment.TopStart)
+                        )
                     }
 
 
@@ -488,63 +501,101 @@ fun MapScreen() {
                     BoxWithConstraints(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 12.dp)
+                            .padding(vertical = 24.dp)
                     ) {
                         val sliderWidth = maxWidth
                         val thumbPosition = (rating - 1f) / 4f * sliderWidth.value
 
+                        // Globito con puntuación
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            // Globito con puntuación
                             Box(
                                 modifier = Modifier
-                                    .offset(x = thumbPosition.dp - 20.dp, y = (-10).dp)
+                                    .offset(x = thumbPosition.dp - 15.dp, y = (-28).dp)
                                     .align(Alignment.TopStart)
                                     .background(Color(0xFF6A1B9A), shape = RoundedCornerShape(50))
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = rating.toInt().toString(),
                                     color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
 
+                        // Barra fina personalizada
+                        Box(modifier = Modifier.fillMaxWidth().height(8.dp).align(Alignment.Center)) {
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                val y = size.height / 2
+                                val barHeight = 5.dp.toPx()
+
+                                drawLine(Color(0x336A1B9A), Offset(0f, y), Offset(size.width, y), barHeight)
+                                drawLine(Color(0xFF6A1B9A), Offset(0f, y), Offset((rating - 1f) / 4f * size.width, y), barHeight)
+                            }
+                        }
+
+                        // Slider funcional pero invisible
                         Slider(
                             value = rating,
                             onValueChange = {
-                                // Redondeamos al valor más cercano
                                 rating = it.roundToInt().toFloat()
                             },
                             valueRange = 1f..5f,
                             modifier = Modifier.fillMaxWidth(),
                             colors = SliderDefaults.colors(
-                                thumbColor = Color(0xFF6A1B9A),
-                                activeTrackColor = Color(0xFF6A1B9A)
+                                thumbColor = Color.Transparent,
+                                activeTrackColor = Color.Transparent,
+                                inactiveTrackColor = Color.Transparent
                             )
+                        )
+
+                        // Círculo visual del thumb
+                        Box(
+                            modifier = Modifier
+                                .offset(x = thumbPosition.dp - 12.dp, y = (12).dp)
+                                .size(24.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(Color(0xFF6A1B9A))
+                                .align(Alignment.TopStart)
                         )
                     }
 
 
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Ahora abierto", modifier = Modifier.weight(1f), color = Color.DarkGray)
+                        Text("Ahora abierto", modifier = Modifier.weight(1f), color = Color.Gray)
                         Switch(checked = openNow, onCheckedChange = { openNow = it })
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Tiene stock disponible", modifier = Modifier.weight(1f), color = Color.DarkGray)
+                        Text("Tiene stock disponible", modifier = Modifier.weight(1f), color = Color.Gray)
                         Switch(checked = hasStock, onCheckedChange = { hasStock = it })
                     }
 
                     Spacer(Modifier.height(16.dp))
-                    Button(
-                        onClick = { showFilterSheet = false },
-                        modifier = Modifier.align(Alignment.End)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Aplicar")
+                        TextButton(
+                            onClick = {
+                                radius = 50f
+                                rating = 1f
+                                openNow = false
+                                hasStock = false
+                                showFilterSheet = false
+                            }
+                        ) {
+                            Text("Limpiar filtros", color = Color.Gray)
+                        }
+
+                        Button(
+                            onClick = { showFilterSheet = false }
+                        ) {
+                            Text("Aplicar")
+                        }
                     }
+
                 }
             }
         }
