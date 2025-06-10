@@ -1,5 +1,6 @@
 package com.misfigus.screens.login
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -153,8 +154,14 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
             onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
+                        Log.d("LoginScreen", "Intentando iniciar sesión con email: $email")
                         val loginDto = UserLoginDto(email = email, password = password)
+                        Log.d("LoginScreen", "creelogindto")
+                        Log.d("LoginScreen", "loginDto: $loginDto")
+                        
                         val response = AuthApi.getService(context).login(loginDto)
+                        Log.d("LoginScreen", "Login exitoso")
+                        Log.d("LoginScreen", "Reponse: ${response}")
 
                         // Guardar el token globalmente
                         TokenProvider.token = response.token
@@ -174,6 +181,7 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
                     }
                     catch (e: retrofit2.HttpException) {
                         withContext(Dispatchers.Main) {
+                            Log.d("LoginScreen", "Error de autenticación: ${e.response()?.errorBody()?.string()}")
                             val errorBody = e.response()?.errorBody()?.string()
                             val errorMessage = try {
                                 JSONObject(errorBody).getString("message")
