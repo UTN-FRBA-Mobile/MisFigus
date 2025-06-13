@@ -13,12 +13,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.mappings.TradeRequestMapper
 import com.misfigus.models.trades.TradeRequest
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
-import com.misfigus.network.TradeRequestApi
+import com.misfigus.network.TradeApi
 import com.misfigus.screens.album.NewTag
 import com.misfigus.session.SessionViewModel
 
@@ -35,7 +34,7 @@ fun TradeRequestsScreen(
 
     LaunchedEffect(Unit) {
         try {
-            val api = TradeRequestApi.getService(context)
+            val api = TradeApi.getService(context)
             val fetched = api.getAllTradeRequests()
             println("TRADE REQUESTS OBTENIDAS: ${fetched.size}")
             fetched.forEach { println(it) }

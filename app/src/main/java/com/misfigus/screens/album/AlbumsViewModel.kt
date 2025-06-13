@@ -63,7 +63,7 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
                 Log.d("API_RESPONSE", listResult.toString())
                 CategoriesUiState.Success(listResult)
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                Log.e("API_ERROR", "Error al obtener álbumes por categoria: ${e.message}", e)
                 CategoriesUiState.Error
             }
         }
@@ -77,7 +77,7 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
                 Log.d("API_RESPONSE", listResult.toString())
                 AlbumsCategoryUiState.Success(listResult)
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                Log.e("API_ERROR", "Error al obtener categoria de álbumes: ${e.message}", e)
                 AlbumsCategoryUiState.Error
             }
         }
@@ -91,7 +91,7 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
                 Log.d("API_RESPONSE", listResult.toString())
                 AlbumUiState.Success(listResult)
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                Log.e("API_ERROR", "Error al obtener álbum por id: ${e.message}", e)
                 AlbumUiState.Error
             }
         }
