@@ -55,7 +55,7 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
                     text = tradingCard.number.toString(),
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    style = MaterialTheme.typography.titleMedium.copy(
                         textDecoration = if (obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
                     color = if (obtained) Color.White else Red

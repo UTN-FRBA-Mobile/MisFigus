@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.misfigus.dto.AlbumCategoryCountDto
 import com.misfigus.models.Album
 import com.misfigus.network.AlbumApi
+import com.misfigus.network.AuthApi
 import kotlinx.coroutines.launch
 
 sealed interface CategoriesUiState {
@@ -24,6 +25,13 @@ sealed interface AlbumsCategoryUiState {
     object Loading : AlbumsCategoryUiState
 }
 
+sealed interface AlbumsUserCategoryUiState {
+    data class Success(val albumsUserCategory: List<Album>) : AlbumsUserCategoryUiState
+    object Error : AlbumsUserCategoryUiState
+    object Loading : AlbumsUserCategoryUiState
+}
+
+
 sealed interface AlbumsUiState {
     data class Success(val albums: List<Album>) : AlbumsUiState
     object Error : AlbumsUiState
@@ -34,6 +42,18 @@ sealed interface AlbumUiState {
     data class Success(val album: Album) : AlbumUiState
     object Error : AlbumUiState
     object Loading : AlbumUiState
+}
+
+sealed interface AlbumsUserUiState {
+    data class Success(val albums: List<Album>) : AlbumsUserUiState
+    object Error : AlbumsUserUiState
+    object Loading : AlbumsUserUiState
+}
+
+sealed interface AlbumUserUiState {
+    data class Success(val album: Album) : AlbumUserUiState
+    object Error : AlbumUserUiState
+    object Loading : AlbumUserUiState
 }
 
 class AlbumsViewModel(application: Application) : AndroidViewModel(application) {
@@ -50,9 +70,18 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
     var albumUiState: AlbumUiState by mutableStateOf(AlbumUiState.Loading)
         private set
 
+    var albumsUserUiState: AlbumsUserUiState by mutableStateOf(AlbumsUserUiState.Loading)
+        private set
+
+    var albumUserUiState: AlbumUserUiState by mutableStateOf(AlbumUserUiState.Loading)
+        private set
+
+    var albumsUserCategoryUiState: AlbumsUserCategoryUiState by mutableStateOf(AlbumsUserCategoryUiState.Loading)
+        private set
+
     init {
         getAlbumCountByCategory()
-        getAlbums()
+        getUserAlbums()
     }
 
     fun getAlbumCountByCategory() {
@@ -107,6 +136,51 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
                 AlbumsUiState.Error
+            }
+        }
+    }
+
+    fun getUserAlbum(albumId: String) {
+        viewModelScope.launch {
+            albumUserUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val currentUser = AuthApi.getService(context).getCurrentUser()
+                val listResult = AlbumApi.getService(context).getUserAlbum(albumId, currentUser.email)
+                Log.d("API_RESPONSE", listResult.toString())
+                AlbumUserUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                AlbumUserUiState.Error
+            }
+        }
+    }
+
+    fun getUserAlbums() {
+        viewModelScope.launch {
+            albumsUserUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val currentUser = AuthApi.getService(context).getCurrentUser()
+                val listResult = AlbumApi.getService(context).getUserAlbums(currentUser.email)
+                Log.d("API_RESPONSE", listResult.toString())
+                AlbumsUserUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener álbumes: ${e.message}", e)
+                AlbumsUserUiState.Error
+            }
+        }
+    }
+
+    fun getUserAlbumsCategory(categoryId: String) {
+        viewModelScope.launch {
+            albumsUserCategoryUiState = try {
+                val context = getApplication<Application>().applicationContext
+                val currentUser = AuthApi.getService(context).getCurrentUser()
+                val listResult = AlbumApi.getService(context).getUserAlbumsCategory(categoryId, currentUser.email)
+                Log.d("API_RESPONSE", listResult.toString())
+                AlbumsUserCategoryUiState.Success(listResult)
+            } catch (e: Exception) {
+                Log.e("API_ERROR", "Error al obtener categoria de álbumes: ${e.message}", e)
+                AlbumsUserCategoryUiState.Error
             }
         }
     }

@@ -25,10 +25,10 @@ import com.misfigus.navigation.BackButton
 @Composable
 fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewModel: AlbumsViewModel) {
 
-    val albumUiState = viewModel.albumUiState
+    val albumUserUiState = viewModel.albumUserUiState
 
     LaunchedEffect(album) {
-        viewModel.getAlbum(album.albumId)
+        viewModel.getUserAlbum(album.id.toString())
     }
 
     Scaffold(
@@ -41,17 +41,17 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
                 .padding(innerPadding)
                 .padding(20.dp)
         ) {
-            when (albumUiState) {
-                is AlbumUiState.Loading -> {
+            when (albumUserUiState) {
+                is AlbumUserUiState.Loading -> {
                     Text(text = "Api call loading... [GET ALBUM BY ID]")
                 }
 
-                is AlbumUiState.Error -> {
+                is AlbumUserUiState.Error -> {
                     Text(text = "Api call error [GET ALBUM BY ID]")
                 }
 
-                is AlbumUiState.Success -> {
-                    val album = albumUiState.album
+                is AlbumUserUiState.Success -> {
+                    val album = albumUserUiState.album
                     Text(
                         text = album.name,
                         style = MaterialTheme.typography.titleLarge,
