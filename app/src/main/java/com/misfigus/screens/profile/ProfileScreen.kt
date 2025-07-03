@@ -207,6 +207,9 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
                             fullName,
                             username,
                             currentUser.profileImageUrl,
+                            currentUser.location,
+                            currentUser.shipping,
+                            currentUser.reputation,
                             currentUser.albums,
                             currentUser.friends
                         )
