@@ -157,8 +157,8 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.Login.route) { LoginScreen(navController, sessionViewModel) }
             composable(Screen.Register.route) { RegisterScreen(navController, sessionViewModel) }
             composable(Screen.Search.route) { MapScreen() }
-            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState, albumsViewModel.albumsUiState) }
-            composable(Screen.Trading.route) { IntercambioScreen(navController) }
+            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState, albumsViewModel.albumsUserUiState) }
+            composable(Screen.Trading.route) { IntercambioScreen(navController, sessionViewModel) }
             composable("trader/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 id?.let {
