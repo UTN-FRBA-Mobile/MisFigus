@@ -39,6 +39,7 @@ import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
+import getUserProfilePictureId
 
 @Composable
 fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
@@ -79,7 +80,7 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
             ) {
                 Icon(Icons.Outlined.Error, contentDescription = null, tint = Red)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Hay $totalTrades personas de tu zona que quieren canjear", fontSize = 13.sp, color = Red)
+                Text("¡Tienes $totalTrades canjes en tu zona!", fontSize = 13.sp, color = Red)
             }
         }
     }
@@ -101,7 +102,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.matias), // TODO get profile picture
+                painter = painterResource(id = getUserProfilePictureId(trade.from.username)),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .width(40.dp)
