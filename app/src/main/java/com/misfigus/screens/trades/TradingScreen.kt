@@ -87,7 +87,7 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
 }
 
 @Composable
-fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
+fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tradeViewModel: TradeViewModel) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -130,7 +130,10 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
                     color = Grey
                 )
             }
-            IconButton(onClick = {navHostController.navigate("trader/{1}")}) { // TODO pass in the trade
+            IconButton(onClick = {
+                tradeViewModel.selectedTrade.value = trade
+                navHostController.navigate("trader/{1}")
+            }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Canjear",
@@ -142,10 +145,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
 }
 
 @Composable
-fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel) {
-    val currentUser = sessionViewModel.user
-    Log.d("", "current user iis")
-    Log.d("TAG", "IntercambioScreen: $currentUser")
+fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel, tradeViewModel: TradeViewModel) {
     var possibleTrades by remember { mutableStateOf<List<PossibleTradeDto>>(emptyList()) }
     val context = LocalContext.current
 
@@ -170,7 +170,8 @@ fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: Se
         items(possibleTrades) { trade ->
             TraderCard(
                 trade = trade,
-                navHostController = navHostController
+                navHostController = navHostController,
+                tradeViewModel = tradeViewModel
             )
         }
     }

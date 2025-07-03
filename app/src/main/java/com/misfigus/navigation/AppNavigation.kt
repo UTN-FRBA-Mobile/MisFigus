@@ -38,6 +38,7 @@ import com.misfigus.screens.login.RegisterScreen
 import com.misfigus.screens.map.MapScreen
 import com.misfigus.screens.profile.ProfileScreen
 import com.misfigus.screens.trades.IntercambioScreen
+import com.misfigus.screens.trades.TradeViewModel
 import com.misfigus.screens.trades.TraderOptionsScreen
 import com.misfigus.screens.trades.requests.TradeRequestDetailScreen
 import com.misfigus.screens.trades.requests.TradeRequestsScreen
@@ -88,6 +89,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
     val albumsViewModel: AlbumsViewModel = viewModel()
+    val tradeViewModel: TradeViewModel = viewModel()
 
     val context = LocalContext.current
     val authService = AuthApi.getService(context)
@@ -158,11 +160,11 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.Register.route) { RegisterScreen(navController, sessionViewModel) }
             composable(Screen.Search.route) { MapScreen() }
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState, albumsViewModel.albumsUserUiState) }
-            composable(Screen.Trading.route) { IntercambioScreen(navController, sessionViewModel) }
+            composable(Screen.Trading.route) { IntercambioScreen(navController, sessionViewModel, tradeViewModel) }
             composable("trader/{id}") { backStackEntry ->
                 val id = backStackEntry.arguments?.getString("id")
                 id?.let {
-                    TraderOptionsScreen(navHostController = navController, id = it)
+                    TraderOptionsScreen(navHostController = navController, id = it, tradeViewModel = tradeViewModel)
                 }
             }
             composable(Screen.Profile.route) {

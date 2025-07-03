@@ -1,5 +1,6 @@
 package com.misfigus.screens.trades
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,10 +48,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.misfigus.R
+import com.misfigus.dto.UserDto
 import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
+import getUserProfilePictureId
 
 var myStickers = listOf(
     mapOf("name" to "AR", "number" to "1"),
@@ -83,7 +86,7 @@ fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: Image
 }
 
 @Composable
-fun TraderBanner() {
+fun TraderBanner(from : UserDto) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -97,7 +100,7 @@ fun TraderBanner() {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Canjeá con Matías",
+                text = "Canjeá con ${from.username}",
                 fontSize = 30.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
@@ -107,7 +110,7 @@ fun TraderBanner() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.matias),
+                    painter = painterResource(id = getUserProfilePictureId(from.username)),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .width(70.dp)
@@ -146,7 +149,10 @@ fun Sticker(name: String,number: String) {
 
     Box(
         modifier = Modifier
-            .background(color = if (isClicked) Red else Color.White, shape = RoundedCornerShape(8.dp))
+            .background(
+                color = if (isClicked) Red else Color.White,
+                shape = RoundedCornerShape(8.dp)
+            )
             .border(width = 1.dp, color = Red, shape = RoundedCornerShape(8.dp))
             .padding(6.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -275,17 +281,19 @@ fun MoreAlbums() {
 }
 
 @Composable
-fun TraderOptionsScreen(navHostController: NavHostController, id: String) {
-//    Text("trader options. id $id")
+fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeViewModel: TradeViewModel) {
+    val trade = tradeViewModel.selectedTrade.value
+    Log.d("TraderOptionsScreen", "the trade is: $trade")
     Scaffold(
         topBar = { BackButton(navHostController, "Canje") }
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .fillMaxSize().padding(innerPadding)
+                .fillMaxSize()
+                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            TraderBanner()
+            TraderBanner(from=trade!!.from)
             ForYouSection()
             ForTraderSection()
             MoreAlbums()
