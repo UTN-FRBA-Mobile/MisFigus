@@ -118,7 +118,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
                 Text(
-                    text = "Fifa World Cup Qatar 2022",
+                    text = trade.albumName,
                     fontSize = 13.sp,
                     color = Red,
                     modifier = Modifier.padding(bottom = 3.dp)
