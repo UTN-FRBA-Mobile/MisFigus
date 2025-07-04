@@ -21,8 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -120,22 +123,25 @@ fun TraderBanner(from : UserDto) {
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     TextWithIcon(
-                        text = "Caballito, Ciudad de Buenos Aires",
+                        text = from.location,
                         textColor = Grey,
                         imageColor = Grey,
                         image = Icons.Outlined.LocationOn
                     )
+                    val shipping = if (from.shipping) "Hace" else "No hace"
                     TextWithIcon(
-                        text = "Hace envios",
+                        text = "${shipping} envios",
                         textColor = Grey,
                         imageColor = Grey,
-                        image = Icons.Outlined.LocalShipping
+                        image = if (from.shipping) Icons.Outlined.LocalShipping else Icons.Outlined.Block
                     )
+                    val reputation = from.reputation
+                    val text = if (reputation == "good") "Buena" else "Mala"
                     TextWithIcon(
-                        text = "Buena reputación",
+                        text = " ${text} reputación",
                         textColor = Grey,
                         imageColor = Grey,
-                        image = Icons.Outlined.ThumbUp
+                        image = if (reputation == "good") Icons.Outlined.ThumbUp else Icons.Outlined.ThumbDown
                     )
                 }
             }
