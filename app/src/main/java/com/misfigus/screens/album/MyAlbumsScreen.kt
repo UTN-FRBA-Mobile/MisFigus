@@ -122,7 +122,8 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
                 albums.forEachIndexed { index, item ->
                     val barColor = progressColors[index % progressColors.size]
-                    var percentage: Float = ((item.tradingCards.size.toFloat()/item.totalCards.toFloat()) * 100)
+                    val obtainedCards = item.tradingCards.filter { card -> card.obtained }.size
+                    var percentage: Float = ((obtainedCards.toFloat()/item.totalCards.toFloat()) * 100)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier

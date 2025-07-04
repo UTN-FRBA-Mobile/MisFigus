@@ -1,5 +1,6 @@
 package com.misfigus.screens.album
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,9 +49,10 @@ import com.misfigus.models.Album
 import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Purple
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewModel: AlbumsViewModel) {
+fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,  viewModel: AlbumsViewModel) {
 
     val albumUserUiState = viewModel.albumUserUiState
 
@@ -58,8 +60,8 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
     var searchQuery by remember { mutableStateOf("") }
     var modifiedCards by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
 
-    LaunchedEffect(album) {
-        viewModel.getUserAlbum(album.id.toString())
+    LaunchedEffect(Unit) {
+        viewModel.getUserAlbum(initialAlbum.id.toString())
     }
 
     Scaffold(
@@ -67,16 +69,24 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
             TopAppBar(
                 title = {
                     Text(
-                        text = "Álbumes - ${album.category.spanishDesc}",
+                        text = "Álbumes - ${initialAlbum.category.spanishDesc}",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
-                    BackButton(navHostController, "Albumes - ${album.category.spanishDesc}")
+                    BackButton(navHostController, "Albumes - ${initialAlbum.category.spanishDesc}")
                 },
                 actions = {
                     editButton(isEditing = isEditing){
+                        if (isEditing) {
+                            if (modifiedCards.isNotEmpty()) {
+                                if (albumUserUiState is AlbumUserUiState.Success) {
+                                    viewModel.updateUserCards(albumUserUiState.album, modifiedCards.toMap())
+                                }
+                                modifiedCards = emptyMap()
+                            }
+                        }
                         isEditing = !isEditing
                     }
                 },
@@ -86,13 +96,14 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
             )
 
         }
-    ){ innerPadding ->
+    ){
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFFF3F5FD))
-                .padding(innerPadding)
-                .padding(20.dp)
+                .padding(horizontal = 15.dp)
+                .padding(top = 100.dp)
+
         ) {
             when (albumUserUiState) {
                 is AlbumUserUiState.Loading -> {
@@ -109,7 +120,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, album: Album,  viewM
                     Text(
                         text = album.name,
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        modifier = Modifier.padding(bottom = 5.dp)
                     )
 
                     SearchBar(

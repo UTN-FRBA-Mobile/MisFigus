@@ -180,7 +180,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
                     val albumDetailed = getAlbumByName(it)
-                    if(albumDetailed != null) AlbumDetailScreen(navController, album = albumDetailed, albumsViewModel)
+                    if(albumDetailed != null) AlbumDetailScreen(navController, initialAlbum = albumDetailed, albumsViewModel)
                 }
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StickerDto(
     val number: Int,
-    val repeatCount: Int,
+    val repeatCount: Int
 )
 
 @Serializable
