@@ -39,6 +39,7 @@ import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
+import getUserProfilePictureId
 
 @Composable
 fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
@@ -79,14 +80,14 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
             ) {
                 Icon(Icons.Outlined.Error, contentDescription = null, tint = Red)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Hay $totalTrades personas de tu zona que quieren canjear", fontSize = 13.sp, color = Red)
+                Text("¡Tienes $totalTrades canjes en tu zona!", fontSize = 13.sp, color = Red)
             }
         }
     }
 }
 
 @Composable
-fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
+fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tradeViewModel: TradeViewModel) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -101,7 +102,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.matias), // TODO get profile picture
+                painter = painterResource(id = getUserProfilePictureId(trade.from.username)),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .width(40.dp)
@@ -118,7 +119,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
                 Text(
-                    text = "Fifa World Cup Qatar 2022",
+                    text = trade.albumName,
                     fontSize = 13.sp,
                     color = Red,
                     modifier = Modifier.padding(bottom = 3.dp)
@@ -129,7 +130,10 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
                     color = Grey
                 )
             }
-            IconButton(onClick = { navHostController.navigate("trader/{1}") }) { // TODO pass in the trade
+            IconButton(onClick = {
+                tradeViewModel.selectedTrade.value = trade
+                navHostController.navigate("trader/{1}")
+            }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Canjear",
@@ -142,10 +146,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController) {
 }
 
 @Composable
-fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel) {
-    val currentUser = sessionViewModel.user
-    Log.d("", "current user iis")
-    Log.d("TAG", "IntercambioScreen: $currentUser")
+fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel, tradeViewModel: TradeViewModel) {
     var possibleTrades by remember { mutableStateOf<List<PossibleTradeDto>>(emptyList()) }
     val context = LocalContext.current
 
@@ -170,7 +171,8 @@ fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: Se
         items(possibleTrades) { trade ->
             TraderCard(
                 trade = trade,
-                navHostController = navHostController
+                navHostController = navHostController,
+                tradeViewModel = tradeViewModel
             )
         }
     }
