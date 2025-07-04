@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,7 +46,9 @@ import com.misfigus.screens.album.CategoriesUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
-import java.util.Locale
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 
 val progressColors = listOf(
     Color(0xFF6A1B9A), // púrpura
@@ -62,6 +69,7 @@ fun MyAlbums(navHostController: NavHostController, categoriesUiState: Categories
 @SuppressLint("DefaultLocale")
 @Composable
 fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
+    var expanded by remember { mutableStateOf(false) }
     when (albumsUserUiState) {
         is AlbumsUserUiState.Loading -> {
             Text(text = "Api call loading... [GET COUNT BY CATEGORIES]")
@@ -73,6 +81,7 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
         is AlbumsUserUiState.Success -> {
             val albums = albumsUserUiState.albums
+            val visibleAlbums = if (expanded) albums.take(4) else albums.take(2)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,7 +129,7 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                albums.forEachIndexed { index, item ->
+                visibleAlbums.forEachIndexed { index, item ->
                     val barColor = progressColors[index % progressColors.size]
                     val obtainedCards = item.tradingCards.filter { card -> card.obtained }.size
                     var percentage: Float = ((obtainedCards.toFloat()/item.totalCards.toFloat()) * 100)
@@ -159,8 +168,9 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                albums.forEachIndexed { index, item ->
-                    val percentage = (item.tradingCards.size.toFloat() / item.totalCards.toFloat()) * 100f
+                visibleAlbums.forEachIndexed { index, item ->
+                    val obtainedCards = item.tradingCards.filter { card -> card.obtained }.size
+                    var percentage: Float = ((obtainedCards.toFloat()/item.totalCards.toFloat()) * 100)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -184,12 +194,16 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = "ver más ↓",
-                    color = Purple,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                if (albums.size > 2) {
+                    Text(
+                        text = if (expanded) "ver menos ↑" else "ver más ↓",
+                        color = Purple,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .clickable { expanded = !expanded }
+                    )
+                }
             }
         }
     }
