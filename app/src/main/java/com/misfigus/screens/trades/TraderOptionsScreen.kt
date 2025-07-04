@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,10 +34,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,15 +54,6 @@ import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import getUserProfilePictureId
 
-var myStickers = listOf(
-    mapOf("name" to "AR", "number" to "1"),
-    mapOf("name" to "AR", "number" to "10")
-)
-
-var matiasStickers = listOf(
-    mapOf("name" to "AR", "number" to "3"),
-    mapOf("name" to "AR", "number" to "4")
-)
 
 @Composable
 fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: ImageVector) {
@@ -146,19 +137,17 @@ fun TraderBanner(from : UserDto) {
 }
 
 @Composable
-fun Sticker(name: String, number: String) {
-    var isClicked by remember { mutableStateOf(false) }
-
+fun Sticker(name: String, number: String, isSelected: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .background(
-                color = if (isClicked) Red else Color.White,
+                color = if (isSelected) Red else Color.White,
                 shape = RoundedCornerShape(8.dp)
             )
             .border(width = 1.dp, color = Red, shape = RoundedCornerShape(8.dp))
             .padding(6.dp)
             .clip(RoundedCornerShape(8.dp))
-            .clickable { isClicked = !isClicked },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -168,13 +157,13 @@ fun Sticker(name: String, number: String) {
             Text(
                 text = name,
                 fontSize = 13.sp,
-                color = if (isClicked) Color.White else Red,
+                color = if (isSelected) Color.White else Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
             Text(
                 text = number,
                 fontSize = 13.sp,
-                color = if (isClicked) Color.White else Red,
+                color = if (isSelected) Color.White else Red,
                 modifier = Modifier.padding(bottom = 3.dp)
             )
         }
@@ -182,7 +171,14 @@ fun Sticker(name: String, number: String) {
 }
 
 @Composable
-fun TradeSection(traderName: String, albumName: String, message: String, stickers: List<Integer> = emptyList()) {
+fun TradeSection(
+    traderName: String,
+    albumName: String,
+    message: String,
+    stickers: List<Int> = emptyList(),
+    selectedStickers: SnapshotStateList<Int>,
+    onStickerClick: (Int) -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -223,7 +219,9 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
                     Sticker(
                         //name = sticker["name"].toString(),
                         name = "XXX",
-                        number = sticker.toString()
+                        number = sticker.toString(),
+                        isSelected = selectedStickers.contains(sticker),
+                        onClick = { onStickerClick(sticker) }
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                 }
@@ -233,22 +231,38 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
 }
 
 @Composable
-fun ForYouSection(albumName: String, traderName: String, stickers: List<Integer> = emptyList()) {
+fun ForYouSection(
+    albumName: String,
+    traderName: String,
+    stickers: List<Int> = emptyList(),
+    selectedStickers: SnapshotStateList<Int>,
+    onStickerClick: (Int) -> Unit
+) {
     TradeSection(
         traderName = "Vos",
         albumName = albumName,
         message = "${traderName} tiene ${stickers.size} figuritas que te faltan",
-        stickers = stickers
+        stickers = stickers,
+        selectedStickers = selectedStickers,
+        onStickerClick = onStickerClick
     )
 }
 
 @Composable
-fun ForTraderSection(albumName: String, traderName: String, stickers: List<Integer> = emptyList()) {
+fun ForTraderSection(
+    albumName: String,
+    traderName: String,
+    stickers: List<Int> = emptyList(),
+    selectedStickers: SnapshotStateList<Int>,
+    onStickerClick: (Int) -> Unit
+) {
     TradeSection(
         traderName = traderName,
         albumName = albumName,
         message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
-        stickers = stickers
+        stickers = stickers,
+        selectedStickers = selectedStickers,
+        onStickerClick = onStickerClick
     )
 }
 
@@ -287,6 +301,10 @@ fun MoreAlbums() {
 fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeViewModel: TradeViewModel) {
     val trade = tradeViewModel.selectedTrade.value
     Log.d("TraderOptionsScreen", "the trade is: $trade")
+
+    val selectedFromYou = remember { mutableStateListOf<Int>() }
+    val selectedToTrade = remember { mutableStateListOf<Int>() }
+
     Scaffold(
         topBar = { BackButton(navHostController, "Canje") }
     ) { innerPadding ->
@@ -300,14 +318,42 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeV
             ForYouSection(
                 albumName = trade.albumName,
                 traderName = trade.from.username,
-                stickers = trade.stickers
+                stickers = trade.stickers,
+                selectedStickers = selectedFromYou,
+                onStickerClick = { sticker ->
+                    if (selectedFromYou.contains(sticker)) {
+                        selectedFromYou.remove(sticker)
+                    } else {
+                        selectedFromYou.add(sticker)
+                    }
+                }
             )
             ForTraderSection(
                 albumName = trade.albumName,
                 traderName = trade.from.username,
-                stickers = trade.toGive
+                stickers = trade.toGive,
+                selectedStickers = selectedToTrade,
+                onStickerClick = { sticker ->
+                    if (selectedToTrade.contains(sticker)) {
+                        selectedToTrade.remove(sticker)
+                    } else {
+                        selectedToTrade.add(sticker)
+                    }
+                }
             )
             MoreAlbums()
+            Button(
+                onClick = {
+                    Log.d("TradeSubmit", "You selected: $selectedFromYou")
+                    Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
+                    // TODO: Call backend
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp)
+            ) {
+                Text("Confirmar Canje")
+            }
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
