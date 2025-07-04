@@ -141,7 +141,7 @@ fun MapScreen() {
             val matchesSearch = searchText.isBlank() ||
                     kiosk.name.lowercase().removePrefix("kiosco ").contains(searchText.trim().lowercase())
 
-            val withinRadius = distance / 1000 <= radius
+            val withinRadius = userLocation == null || distance / 1000 <= radius
             val meetsRating = kiosk.rating >= rating
             val meetsStock = !hasStock || kiosk.availableUnits > 0
             val meetsOpen = !openNow || isOpen
@@ -174,31 +174,42 @@ fun MapScreen() {
                 if (hasLocationPermission) {
                     try {
                         googleMap.isMyLocationEnabled = true
+                        if (!hasCenteredMap && userLocation == null) {
+                            val fallbackLatLng = LatLng(-34.6037, -58.3816) // CABA
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fallbackLatLng, 12f))
+                        }
+
                         val locationRequest = LocationRequest.Builder(10000)
                             .setPriority(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY)
                             .setMinUpdateIntervalMillis(5000)
                             .build()
+
                         val locationCallback = object : LocationCallback() {
                             override fun onLocationResult(locationResult: LocationResult) {
                                 val location = locationResult.lastLocation ?: return
                                 val latLng = LatLng(location.latitude, location.longitude)
                                 userLocation = latLng
+
                                 if (!hasCenteredMap) {
                                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
                                     hasCenteredMap = true
                                 }
+
                                 fusedLocationClient.removeLocationUpdates(this)
                             }
                         }
+
                         fusedLocationClient.requestLocationUpdates(
                             locationRequest,
                             locationCallback,
                             context.mainLooper
                         )
+
                     } catch (e: SecurityException) {
                         e.printStackTrace()
                     }
                 }
+
             }
         }
 
