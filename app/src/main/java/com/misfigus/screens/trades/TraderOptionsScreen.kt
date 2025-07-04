@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
@@ -42,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.colorspace.WhitePoint
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -50,10 +48,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.misfigus.R
 import com.misfigus.dto.UserDto
 import com.misfigus.navigation.BackButton
-import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import getUserProfilePictureId
@@ -150,7 +146,7 @@ fun TraderBanner(from : UserDto) {
 }
 
 @Composable
-fun Sticker(name: String,number: String) {
+fun Sticker(name: String, number: String) {
     var isClicked by remember { mutableStateOf(false) }
 
     Box(
@@ -186,7 +182,7 @@ fun Sticker(name: String,number: String) {
 }
 
 @Composable
-fun TradeSection(traderName: String, albumName: String, message: String, stickers: List<Map<String, String>> = emptyList()) {
+fun TradeSection(traderName: String, albumName: String, message: String, stickers: List<Integer> = emptyList()) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
@@ -225,8 +221,9 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
             ) {
                 stickers.forEach { sticker ->
                     Sticker(
-                        name = sticker["name"].toString(),
-                        number = sticker["number"].toString()
+                        //name = sticker["name"].toString(),
+                        name = "XXX",
+                        number = sticker.toString()
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                 }
@@ -236,22 +233,22 @@ fun TradeSection(traderName: String, albumName: String, message: String, sticker
 }
 
 @Composable
-fun ForYouSection() {
+fun ForYouSection(albumName: String, traderName: String, stickers: List<Integer> = emptyList()) {
     TradeSection(
         traderName = "Vos",
-        albumName = "Fifa World Cup Qatar 2022",
-        message = "Matías tiene 13 figuritas que te faltan",
-        stickers = matiasStickers
+        albumName = albumName,
+        message = "${traderName} tiene ${stickers.size} figuritas que te faltan",
+        stickers = stickers
     )
 }
 
 @Composable
-fun ForTraderSection() {
+fun ForTraderSection(albumName: String, traderName: String, stickers: List<Integer> = emptyList()) {
     TradeSection(
-        traderName = "Matías",
-        albumName = "Fifa World Cup Qatar 2022",
-        message = "Tenés 6 figuritas que Matías necesita",
-        stickers = myStickers
+        traderName = traderName,
+        albumName = albumName,
+        message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
+        stickers = stickers
     )
 }
 
@@ -299,9 +296,17 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeV
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            TraderBanner(from=trade!!.from)
-            ForYouSection()
-            ForTraderSection()
+            TraderBanner(from = trade!!.from)
+            ForYouSection(
+                albumName = trade.albumName,
+                traderName = trade.from.username,
+                stickers = trade.stickers
+            )
+            ForTraderSection(
+                albumName = trade.albumName,
+                traderName = trade.from.username,
+                stickers = trade.toGive
+            )
             MoreAlbums()
             Spacer(modifier = Modifier.height(32.dp))
         }
