@@ -1,5 +1,8 @@
-package com.misfigus.models
+package com.misfigus.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class KioskDTO(
     val id: String,
     val name: String,
