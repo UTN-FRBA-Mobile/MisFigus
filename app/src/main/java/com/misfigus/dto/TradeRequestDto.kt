@@ -15,3 +15,10 @@ data class TradeRequestDto(
     val seen: Boolean
 )
 
+@Serializable
+data class PossibleTradeDto(
+    val album: Int,
+    val albumName: String,
+    val from: UserDto,
+    val stickers: List<Integer>
+)

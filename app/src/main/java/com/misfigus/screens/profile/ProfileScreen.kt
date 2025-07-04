@@ -202,7 +202,17 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
             confirmButton = {
                 TextButton(onClick = {
                     coroutineScope.launch {
-                        val updated = UserDto(currentUser.email, fullName, username, currentUser.profileImageUrl)
+                        val updated = UserDto(
+                            currentUser.email,
+                            fullName,
+                            username,
+                            currentUser.profileImageUrl,
+                            currentUser.location,
+                            currentUser.shipping,
+                            currentUser.reputation,
+                            currentUser.albums,
+                            currentUser.friends
+                        )
                         val hasChanges = updated.fullName != currentUser.fullName || updated.username != currentUser.username
 
                         if (!hasChanges) {
