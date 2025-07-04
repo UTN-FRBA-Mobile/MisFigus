@@ -35,17 +35,11 @@ import com.misfigus.ui.theme.Red
 
 
 @Composable
-fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
+fun TradingCardItem(tradingCard: TradingCard, currentQuantity: Int, isEditing: Boolean, onClick: () -> Unit = {}, onAdd: () -> Unit, onRemove: () -> Unit,){
     Box(modifier = Modifier.padding(2.dp)) {
-        var totalCartas by remember { mutableStateOf(tradingCard.repeatedQuantity) }
-        var obtained by remember { mutableStateOf(tradingCard.obtained) }
-
-        LaunchedEffect(totalCartas) {
-            obtained = totalCartas > 0
-        }
+        val obtained = currentQuantity > 0
         Card(
-            modifier = Modifier.padding(8.dp).size(width = 100.dp, height = 150.dp)
-                .clickable { onClick },
+            modifier = Modifier.padding(8.dp).size(width = 100.dp, height = 150.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             colors = CardDefaults.cardColors(
                 containerColor = if (obtained) Red else Color.White
@@ -54,15 +48,15 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = tradingCard.number.toString(),
-                    style = MaterialTheme.typography.bodyLarge.copy(
+                    text = "  " + tradingCard.number.toString() + "  ",
+                    style = MaterialTheme.typography.titleMedium.copy(
                         textDecoration = if (obtained) TextDecoration.LineThrough else TextDecoration.None
                     ),
                     color = if (obtained) Color.White else Red
                 )
             }
         }
-        if (totalCartas > 0) {
+        if (currentQuantity > 0) {
             Box(
                 modifier = Modifier
                     .absoluteOffset(x = 85.dp, y = (-2).dp)
@@ -72,44 +66,50 @@ fun TradingCardItem(tradingCard: TradingCard, onClick: () -> Unit = {}){
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = totalCartas.toString(),
+                    text = currentQuantity.toString(),
                     style = MaterialTheme.typography.bodyLarge,
                     color = Red
                 )
             }
 
+            if(isEditing){
+                Box(
+                    modifier = Modifier
+                        .absoluteOffset(x = 0.dp, y = (-2).dp)
+                        .size(30.dp)
+                        .background(Purple, shape = CircleShape)
+                        .border(width = 2.dp, Purple, CircleShape)
+                        .clickable { onRemove() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Remove,
+                        contentDescription = "Delete",
+                        tint = Color.White
+                    )
+
+                }
+            }
+
+        }
+        if(isEditing){
             Box(
                 modifier = Modifier
-                    .absoluteOffset(x = 0.dp, y = (-2).dp)
+                    .absoluteOffset(x = 85.dp, y = 135.dp)
                     .size(30.dp)
                     .background(Purple, shape = CircleShape)
                     .border(width = 2.dp, Purple, CircleShape)
-                    .clickable { totalCartas -= 1 },
+                    .clickable { onAdd() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Remove,
-                    contentDescription = "Delete",
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
                     tint = Color.White
                 )
 
             }
         }
-        Box(
-            modifier = Modifier
-                .absoluteOffset(x = 85.dp, y = 135.dp)
-                .size(30.dp)
-                .background(Purple, shape = CircleShape)
-                .border(width = 2.dp, Purple, CircleShape)
-                .clickable { totalCartas += 1 },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add",
-                tint = Color.White
-            )
 
-        }
     }
 }

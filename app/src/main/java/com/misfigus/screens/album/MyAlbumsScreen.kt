@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.screens.album.AlbumsUiState
+import com.misfigus.screens.album.AlbumsUserUiState
 import com.misfigus.screens.album.CategoriesUiState
 import com.misfigus.ui.theme.Background
 import com.misfigus.ui.theme.Grey
@@ -51,28 +51,28 @@ val progressColors = listOf(
 )
 
 @Composable
-fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState, albumsUiState: AlbumsUiState) {
+fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState, albumsUserUiState: AlbumsUserUiState) {
     Column(modifier = Modifier.padding(20.dp)) {
         Text("Mis Álbumes", style = MaterialTheme.typography.titleLarge, color = Grey)
-        MyCollectionStats(albumsUiState)
+        MyCollectionStats(albumsUserUiState)
         CategoryScreen(navHostController, categoriesUiState)
     }
 }
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun MyCollectionStats(albumsUiState: AlbumsUiState) {
-    when (albumsUiState) {
-        is AlbumsUiState.Loading -> {
+fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
+    when (albumsUserUiState) {
+        is AlbumsUserUiState.Loading -> {
             Text(text = "Api call loading... [GET COUNT BY CATEGORIES]")
         }
 
-        is AlbumsUiState.Error -> {
+        is AlbumsUserUiState.Error -> {
             Text(text = "Api call error [GET COUNT BY CATEGORIES]")
         }
 
-        is AlbumsUiState.Success -> {
-            val albums = albumsUiState.albums
+        is AlbumsUserUiState.Success -> {
+            val albums = albumsUserUiState.albums
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,7 +122,8 @@ fun MyCollectionStats(albumsUiState: AlbumsUiState) {
 
                 albums.forEachIndexed { index, item ->
                     val barColor = progressColors[index % progressColors.size]
-                    var percentage: Float = ((item.tradingCards.size.toFloat()/item.totalCards.toFloat()) * 100)
+                    val obtainedCards = item.tradingCards.filter { card -> card.obtained }.size
+                    var percentage: Float = ((obtainedCards.toFloat()/item.totalCards.toFloat()) * 100)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier

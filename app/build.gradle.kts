@@ -80,4 +80,6 @@ dependencies {
     // Kotlin serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // HTTP logging
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }

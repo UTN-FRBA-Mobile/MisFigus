@@ -2,8 +2,11 @@ package com.misfigus.network
 
 import com.misfigus.dto.AlbumCategoryCountDto
 import com.misfigus.models.Album
+import com.misfigus.models.trades.TradingCard
+import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
+import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AlbumApiService {
@@ -17,6 +20,19 @@ interface AlbumApiService {
     @GET("albums/{albumId}")
     suspend fun getAlbum(@Query("albumId") albumId: String? = null): Album
 
-    @GET("albums")
+    @GET("albums/v1")
     suspend fun getAlbums(): List<Album>
+
+    @GET("albums/{albumId}/{email}")
+    suspend fun getUserAlbum(@Query("albumId") albumId: String? = null, @Query("email") email: String? = null): Album
+
+    @GET("albums/v2/{email}")
+    suspend fun getUserAlbums(@Query("email") email: String? = null): List<Album>
+
+    @GET("albums/category/{email}")
+    suspend fun getUserAlbumsCategory(@Query("categoryId") categoryId: String? = null, @Query("email") email: String? = null): List<Album>
+
+    @PUT("albums/{albumId}/{email}")
+    suspend fun updateUserCardsForAlbum(@Path("albumId") albumId: String? = null, @Path("email") email: String? = null, @Body tradingCards: List<TradingCard>): Album
+
 }
