@@ -26,15 +26,20 @@ import androidx.compose.material.icons.outlined.LocalShipping
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -48,6 +53,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.misfigus.dto.PossibleTradeDto
 import com.misfigus.dto.UserDto
 import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Red
@@ -248,23 +254,6 @@ fun ForYouSection(
     )
 }
 
-@Composable
-fun ForTraderSection(
-    albumName: String,
-    traderName: String,
-    stickers: List<Int> = emptyList(),
-    selectedStickers: SnapshotStateList<Int>,
-    onStickerClick: (Int) -> Unit
-) {
-    TradeSection(
-        traderName = traderName,
-        albumName = albumName,
-        message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
-        stickers = stickers,
-        selectedStickers = selectedStickers,
-        onStickerClick = onStickerClick
-    )
-}
 
 @Composable
 fun MoreAlbums() {
@@ -295,6 +284,65 @@ fun MoreAlbums() {
             )
         }
     }
+}
+
+@Composable
+fun ForTraderSection(
+    albumName: String,
+    traderName: String,
+    stickers: List<Int> = emptyList(),
+    selectedStickers: SnapshotStateList<Int>,
+    onStickerClick: (Int) -> Unit
+) {
+    TradeSection(
+        traderName = traderName,
+        albumName = albumName,
+        message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
+        stickers = stickers,
+        selectedStickers = selectedStickers,
+        onStickerClick = onStickerClick
+    )
+}
+
+@Composable
+fun ConfirmTradeButton(
+    selectedFromYou: List<Int>,
+    selectedToTrade: List<Int>,
+    trade: PossibleTradeDto
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Canje enviado") },
+            text = { Text("Tu solicitud de canje fue enviada a ${trade.from.username}.") }
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Button(
+            onClick = {
+                Log.d("TradeSubmit", "You selected: $selectedFromYou")
+                Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
+                // TODO: Call backend here
+                showDialog = true
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Confirmar Canje")
+        }
+    }
+
 }
 
 @Composable
@@ -342,18 +390,11 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeV
                 }
             )
             MoreAlbums()
-            Button(
-                onClick = {
-                    Log.d("TradeSubmit", "You selected: $selectedFromYou")
-                    Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
-                    // TODO: Call backend
-                },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp)
-            ) {
-                Text("Confirmar Canje")
-            }
+            ConfirmTradeButton(
+                selectedFromYou = selectedFromYou,
+                selectedToTrade = selectedToTrade,
+                trade = trade
+            )
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
