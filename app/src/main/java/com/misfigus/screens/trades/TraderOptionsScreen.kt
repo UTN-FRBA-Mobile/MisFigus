@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.ThumbDown
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -59,8 +60,21 @@ import com.misfigus.dto.UserDto
 import com.misfigus.navigation.BackButton
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
+import com.misfigus.ui.theme.Purple
 import getUserProfilePictureId
 
+fun getAlbumInitials(albumName: String): String {
+    val words = albumName.trim().split("\\s+".toRegex())
+    return if (words.size >= 2) {
+        "${words[0].first()}${words[1].first()}".uppercase()
+    } else if (words.isNotEmpty() && words[0].length >= 2) {
+        words[0].take(2).uppercase()
+    } else if (words.isNotEmpty()) {
+        words[0].uppercase()
+    } else {
+        "XX"
+    }
+}
 
 @Composable
 fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: ImageVector) {
@@ -224,8 +238,7 @@ fun TradeSection(
             ) {
                 stickers.forEach { sticker ->
                     Sticker(
-                        //name = sticker["name"].toString(),
-                        name = "XXX",
+                        name = getAlbumInitials(albumName),
                         number = sticker.toString(),
                         isSelected = selectedStickers.contains(sticker),
                         onClick = { onStickerClick(sticker) }
@@ -306,9 +319,11 @@ fun ConfirmTradeButton(
                 // TODO: Call backend here
                 showDialog = true
             },
-            modifier = Modifier.padding(16.dp)
+            colors = ButtonDefaults.buttonColors(containerColor = Purple),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(end = 16.dp, top = 20.dp)
         ) {
-            Text("Confirmar Canje")
+            Text("Confirmar canje", color = Color.White, fontSize = 13.sp)
         }
     }
 
