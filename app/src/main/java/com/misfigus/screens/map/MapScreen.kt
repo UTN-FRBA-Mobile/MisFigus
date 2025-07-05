@@ -51,11 +51,10 @@ import kotlin.math.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import com.example.misfigus.R
-
+import com.misfigus.dto.mappings.KioskAssetsMapper
 fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val earthRadius = 6371e3
     val dLat = Math.toRadians(lat2 - lat1)
@@ -170,7 +169,9 @@ fun MapScreen() {
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }) {
+
             mapView.getMapAsync { googleMap: GoogleMap ->
+                googleMap.uiSettings.isMyLocationButtonEnabled = false
                 kiosks.forEach { kiosk ->
                     val position = LatLng(kiosk.coordinates.latitude, kiosk.coordinates.longitude)
                     googleMap.addMarker(
@@ -358,7 +359,15 @@ fun MapScreen() {
                 }
             }
         }
+
+
         kioskDetailShown?.let { kiosk ->
+            val backgroundImage = remember(kiosk.name) {
+                KioskAssetsMapper.getBackgroundImage(context, kiosk.name)
+            }
+            val kiosqueroImage = remember(kiosk.name) {
+                KioskAssetsMapper.getKiosqueroImage(context, kiosk.name)
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -383,7 +392,7 @@ fun MapScreen() {
                                 .height(160.dp)
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.kiosco_background),
+                                painter = painterResource(id = backgroundImage),
                                 contentDescription = "Foto del kiosco",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
@@ -400,7 +409,7 @@ fun MapScreen() {
                                     .border(2.dp, Color.White, CircleShape)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.kiosquero),
+                                    painter = painterResource(id = kiosqueroImage),
                                     contentDescription = "Foto del responsable",
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -435,68 +444,64 @@ fun MapScreen() {
 
                         }
 
-                            Column(
+                        Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 16.dp)
                                 .offset(y = (-40).dp)
+                        ) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(30.dp)) // Espacio debajo de la imagen
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 16.dp), // margen a la derecha
+                                contentAlignment = Alignment.CenterEnd
                             ) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Spacer(modifier = Modifier.height(8.dp))
-                                Spacer(modifier = Modifier.height(30.dp)) // Espacio debajo de la imagen
-
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(end = 16.dp), // margen a la derecha
-                                    contentAlignment = Alignment.CenterEnd
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        repeat(5) { index ->
-                                            val color = if (index < kiosk.rating.toInt()) Color(0xFF6A1B9A) else Color.LightGray
-                                            Icon(
-                                                Icons.Default.Star,
-                                                contentDescription = null,
-                                                tint = color,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "${kiosk.rating}",
-                                            fontSize = 14.sp,
-                                            color = Color(0xFF6A1B9A)
+                                    repeat(5) { index ->
+                                        val color = if (index < kiosk.rating.toInt()) Color(0xFF6A1B9A) else Color.LightGray
+                                        Icon(
+                                            Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = color,
+                                            modifier = Modifier.size(16.dp)
                                         )
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Button(
-                                            onClick = { showRatingDialog = true },
-                                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A)),
-                                            modifier = Modifier
-                                                .width(70.dp) // ancho fijo
-                                                .height(32.dp), // alto igual que antes
-                                            shape = RoundedCornerShape(8.dp), // cuadrado con bordes levemente redondeados
-                                            contentPadding = PaddingValues(0.dp)
-                                        ) {
-                                            Text(
-                                                text = "Valorar",
-                                                color = Color.White,
-                                                fontSize = 14.sp,
-                                                textAlign = TextAlign.Center,
-                                                modifier = Modifier.fillMaxWidth()
-                                            )
-                                        }
-
-
-
                                     }
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "${kiosk.rating}",
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF6A1B9A)
+                                    )
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Button(
+                                        onClick = { showRatingDialog = true },
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A)),
+                                        modifier = Modifier
+                                            .width(70.dp) // ancho fijo
+                                            .height(32.dp), // alto igual que antes
+                                        shape = RoundedCornerShape(8.dp), // cuadrado con bordes levemente redondeados
+                                        contentPadding = PaddingValues(0.dp)
+                                    ) {
+                                        Text(
+                                            text = "Valorar",
+                                            color = Color.White,
+                                            fontSize = 14.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+
                                 }
+                            }
                             Spacer(modifier = Modifier.height(16.dp))
                             Text("Hoy abierto hasta las ${kiosk.openUntil} hs", color = Color.Red)
-                            Spacer(modifier = Modifier.height(8.dp))
                             Text("Horario semanal:", fontWeight = FontWeight.Bold)
-
                             val days = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
                             val todayIndex = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).dayOfWeek.value
 
@@ -545,14 +550,21 @@ fun MapScreen() {
 
                             Spacer(modifier = Modifier.height(12.dp))
                             Text("🛒 Precio por paquete: \$${kiosk.price}", color = Color.Red)
-                            Spacer(modifier = Modifier.height(12.dp))
 
-                            TextButton(
-                                onClick = { kioskDetailShown = null },
-                                modifier = Modifier.align(Alignment.End)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Volver", color = Color(0xFF6A1B9A))
+                                Text(
+                                    text = "Volver",
+                                    color = Color(0xFF6A1B9A), // violeta
+                                    fontSize = 14.sp
+                                )
+
                             }
+
                         }
                     }
                 }
@@ -575,7 +587,7 @@ fun MapScreen() {
 
                     Spacer(Modifier.height(12.dp))
                     Text("Radio (km)", fontWeight = FontWeight.Bold, color = Color.DarkGray)
-                     BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)) {
+                    BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)) {
                         val sliderWidth = maxWidth
                         val thumbPosition = (radius - 1f) / 49f * sliderWidth.value
 
@@ -733,24 +745,62 @@ fun MapScreen() {
         }
     }
     if (showRatingDialog && kioskDetailShown != null) {
+        val backgroundImage = KioskAssetsMapper.getBackgroundImage(context, kioskDetailShown!!.name)
+        val kiosqueroImage = KioskAssetsMapper.getKiosqueroImage(context, kioskDetailShown!!.name)
+
         Dialog(onDismissRequest = { showRatingDialog = false }) {
             Card(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 450.dp) // Aumentamos la altura mínima
-                    .padding(24.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                    .heightIn(min = 500.dp)
+
             ) {
                 Box {
+                    // Imagen de fondo dinámica del kiosco
+                    Image(
+                        painter = painterResource(id = backgroundImage),
+                        contentDescription = "Fondo del kiosco",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(140.dp)
+                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                    )
+
+                    // Imagen del responsable en círculo centrado
+                    Image(
+                        painter = painterResource(id = kiosqueroImage),
+                        contentDescription = "Responsable",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(80.dp)
+                            .align(Alignment.TopCenter)
+                            .offset(y = 100.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.White, CircleShape)
+                    )
+
+                    // Botón volver
+                    IconButton(
+                        onClick = { showRatingDialog = false },
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Volver",
+                            tint = Color.White
+                        )
+                    }
+
+                    // Contenido principal
                     Column(
                         modifier = Modifier
-                            .padding(top = 80.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
-
+                            .padding(top = 180.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                             .fillMaxWidth()
                     ) {
-                        Spacer(modifier = Modifier.height(24.dp))
-
                         Text(
                             text = kioskDetailShown!!.name,
                             style = MaterialTheme.typography.titleLarge,
@@ -761,6 +811,7 @@ fun MapScreen() {
                                 .align(Alignment.CenterHorizontally)
                         )
 
+                        // Estrellas
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -780,23 +831,25 @@ fun MapScreen() {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
+                        // Comentario
                         OutlinedTextField(
                             value = ratingComment,
                             onValueChange = {
-                                if (it.length <= 320) ratingComment = it
+                                if (it.length <= 250) ratingComment = it
                             },
-                            label = { Text("Comentario") },
+                            label = { Text("Contanos tu opinion") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(140.dp),
                             maxLines = 6,
                             supportingText = {
-                                Text("${ratingComment.length} / 320", modifier = Modifier.align(Alignment.End))
+                                Text("${ratingComment.length} / 250 caracteres usados", modifier = Modifier.align(Alignment.End))
                             }
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
 
+                        // Botón Enviar
                         Button(
                             onClick = {
                                 showRatingDialog = false
@@ -808,33 +861,6 @@ fun MapScreen() {
                         ) {
                             Text("Enviar", color = Color.White)
                         }
-                    }
-
-                    // Imagen del responsable centrada
-                    Image(
-                        painter = painterResource(id = R.drawable.kiosquero),
-                        contentDescription = "Responsable",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(100.dp) // antes era 80.dp
-                            .align(Alignment.TopCenter)
-                            .offset(y = (0).dp)
-                            .clip(CircleShape)
-                            .border(2.dp, Color.White, CircleShape)
-                    )
-
-                    // Botón cerrar
-                    IconButton(
-                        onClick = { showRatingDialog = false },
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Volver",
-                            tint = Color.Gray
-                        )
                     }
                 }
             }
