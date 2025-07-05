@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.dto.mappings.TradeRequestMapper
 import com.misfigus.models.trades.TradeRequest
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
@@ -40,9 +39,8 @@ fun TradeRequestsScreen(
     LaunchedEffect(Unit) {
         try {
             val api = TradeApi.getService(context)
-            val fetched = api.getAllTradeRequests()
-            fetched.forEach { println(it) }
-            allRequests = fetched.map(TradeRequestMapper::fromDto)
+            val allRequests = api.getAllTradeRequests()
+            allRequests.forEach { println(it) }
         } catch (e: Exception) {
             println("ERROR al cargar solicitudes")
             e.printStackTrace()
@@ -104,7 +102,7 @@ fun TradeRequestsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("No hay solicitudes ${selectedTab.lowercase()}.")
+                    Text("No hay solicitudes.")
                 }
             } else {
                 LazyVerticalGrid(

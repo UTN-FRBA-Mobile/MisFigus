@@ -44,24 +44,31 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.misfigus.dto.PossibleTradeDto
+import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.UserDto
+import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
+import com.misfigus.network.AuthApi
+import com.misfigus.network.TradeApi
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
 import getUserProfilePictureId
+import kotlinx.coroutines.launch
 
 fun getAlbumInitials(albumName: String): String {
     val words = albumName.trim().split("\\s+".toRegex())
@@ -293,6 +300,8 @@ fun ConfirmTradeButton(
     trade: PossibleTradeDto
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     if (showDialog) {
         AlertDialog(
@@ -316,8 +325,32 @@ fun ConfirmTradeButton(
             onClick = {
                 Log.d("TradeSubmit", "You selected: $selectedFromYou")
                 Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
-                // TODO: Call backend here
-                showDialog = true
+                
+                coroutineScope.launch {
+                    try {
+                        // Obtener el usuario actual
+                        val currentUser = AuthApi.getService(context).getCurrentUser()
+                        
+                        // Crear el TradeRequestDto
+                        val tradeRequest = TradeRequestDto(
+                            album = trade.album,
+                            albumName = trade.albumName,
+                            from = currentUser,
+                            to = trade.from,
+                            stickers = selectedFromYou,
+                            toGive = selectedToTrade,
+                            status = TradeRequestStatus.PENDING
+                        )
+                        
+                        // Enviar la solicitud
+                        TradeApi.getService(context).postNewTradeRequest(tradeRequest)
+                        
+                        showDialog = true
+                    } catch (e: Exception) {
+                        println("ERROR al enviar solicitud")
+                        e.printStackTrace()
+                    }
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Purple),
             shape = RoundedCornerShape(12.dp),
