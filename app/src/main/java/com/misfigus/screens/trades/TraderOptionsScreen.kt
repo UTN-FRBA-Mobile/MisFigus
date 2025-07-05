@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -254,38 +255,6 @@ fun ForYouSection(
     )
 }
 
-
-@Composable
-fun MoreAlbums() {
-    Card(
-        modifier = Modifier
-            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = "Otros álbumes",
-                fontSize = 30.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 3.dp)
-            )
-            Text(
-                text = "Matías tiene figuritas de otros álbumes que te faltan, ¡mirá!",
-                fontSize = 13.sp,
-                color = Grey,
-                modifier = Modifier.padding(bottom = 3.dp)
-            )
-        }
-    }
-}
-
 @Composable
 fun ForTraderSection(
     albumName: String,
@@ -363,6 +332,15 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeV
                 .verticalScroll(rememberScrollState())
         ) {
             TraderBanner(from = trade!!.from)
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Seleccioná las figuritas",
+                style = MaterialTheme.typography.titleMedium,
+                color = Grey,
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+                    .fillMaxWidth()
+            )
             ForYouSection(
                 albumName = trade.albumName,
                 traderName = trade.from.username,
@@ -389,7 +367,6 @@ fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeV
                     }
                 }
             )
-            MoreAlbums()
             ConfirmTradeButton(
                 selectedFromYou = selectedFromYou,
                 selectedToTrade = selectedToTrade,
