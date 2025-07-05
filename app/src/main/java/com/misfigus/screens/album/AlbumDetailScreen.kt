@@ -2,6 +2,7 @@ package com.misfigus.screens.album
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,13 +26,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,7 +47,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.misfigus.components.TradingCardItem
 import com.misfigus.models.Album
+import com.misfigus.models.CardFilterTab
 import com.misfigus.navigation.BackButton
+import com.misfigus.ui.theme.LightPurple
 import com.misfigus.ui.theme.Purple
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -59,6 +62,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
     var isEditing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var modifiedCards by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
+    var selectedTab by remember { mutableStateOf(CardFilterTab.ALL) }
 
     LaunchedEffect(Unit) {
         viewModel.getUserAlbum(initialAlbum.id.toString())
@@ -123,6 +127,29 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         modifier = Modifier.padding(bottom = 5.dp)
                     )
 
+                    TabRow(
+                        selectedTabIndex = selectedTab.ordinal,
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp))
+                    ) {
+                        CardFilterTab.entries.forEachIndexed { index, tab ->
+                            Tab(
+                                selected = selectedTab.ordinal == index,
+                                onClick = { selectedTab = tab },
+                                text = {
+                                    Text(
+                                        tab.name,
+                                        color = if (selectedTab == tab) Color.White else MaterialTheme.colorScheme.onSurface
+                                    )
+                                },
+                                modifier = if (selectedTab == tab) Modifier.background(Purple).clip(RoundedCornerShape(16.dp)) else Modifier.background(LightPurple).clip(RoundedCornerShape(16.dp))
+                            )
+                        }
+                    }
+                    var filteredCards = when (selectedTab) {
+                        CardFilterTab.ALL -> album.tradingCards
+                        CardFilterTab.MISSING -> album.tradingCards.filter { !it.obtained }
+                        CardFilterTab.REPEATED -> album.tradingCards.filter { it.repeatedQuantity > 1 }
+                    }
                     SearchBar(
                         query = searchQuery,
                         onQueryChange = { searchQuery = it },
@@ -135,7 +162,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
-                        val filteredCards = album.tradingCards.filter { it.number.toString()?.contains(searchQuery, ignoreCase = true) == true}
+                        filteredCards = if("".equals(searchQuery)) filteredCards else filteredCards.filter { it.number.toString()?.contains(searchQuery, ignoreCase = true) == true}
                         items(filteredCards) { tradeCard ->
                             val currentQuantity = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
 
