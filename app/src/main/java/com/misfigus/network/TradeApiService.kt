@@ -2,6 +2,7 @@ package com.misfigus.network
 
 import com.misfigus.dto.PossibleTradeDto
 import com.misfigus.dto.TradeRequestDto
+import com.misfigus.models.trades.TradeRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -22,5 +23,8 @@ interface TradeApiService {
 
     @PUT("trade-requests/reject/{id}")
     suspend fun rejectTradeRequest(@Path("id") id: UUID)
+
+    @PUT("trade-requests/accept")
+    suspend fun acceptTradeRequest(@Body tradeRequest: TradeRequestDto)
 
 }
