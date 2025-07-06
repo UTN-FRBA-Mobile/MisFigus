@@ -28,10 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.misfigus.dto.TradeRequestDto
 import com.misfigus.navigation.BackButton
+import com.misfigus.network.TradeApi
 import com.misfigus.screens.trades.ForTraderSection
 import com.misfigus.screens.trades.ForYouSection
 import com.misfigus.screens.trades.TradeViewModel
@@ -47,6 +50,8 @@ import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Red
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 @Composable
 fun SummaryToMe(trade: TradeRequestDto) {
@@ -134,7 +139,10 @@ fun Summary(firstCardText: String, secondCardText: String) {
 }
 
 @Composable
-fun AcceptOrRejectButton() {
+fun AcceptOrRejectButton(tradeId: UUID) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -142,7 +150,17 @@ fun AcceptOrRejectButton() {
         horizontalArrangement = Arrangement.End
     ) {
         Button(
-            onClick = {  },
+            onClick = {
+                coroutineScope.launch {
+                    try {
+                        val api = TradeApi.getService(context)
+                        api.rejectTradeRequest(tradeId)
+                    } catch (e: Exception) {
+                        println("ERROR al rechazar solicitud")
+                        e.printStackTrace()
+                    }
+                }
+            },
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier.padding(end = 8.dp)
@@ -179,7 +197,7 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
             ) {
                 if (trade.from.email.equals(sessionViewModel.user?.email)) {
                     // yo envie la solicitud
-                    AcceptOrRejectButton()
+                    AcceptOrRejectButton(tradeId = UUID.fromString(trade.id))
                     Spacer(modifier = Modifier.height(20.dp))
                 }
                 TraderBanner(from = trade.to)
