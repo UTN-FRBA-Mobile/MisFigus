@@ -1,8 +1,15 @@
 package com.misfigus.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -46,8 +53,6 @@ import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import com.misfigus.ui.theme.Purple
 
-
-// cada pestaña de la barra de navegacion
 sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object Presentation : Screen("presentation")
     data object Login : Screen("login")
@@ -102,6 +107,15 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
     )
 
     Scaffold(
+        contentWindowInsets = WindowInsets.statusBars,
+        topBar = {
+            Spacer(
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .fillMaxWidth()
+                    .height(WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
+            )
+        },
         bottomBar = {
             if (bottomBarBaseRoutes.any { matchesRoute(currentRoute, it) }) {
                 NavigationBar(containerColor = Color.White) {
