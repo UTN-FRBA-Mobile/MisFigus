@@ -25,7 +25,7 @@ Llevá el control total de tus álbumes, organizá tus repetidas y encontrá dó
 
 - Activá tu ubicación y descubrí kioscos que venden las figuritas que necesitás.
 - Consultá horarios, dirección y stock actualizado (¡evitá caminatas innecesarias!).
-- Marcá tus kioscos favoritos para volver rápido cuando quieras.
+- Encontrá fácilmente los kioscos mejor valorados por otros usuarios.
 
 ### 🔔 Mantenete al día
 
