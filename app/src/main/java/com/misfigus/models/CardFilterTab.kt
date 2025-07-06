@@ -1,6 +1,6 @@
 package com.misfigus.models
 
-enum class CardFilterTab(label: String) {
+enum class CardFilterTab(val label: String) {
 
     ALL("Todas"),
     MISSING("Me faltan"),

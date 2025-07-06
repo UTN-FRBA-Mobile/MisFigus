@@ -1,8 +1,8 @@
 package com.misfigus.screens.album
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,14 +21,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,11 +60,13 @@ import com.misfigus.ui.theme.Purple
 fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,  viewModel: AlbumsViewModel) {
 
     val albumUserUiState = viewModel.albumUserUiState
+    val context = LocalContext.current
 
     var isEditing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var modifiedCards by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
     var selectedTab by remember { mutableStateOf(CardFilterTab.ALL) }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getUserAlbum(initialAlbum.id.toString())
@@ -82,17 +86,20 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                     BackButton(navHostController, "Albumes - ${initialAlbum.category.spanishDesc}")
                 },
                 actions = {
-                    editButton(isEditing = isEditing){
-                        if (isEditing) {
-                            if (modifiedCards.isNotEmpty()) {
-                                if (albumUserUiState is AlbumUserUiState.Success) {
-                                    viewModel.updateUserCards(albumUserUiState.album, modifiedCards.toMap())
+                    editButton(
+                        isEditing = isEditing,
+                        onToggleEdit = {
+                            if (isEditing) {
+                                if (modifiedCards.isNotEmpty()) {
+                                    showDialog = true
+                                } else {
+                                    isEditing = false
                                 }
-                                modifiedCards = emptyMap()
+                            } else {
+                                isEditing = true
                             }
                         }
-                        isEditing = !isEditing
-                    }
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background
@@ -137,8 +144,9 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                                 onClick = { selectedTab = tab },
                                 text = {
                                     Text(
-                                        tab.name,
-                                        color = if (selectedTab == tab) Color.White else MaterialTheme.colorScheme.onSurface
+                                        tab.label,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = if (selectedTab == tab) Color.White else Purple
                                     )
                                 },
                                 modifier = if (selectedTab == tab) Modifier.background(Purple).clip(RoundedCornerShape(16.dp)) else Modifier.background(LightPurple).clip(RoundedCornerShape(16.dp))
@@ -187,6 +195,39 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
             }
 
         }
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = {
+                    Text(text = "¿Seguro que desea proceder?",
+                        style = MaterialTheme.typography.bodyLarge)
+                },
+                text = {
+                    Text("Confirme si quiere guardar los cambios realizados")
+                },
+                confirmButton = {
+                    TextButton(onClick = {
+                        if (albumUserUiState is AlbumUserUiState.Success) {
+                            viewModel.updateUserCards(albumUserUiState.album, modifiedCards.toMap())
+                            Toast.makeText(context, "Cambios guardados correctamente", Toast.LENGTH_SHORT).show()
+                        }
+                        modifiedCards = emptyMap()
+                        showDialog = false
+                        isEditing = false
+                    }) {
+                        Text("Guardar")
+
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        showDialog = false
+                    }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -209,12 +250,10 @@ fun editButton(isEditing: Boolean, onToggleEdit: () -> Unit) {
             color = Color.White
         )
         Spacer(modifier = Modifier.width(6.dp))
-        IconButton(onClick = {}) { // TODO add screen
-            Icon(
-                imageVector = if (!isEditing) Icons.Outlined.Edit else Icons.Outlined.Save,
-                contentDescription = "Edit",
-                tint = Color.White
-            )
-        }
+        Icon(
+            imageVector = if (!isEditing) Icons.Outlined.Edit else Icons.Outlined.Save,
+            contentDescription = "Edit",
+            tint = Color.White
+        )
     }
 }
