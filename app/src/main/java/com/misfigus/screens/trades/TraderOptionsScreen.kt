@@ -44,24 +44,31 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.misfigus.dto.PossibleTradeDto
+import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.UserDto
+import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
+import com.misfigus.network.AuthApi
+import com.misfigus.network.TradeApi
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
 import getUserProfilePictureId
+import kotlinx.coroutines.launch
 
 fun getAlbumInitials(albumName: String): String {
     val words = albumName.trim().split("\\s+".toRegex())
@@ -100,7 +107,7 @@ fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: Image
 fun TraderBanner(from : UserDto) {
     Card(
         modifier = Modifier
-            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -115,7 +122,7 @@ fun TraderBanner(from : UserDto) {
                 fontSize = 30.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 3.dp)
+                modifier = Modifier.padding(bottom = 20.dp)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -146,7 +153,7 @@ fun TraderBanner(from : UserDto) {
                     val reputation = from.reputation
                     val text = if (reputation == "good") "Buena" else "Mala"
                     TextWithIcon(
-                        text = " ${text} reputación",
+                        text = "${text} reputación",
                         textColor = Grey,
                         imageColor = Grey,
                         image = if (reputation == "good") Icons.Outlined.ThumbUp else Icons.Outlined.ThumbDown
@@ -293,6 +300,8 @@ fun ConfirmTradeButton(
     trade: PossibleTradeDto
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     if (showDialog) {
         AlertDialog(
@@ -316,8 +325,28 @@ fun ConfirmTradeButton(
             onClick = {
                 Log.d("TradeSubmit", "You selected: $selectedFromYou")
                 Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
-                // TODO: Call backend here
-                showDialog = true
+                
+                coroutineScope.launch {
+                    try {
+                        val currentUser = AuthApi.getService(context).getCurrentUser()
+                        
+                        val tradeRequest = TradeRequestDto(
+                            album = trade.album,
+                            albumName = trade.albumName,
+                            from = trade.from,
+                            to = currentUser,
+                            stickers = selectedFromYou,
+                            toGive = selectedToTrade,
+                            status = TradeRequestStatus.PENDING
+                        )
+                        
+                        TradeApi.getService(context).postNewTradeRequest(tradeRequest)
+                        showDialog = true
+                    } catch (e: Exception) {
+                        println("ERROR al enviar solicitud")
+                        e.printStackTrace()
+                    }
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = Purple),
             shape = RoundedCornerShape(12.dp),
@@ -330,7 +359,7 @@ fun ConfirmTradeButton(
 }
 
 @Composable
-fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeViewModel: TradeViewModel) {
+fun TraderOptionsScreen(navHostController: NavHostController, tradeViewModel: TradeViewModel) {
     val trade = tradeViewModel.selectedTrade.value
     Log.d("TraderOptionsScreen", "the trade is: $trade")
 

@@ -1,7 +1,5 @@
 package com.misfigus.screens.trades
 
-import android.util.Log
-import com.example.misfigus.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,10 +43,10 @@ import getUserProfilePictureId
 fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
     Card(
         modifier = Modifier
-            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+            .padding(start = 16.dp, top = 20.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Column {
             Row(
@@ -80,7 +78,7 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
             ) {
                 Icon(Icons.Outlined.Error, contentDescription = null, tint = Red)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("¡Tienes $totalTrades canjes en tu zona!", fontSize = 13.sp, color = Red)
+                Text("¡Tenés $totalTrades canjes en tu zona!", fontSize = 13.sp, color = Red)
             }
         }
     }
@@ -132,7 +130,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tr
             }
             IconButton(onClick = {
                 tradeViewModel.selectedTrade.value = trade
-                navHostController.navigate("trader/{1}")
+                navHostController.navigate("trader")
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
