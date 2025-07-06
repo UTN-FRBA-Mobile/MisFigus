@@ -331,6 +331,7 @@ fun ConfirmTradeButton(
                         val currentUser = AuthApi.getService(context).getCurrentUser()
                         
                         val tradeRequest = TradeRequestDto(
+                            id = "",
                             album = trade.album,
                             albumName = trade.albumName,
                             from = trade.from,

@@ -37,8 +37,9 @@ import getUserProfilePictureId
 @Composable
 fun TradeRequestCard(
     request: TradeRequestDto,
+    profilePictureId: Int,
+    userName: String,
     subtitle: String,
-    isPendingAndUnseen: Boolean,
     onClick: () -> Unit
 ) {
     Row(
@@ -52,38 +53,34 @@ fun TradeRequestCard(
     ) {
         Box {
             Image(
-                painter = painterResource(id = getUserProfilePictureId(request.to.username)),
+                painter = painterResource(id = profilePictureId),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .width(40.dp)
                     .height(40.dp),
                 contentScale = ContentScale.Crop
             )
-
-            if (isPendingAndUnseen) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .align(Alignment.TopEnd)
-                        .offset(x = 2.dp, y = (-2).dp)
-                        .background(MaterialTheme.colorScheme.primary, CircleShape)
-                )
-            }
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 2.dp, y = (-2).dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            )
         }
 
         Spacer(modifier = Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = request.to.email.split("@")[0].replaceFirstChar { it.uppercase() },
+                text = userName,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
                 text = subtitle,
-                fontSize = 14.sp,
-                color = if (isPendingAndUnseen) MaterialTheme.colorScheme.primary else Color.Gray
+                fontSize = 14.sp
             )
         }
 
@@ -204,35 +201,80 @@ fun TradeRequestsScreen(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     items(filteredRequests) { request ->
-                        val subtitle = when (selectedTab) {
-                            "Enviadas" -> when (request.status) {
-                                TradeRequestStatus.ACCEPTED -> "Aceptó mi solicitud de canje"
-                                TradeRequestStatus.REJECTED -> "Rechazó mi solicitud de canje"
-                                TradeRequestStatus.PENDING -> "La solicitud enviada está pendiente"
+                        val (profilePictureId, userName, subtitle) = when (selectedTab) {
+                            "Enviadas" -> {
+                                val targetUser = request.to
+                                when (request.status) {
+                                    TradeRequestStatus.ACCEPTED -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
+                                        "Aceptó mi solicitud de canje"
+                                    )
+                                    TradeRequestStatus.REJECTED -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
+                                        "Rechazó mi solicitud de canje"
+                                    )
+                                    TradeRequestStatus.PENDING -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
+                                        "La solicitud enviada está pendiente"
+                                    )
+                                }
                             }
-                            "Recibidas" -> when (request.status) {
-                                TradeRequestStatus.ACCEPTED -> "Aceptaste la solicitud de canje"
-                                TradeRequestStatus.REJECTED -> "Rechazaste la solicitud de canje"
-                                TradeRequestStatus.PENDING -> "Tienes una solicitud pendiente"
+                            "Recibidas" -> {
+                                val sourceUser = request.from
+                                when (request.status) {
+                                    TradeRequestStatus.ACCEPTED -> Triple(
+                                        getUserProfilePictureId(sourceUser.username),
+                                        sourceUser.fullName,
+                                        "Aceptaste la solicitud de canje"
+                                    )
+                                    TradeRequestStatus.REJECTED -> Triple(
+                                        getUserProfilePictureId(sourceUser.username),
+                                        sourceUser.fullName,
+                                        "Rechazaste la solicitud de canje"
+                                    )
+                                    TradeRequestStatus.PENDING -> Triple(
+                                        getUserProfilePictureId(sourceUser.username),
+                                        sourceUser.fullName,
+                                        "Tenés una solicitud pendiente"
+                                    )
+                                }
                             }
                             "Todas" -> {
                                 val isSender = request.from.email == currentUserEmail
+                                val targetUser = if (isSender) request.to else request.from
                                 when (request.status) {
-                                    TradeRequestStatus.ACCEPTED ->
+                                    TradeRequestStatus.ACCEPTED -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
                                         if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
-                                    TradeRequestStatus.REJECTED ->
+                                    )
+                                    TradeRequestStatus.REJECTED -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
                                         if (isSender) "Rechazó mi solicitud de canje" else "Rechazaste la solicitud de canje"
-                                    TradeRequestStatus.PENDING ->
-                                        if (isSender) "La solicitud enviada está pendiente" else "Tienes una solicitud pendiente"
+                                    )
+                                    TradeRequestStatus.PENDING -> Triple(
+                                        getUserProfilePictureId(targetUser.username),
+                                        targetUser.fullName,
+                                        if (isSender) "La solicitud enviada está pendiente" else "Tenés una solicitud pendiente"
+                                    )
                                 }
                             }
-                            else -> ""
+                            else -> Triple(
+                                getUserProfilePictureId("unknown"),
+                                "Usuario desconocido",
+                                ""
+                            )
                         }
 
                         TradeRequestCard(
                             request = request,
+                            profilePictureId = profilePictureId,
+                            userName = userName,
                             subtitle = subtitle,
-                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING,
                             onClick = {
                                 tradeViewModel.selectedTradeRequest.value = request
                                 navHostController.navigate("trade_request_detail")

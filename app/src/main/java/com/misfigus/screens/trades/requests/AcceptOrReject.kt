@@ -50,13 +50,13 @@ import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Red
-import kotlinx.coroutines.launch
 import java.util.UUID
+import kotlinx.coroutines.launch
 
 @Composable
 fun SummaryToMe(trade: TradeRequestDto) {
-    val firstCardText = trade.from.fullName + " te \nofrece " + trade.stickers.size + " figuritas"
-    val secondCardText = "A cambio quiere " + trade.toGive.size + " figuritas"
+    val firstCardText = trade.from.fullName + " te \nofrece " + trade.toGive.size + "\nfiguritas"
+    val secondCardText = "A cambio\nquiere " + trade.stickers.size + "\nfiguritas"
     Summary(firstCardText, secondCardText)
 }
 
@@ -81,7 +81,7 @@ fun SummaryCard(text: String, color: Color) {
                 color = Color.White,
                 shape = RoundedCornerShape(16.dp)
             )
-            .padding(16.dp),
+            .padding(vertical = 40.dp, horizontal = 20.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -109,7 +109,7 @@ fun Summary(firstCardText: String, secondCardText: String) {
     ) {
         SummaryCard(
             text = firstCardText,
-            color = Purple
+            color = Purple,
         )
         
         Column(
@@ -189,19 +189,26 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
         topBar = { BackButton(navHostController, "Canje") }
     ) { innerPadding ->
         if (trade != null) {
+            val currentUserEmail = sessionViewModel.user?.email
+            val isRequestSender = trade.from.email.equals(currentUserEmail)
+            val otherUser = if (isRequestSender) trade.to else trade.from
+            
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
-                if (trade.from.email.equals(sessionViewModel.user?.email)) {
-                    // yo envie la solicitud
+                // Solo mostrar botones si YO recibí la solicitud
+                if (!isRequestSender) {
                     AcceptOrRejectButton(tradeId = UUID.fromString(trade.id))
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-                TraderBanner(from = trade.to)
+                
+                // Mostrar banner del "otro" usuario (quien no soy yo)
+                TraderBanner(from = otherUser)
                 Spacer(modifier = Modifier.height(20.dp))
+                
                 Text(
                     text = "Resumen del canje",
                     style = MaterialTheme.typography.titleMedium,
@@ -211,13 +218,15 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                if (trade.from.email.equals(sessionViewModel.user?.email)) {
-                    // yo envie la solicitud
+                
+                if (isRequestSender) {
+                    // Yo envié la solicitud
                     SummaryFromMe(trade)
                 } else {
-                    // yo recibi la solicitud
+                    // Yo recibí la solicitud
                     SummaryToMe(trade)
                 }
+                
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "Detalle del canje",
@@ -227,20 +236,40 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
                         .padding(start = 16.dp, top = 20.dp, end = 16.dp)
                         .fillMaxWidth()
                 )
-                ForYouSection(
-                    albumName = trade.albumName,
-                    traderName = trade.to.username,
-                    stickers = trade.stickers,
-                    selectedStickers = selectedFromYou,
-                    onStickerClick = { }
-                )
-                ForTraderSection(
-                    albumName = trade.albumName,
-                    traderName = trade.to.username,
-                    stickers = trade.toGive,
-                    selectedStickers = selectedToTrade,
-                    onStickerClick = { }
-                )
+                
+                if (isRequestSender) {
+                    // Yo envié la solicitud
+                    ForYouSection(
+                        albumName = trade.albumName,
+                        traderName = otherUser.username,
+                        stickers = trade.stickers, // Lo que YO recibo (lo que pedí)
+                        selectedStickers = selectedFromYou,
+                        onStickerClick = { }
+                    )
+                    ForTraderSection(
+                        albumName = trade.albumName,
+                        traderName = otherUser.username,
+                        stickers = trade.toGive, // Lo que YO doy (lo que ofrezco)
+                        selectedStickers = selectedToTrade,
+                        onStickerClick = { }
+                    )
+                } else {
+                    // Yo recibí la solicitud
+                    ForYouSection(
+                        albumName = trade.albumName,
+                        traderName = otherUser.username,
+                        stickers = trade.toGive, // Lo que YO recibo (lo que me ofrecen)
+                        selectedStickers = selectedFromYou,
+                        onStickerClick = { }
+                    )
+                    ForTraderSection(
+                        albumName = trade.albumName,
+                        traderName = otherUser.username,
+                        stickers = trade.stickers, // Lo que YO doy (lo que me piden)
+                        selectedStickers = selectedToTrade,
+                        onStickerClick = { }
+                    )
+                }
             }
         } else {
             Column(
