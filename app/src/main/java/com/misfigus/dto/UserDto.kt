@@ -20,9 +20,10 @@ data class UserDto(
     val fullName: String,
     val username: String,
     val profileImageUrl: String? = null,
-    val location: String,
-    val shipping: Boolean,
-    val reputation: String,
-    val albums: List<UserAlbumDto>,
-    val friends: List<String>,
+    val location: String? = null,
+    val shipping: Boolean? = null,
+    val reputation: String? = null,
+    val albums: List<UserAlbumDto> = emptyList(),
+    val friends: List<String> = emptyList()
 )
+

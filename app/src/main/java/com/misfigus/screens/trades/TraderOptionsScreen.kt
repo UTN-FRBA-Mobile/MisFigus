@@ -104,7 +104,7 @@ fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: Image
 }
 
 @Composable
-fun TraderBanner(from : UserDto) {
+fun TraderBanner(from: UserDto) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
@@ -138,25 +138,36 @@ fun TraderBanner(from : UserDto) {
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     TextWithIcon(
-                        text = from.location,
+                        text = from.location ?: "Ubicación no especificada",
                         textColor = Grey,
                         imageColor = Grey,
                         image = Icons.Outlined.LocationOn
                     )
-                    val shipping = if (from.shipping) "Hace" else "No hace"
+
+                    val shipping = if (from.shipping == true) "Hace" else "No hace"
                     TextWithIcon(
-                        text = "${shipping} envios",
+                        text = "$shipping envíos",
                         textColor = Grey,
                         imageColor = Grey,
-                        image = if (from.shipping) Icons.Outlined.LocalShipping else Icons.Outlined.Block
+                        image = if (from.shipping == true) Icons.Outlined.LocalShipping else Icons.Outlined.Block
                     )
-                    val reputation = from.reputation
-                    val text = if (reputation == "good") "Buena" else "Mala"
+
+                    val reputation = from.reputation ?: "unknown"
+                    val text = when (reputation.lowercase()) {
+                        "good" -> "Buena"
+                        "bad" -> "Mala"
+                        else -> "Reputación desconocida"
+                    }
+                    val icon = when (reputation.lowercase()) {
+                        "good" -> Icons.Outlined.ThumbUp
+                        "bad" -> Icons.Outlined.ThumbDown
+                        else -> Icons.Outlined.Block
+                    }
                     TextWithIcon(
-                        text = "${text} reputación",
+                        text = text,
                         textColor = Grey,
                         imageColor = Grey,
-                        image = if (reputation == "good") Icons.Outlined.ThumbUp else Icons.Outlined.ThumbDown
+                        image = icon
                     )
                 }
             }
