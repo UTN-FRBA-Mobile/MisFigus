@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -132,6 +134,32 @@ fun Summary(firstCardText: String, secondCardText: String) {
 }
 
 @Composable
+fun AcceptOrRejectButton() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.End
+    ) {
+        Button(
+            onClick = {  },
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(end = 8.dp)
+        ) {
+            Text("Rechazar", color = Purple, fontSize = 13.sp)
+        }
+        Button(
+            onClick = {  },
+            colors = ButtonDefaults.buttonColors(containerColor = Purple),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Aceptar", color = Color.White, fontSize = 13.sp)
+        }
+    }
+}
+
+@Composable
 fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeViewModel, sessionViewModel: SessionViewModel) {
     val trade = tradeViewModel.selectedTradeRequest.value
     Log.d("AcceptOrReject", "the trade is: $trade")
@@ -149,6 +177,11 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
             ) {
+                if (trade.from.email.equals(sessionViewModel.user?.email)) {
+                    // yo envie la solicitud
+                    AcceptOrRejectButton()
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
                 TraderBanner(from = trade.to)
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -181,26 +214,14 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
                     traderName = trade.to.username,
                     stickers = trade.stickers,
                     selectedStickers = selectedFromYou,
-                    onStickerClick = { sticker ->
-                        if (selectedFromYou.contains(sticker)) {
-                            selectedFromYou.remove(sticker)
-                        } else {
-                            selectedFromYou.add(sticker)
-                        }
-                    }
+                    onStickerClick = { }
                 )
                 ForTraderSection(
                     albumName = trade.albumName,
                     traderName = trade.to.username,
                     stickers = trade.toGive,
                     selectedStickers = selectedToTrade,
-                    onStickerClick = { sticker ->
-                        if (selectedToTrade.contains(sticker)) {
-                            selectedToTrade.remove(sticker)
-                        } else {
-                            selectedToTrade.add(sticker)
-                        }
-                    }
+                    onStickerClick = { }
                 )
             }
         } else {
