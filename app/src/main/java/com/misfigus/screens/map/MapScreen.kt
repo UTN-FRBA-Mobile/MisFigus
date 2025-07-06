@@ -152,7 +152,6 @@ fun MapScreen() {
             } catch (e: Exception) {
                 false
             }
-
             val matchesSearch = searchText.isBlank() ||
                     kiosk.name.lowercase().removePrefix("kiosco ").contains(searchText.trim().lowercase())
 
