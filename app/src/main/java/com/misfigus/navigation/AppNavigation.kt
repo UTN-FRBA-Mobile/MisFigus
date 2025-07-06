@@ -80,6 +80,8 @@ fun matchesRoute(currentRoute: String?, baseRoute: String): Boolean {
     return when (baseRoute) {
         "album" -> currentRoute.indexOf("album") == 0 || currentRoute.indexOf("category") == 0
                 || currentRoute.indexOf("details") == 0
+        "trading" -> currentRoute.indexOf("trading") == 0 || currentRoute.indexOf("trade_requests") == 0
+                || currentRoute.indexOf("trade_request_detail") == 0 || currentRoute.indexOf("trader") == 0
         else -> currentRoute.indexOf(baseRoute) == 0
     }
 }

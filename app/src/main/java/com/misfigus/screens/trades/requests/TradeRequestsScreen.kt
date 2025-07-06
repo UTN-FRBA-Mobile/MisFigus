@@ -102,7 +102,7 @@ fun TradeRequestsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("No hay solicitudes.")
+                    Text("No hay solicitudes")
                 }
             } else {
                 LazyVerticalGrid(
