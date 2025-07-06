@@ -172,15 +172,6 @@ fun MapScreen() {
 
             mapView.getMapAsync { googleMap: GoogleMap ->
                 googleMap.uiSettings.isMyLocationButtonEnabled = false
-                kiosks.forEach { kiosk ->
-                    val position = LatLng(kiosk.coordinates.latitude, kiosk.coordinates.longitude)
-                    googleMap.addMarker(
-                        MarkerOptions()
-                            .position(position)
-                            .title(kiosk.name)
-                            .snippet("${kiosk.address} | ⭐ ${kiosk.rating} | \$${kiosk.price}")
-                    )
-                }
                 googleMap.setOnMarkerClickListener { marker ->
                     selectedKiosk = kiosks.find { it.name == marker.title }
                     marker.showInfoWindow()
@@ -190,7 +181,7 @@ fun MapScreen() {
                     try {
                         googleMap.isMyLocationEnabled = true
                         if (!hasCenteredMap && userLocation == null) {
-                            val fallbackLatLng = LatLng(-34.6037, -58.3816) // CABA
+                            val fallbackLatLng = LatLng(-34.6037, -58.3816)
                             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(fallbackLatLng, 12f))
                         }
 
@@ -359,8 +350,6 @@ fun MapScreen() {
                 }
             }
         }
-
-
         kioskDetailShown?.let { kiosk ->
             val backgroundImage = remember(kiosk.name) {
                 KioskAssetsMapper.getBackgroundImage(context, kiosk.name)
@@ -385,7 +374,6 @@ fun MapScreen() {
                     elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column {
-                        // Imagen de fondo del kiosco
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -397,13 +385,11 @@ fun MapScreen() {
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.fillMaxSize()
                             )
-
-                            // Imagen circular del responsable
                             Box(
                                 modifier = Modifier
                                     .size(80.dp)
                                     .align(Alignment.BottomStart)
-                                    .offset(x = 16.dp, y = 32.dp) // Ajustás esta posición a gusto
+                                    .offset(x = 16.dp, y = 32.dp)
                                     .background(Color.White, shape = CircleShape)
                                     .clip(CircleShape)
                                     .border(2.dp, Color.White, CircleShape)
@@ -433,17 +419,16 @@ fun MapScreen() {
                                 Text(
                                     text = kiosk.address,
                                     fontSize = 14.sp,
-                                    color = Color.White // Cambiamos DarkGray por blanco
+                                    color = Color.White
                                 )
                                 Text(
                                     text = "Responsable: ${kiosk.responsible}",
                                     fontSize = 14.sp,
-                                    color = Color.White // Cambiamos Gray por blanco
+                                    color = Color.White
                                 )
                             }
 
                         }
-
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -452,12 +437,12 @@ fun MapScreen() {
                         ) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Spacer(modifier = Modifier.height(8.dp))
-                            Spacer(modifier = Modifier.height(30.dp)) // Espacio debajo de la imagen
+                            Spacer(modifier = Modifier.height(30.dp))
 
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(end = 16.dp), // margen a la derecha
+                                    .padding(end = 16.dp),
                                 contentAlignment = Alignment.CenterEnd
                             ) {
                                 Row(
@@ -483,9 +468,9 @@ fun MapScreen() {
                                         onClick = { showRatingDialog = true },
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A)),
                                         modifier = Modifier
-                                            .width(70.dp) // ancho fijo
-                                            .height(32.dp), // alto igual que antes
-                                        shape = RoundedCornerShape(8.dp), // cuadrado con bordes levemente redondeados
+                                            .width(70.dp)
+                                            .height(32.dp),
+                                        shape = RoundedCornerShape(8.dp),
                                         contentPadding = PaddingValues(0.dp)
                                     ) {
                                         Text(
@@ -504,7 +489,6 @@ fun MapScreen() {
                             Text("Horario semanal:", fontWeight = FontWeight.Bold)
                             val days = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
                             val todayIndex = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).dayOfWeek.value
-
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
@@ -527,8 +511,6 @@ fun MapScreen() {
                                         }
                                     }
                                 }
-
-                                // Cartel lateral
                                 Box(
                                     modifier = Modifier
                                         .padding(start = 16.dp)
@@ -559,7 +541,7 @@ fun MapScreen() {
                             ) {
                                 Text(
                                     text = "Volver",
-                                    color = Color(0xFF6A1B9A), // violeta
+                                    color = Color(0xFF6A1B9A),
                                     fontSize = 14.sp
                                 )
 
@@ -584,14 +566,11 @@ fun MapScreen() {
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Filtro de búsqueda", style = MaterialTheme.typography.titleMedium, color = Color.Black)
-
                     Spacer(Modifier.height(12.dp))
                     Text("Radio (km)", fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)) {
                         val sliderWidth = maxWidth
                         val thumbPosition = (radius - 1f) / 49f * sliderWidth.value
-
-                        // Globito
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Box(
                                 modifier = Modifier
@@ -603,8 +582,6 @@ fun MapScreen() {
                                 Text(radius.toInt().toString(), color = Color.White, fontWeight = FontWeight.Bold)
                             }
                         }
-
-                        // Barra fina personalizada
                         Box(modifier = Modifier.fillMaxWidth().height(8.dp).align(Alignment.Center)) {
                             Canvas(modifier = Modifier.fillMaxSize()) {
                                 val y = size.height / 2
@@ -614,8 +591,6 @@ fun MapScreen() {
                                 drawLine(Color(0xFF6A1B9A), Offset(0f, y), Offset((radius - 1f) / 49f * size.width, y), barHeight)
                             }
                         }
-
-                        // Slider funcional
                         Slider(
                             value = radius,
                             onValueChange = { radius = it },
@@ -627,8 +602,6 @@ fun MapScreen() {
                                 inactiveTrackColor = Color.Transparent
                             )
                         )
-
-                        // Círculo visual del thumb
                         Box(
                             modifier = Modifier
                                 .offset(x = thumbPosition.dp - 12.dp, y = (12).dp)
@@ -638,8 +611,6 @@ fun MapScreen() {
                                 .align(Alignment.TopStart)
                         )
                     }
-
-
                     Spacer(Modifier.height(12.dp))
                     Text("Puntuación", fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     BoxWithConstraints(
@@ -649,8 +620,6 @@ fun MapScreen() {
                     ) {
                         val sliderWidth = maxWidth
                         val thumbPosition = (rating - 1f) / 4f * sliderWidth.value
-
-                        // Globito con puntuación
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Box(
                                 modifier = Modifier
@@ -666,8 +635,6 @@ fun MapScreen() {
                                 )
                             }
                         }
-
-                        // Barra fina personalizada
                         Box(modifier = Modifier.fillMaxWidth().height(8.dp).align(Alignment.Center)) {
                             Canvas(modifier = Modifier.fillMaxSize()) {
                                 val y = size.height / 2
@@ -677,8 +644,6 @@ fun MapScreen() {
                                 drawLine(Color(0xFF6A1B9A), Offset(0f, y), Offset((rating - 1f) / 4f * size.width, y), barHeight)
                             }
                         }
-
-                        // Slider funcional pero invisible
                         Slider(
                             value = rating,
                             onValueChange = {
@@ -692,8 +657,6 @@ fun MapScreen() {
                                 inactiveTrackColor = Color.Transparent
                             )
                         )
-
-                        // Círculo visual del thumb
                         Box(
                             modifier = Modifier
                                 .offset(x = thumbPosition.dp - 12.dp, y = (12).dp)
@@ -703,8 +666,6 @@ fun MapScreen() {
                                 .align(Alignment.TopStart)
                         )
                     }
-
-
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("Ahora abierto", modifier = Modifier.weight(1f), color = Color.Gray)
@@ -757,7 +718,6 @@ fun MapScreen() {
 
             ) {
                 Box {
-                    // Imagen de fondo dinámica del kiosco
                     Image(
                         painter = painterResource(id = backgroundImage),
                         contentDescription = "Fondo del kiosco",
@@ -767,8 +727,6 @@ fun MapScreen() {
                             .height(140.dp)
                             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     )
-
-                    // Imagen del responsable en círculo centrado
                     Image(
                         painter = painterResource(id = kiosqueroImage),
                         contentDescription = "Responsable",
@@ -780,8 +738,6 @@ fun MapScreen() {
                             .clip(CircleShape)
                             .border(2.dp, Color.White, CircleShape)
                     )
-
-                    // Botón volver
                     IconButton(
                         onClick = { showRatingDialog = false },
                         modifier = Modifier
@@ -794,8 +750,6 @@ fun MapScreen() {
                             tint = Color.White
                         )
                     }
-
-                    // Contenido principal
                     Column(
                         modifier = Modifier
                             .padding(top = 180.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
@@ -810,8 +764,6 @@ fun MapScreen() {
                                 .padding(bottom = 16.dp)
                                 .align(Alignment.CenterHorizontally)
                         )
-
-                        // Estrellas
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center,
@@ -828,10 +780,7 @@ fun MapScreen() {
                                 }
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // Comentario
+                        Spacer(modifier = Modifier.height(20.dp))
                         OutlinedTextField(
                             value = ratingComment,
                             onValueChange = {
@@ -848,8 +797,6 @@ fun MapScreen() {
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
-
-                        // Botón Enviar
                         Button(
                             onClick = {
                                 showRatingDialog = false
@@ -866,5 +813,21 @@ fun MapScreen() {
             }
         }
     }
+    LaunchedEffect(filteredKiosks) {
+        mapView.getMapAsync { map ->
+            map.clear()
 
+            filteredKiosks
+                .filter { it.coordinates.latitude != 0.0 && it.coordinates.longitude != 0.0 }
+                .forEach { kiosk ->
+                    val position = LatLng(kiosk.coordinates.latitude, kiosk.coordinates.longitude)
+                    map.addMarker(
+                        MarkerOptions()
+                            .position(position)
+                            .title(kiosk.name)
+                            .snippet("${kiosk.address} | ⭐ ${kiosk.rating} | \$${kiosk.price}")
+                    )
+                }
+        }
+    }
 }

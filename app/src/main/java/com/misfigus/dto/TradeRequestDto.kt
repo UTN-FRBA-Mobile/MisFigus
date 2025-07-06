@@ -20,5 +20,6 @@ data class PossibleTradeDto(
     val album: Int,
     val albumName: String,
     val from: UserDto,
-    val stickers: List<Integer>
+    val stickers: List<Int>,
+    val toGive: List<Int>
 )
