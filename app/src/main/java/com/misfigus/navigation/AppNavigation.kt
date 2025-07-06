@@ -40,7 +40,7 @@ import com.misfigus.screens.profile.ProfileScreen
 import com.misfigus.screens.trades.IntercambioScreen
 import com.misfigus.screens.trades.TradeViewModel
 import com.misfigus.screens.trades.TraderOptionsScreen
-import com.misfigus.screens.trades.requests.TradeRequestDetailScreen
+import com.misfigus.screens.trades.requests.AcceptOrReject
 import com.misfigus.screens.trades.requests.TradeRequestsScreen
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
@@ -59,7 +59,7 @@ sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
     data object TradeRequests : Screen("trade_requests")
-    data object TradeRequestDetail : Screen("trade_request_detail/{requestId}")
+    data object TradeRequestDetail : Screen("trade_request_detail")
 
 }
 
@@ -163,11 +163,8 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.Search.route) { MapScreen() }
             composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState, albumsViewModel.albumsUserUiState) }
             composable(Screen.Trading.route) { IntercambioScreen(navController, sessionViewModel, tradeViewModel) }
-            composable("trader/{id}") { backStackEntry ->
-                val id = backStackEntry.arguments?.getString("id")
-                id?.let {
-                    TraderOptionsScreen(navHostController = navController, id = it, tradeViewModel = tradeViewModel)
-                }
+            composable("trader") {
+                TraderOptionsScreen(navHostController = navController, tradeViewModel = tradeViewModel)
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
@@ -195,13 +192,10 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
                 }
             }
             composable(Screen.TradeRequests.route) {
-                TradeRequestsScreen(navController, sessionViewModel)
+                TradeRequestsScreen(navController, sessionViewModel, tradeViewModel)
             }
             composable(Screen.TradeRequestDetail.route) { backStackEntry ->
-                val requestId = backStackEntry.arguments?.getString("requestId")
-                requestId?.let {
-                    TradeRequestDetailScreen(requestId = it, navController = navController)
-                }
+                AcceptOrReject(navHostController = navController, tradeViewModel = tradeViewModel, sessionViewModel = sessionViewModel)
             }
         }
     }

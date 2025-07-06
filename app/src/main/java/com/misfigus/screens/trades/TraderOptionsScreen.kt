@@ -107,7 +107,7 @@ fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: Image
 fun TraderBanner(from : UserDto) {
     Card(
         modifier = Modifier
-            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -122,7 +122,7 @@ fun TraderBanner(from : UserDto) {
                 fontSize = 30.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 3.dp)
+                modifier = Modifier.padding(bottom = 20.dp)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -153,7 +153,7 @@ fun TraderBanner(from : UserDto) {
                     val reputation = from.reputation
                     val text = if (reputation == "good") "Buena" else "Mala"
                     TextWithIcon(
-                        text = " ${text} reputación",
+                        text = "${text} reputación",
                         textColor = Grey,
                         imageColor = Grey,
                         image = if (reputation == "good") Icons.Outlined.ThumbUp else Icons.Outlined.ThumbDown
@@ -359,7 +359,7 @@ fun ConfirmTradeButton(
 }
 
 @Composable
-fun TraderOptionsScreen(navHostController: NavHostController, id: String, tradeViewModel: TradeViewModel) {
+fun TraderOptionsScreen(navHostController: NavHostController, tradeViewModel: TradeViewModel) {
     val trade = tradeViewModel.selectedTrade.value
     Log.d("TraderOptionsScreen", "the trade is: $trade")
 

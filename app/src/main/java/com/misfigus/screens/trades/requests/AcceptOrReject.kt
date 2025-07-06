@@ -1,0 +1,223 @@
+package com.misfigus.screens.trades.requests
+
+import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.misfigus.dto.TradeRequestDto
+import com.misfigus.navigation.BackButton
+import com.misfigus.screens.trades.ForTraderSection
+import com.misfigus.screens.trades.ForYouSection
+import com.misfigus.screens.trades.TradeViewModel
+import com.misfigus.screens.trades.TraderBanner
+import com.misfigus.session.SessionViewModel
+import com.misfigus.ui.theme.Grey
+import com.misfigus.ui.theme.Purple
+import com.misfigus.ui.theme.Red
+
+@Composable
+fun SummaryToMe(trade: TradeRequestDto) {
+    val firstCardText = trade.from.fullName + " te \nofrece " + trade.stickers.size + " figuritas"
+    val secondCardText = "A cambio quiere " + trade.toGive.size + " figuritas"
+    Summary(firstCardText, secondCardText)
+}
+
+@Composable
+fun SummaryFromMe(trade: TradeRequestDto) {
+    val firstCardText = "Le pediste\n" + trade.stickers.size + " figuritas\na " + trade.to.fullName
+    val secondCardText = "A cambio\nle ofrecés\n" + trade.toGive.size + " figuritas"
+    Summary(firstCardText, secondCardText)
+}
+
+@Composable
+fun SummaryCard(text: String, color: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .border(
+                width = 3.dp,
+                color = color,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(
+                color = Color.White,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                color = color,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+fun Summary(firstCardText: String, secondCardText: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SummaryCard(
+            text = firstCardText,
+            color = Purple
+        )
+        
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "Flecha derecha",
+                tint = Purple,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Flecha izquierda",
+                tint = Red,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        SummaryCard(
+            text = secondCardText,
+            color = Red
+        )
+    }
+}
+
+@Composable
+fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeViewModel, sessionViewModel: SessionViewModel) {
+    val trade = tradeViewModel.selectedTradeRequest.value
+    Log.d("AcceptOrReject", "the trade is: $trade")
+
+    val selectedFromYou = remember { mutableStateListOf<Int>() }
+    val selectedToTrade = remember { mutableStateListOf<Int>() }
+
+    Scaffold(
+        topBar = { BackButton(navHostController, "Canje") }
+    ) { innerPadding ->
+        if (trade != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                TraderBanner(from = trade.to)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "Resumen del canje",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Grey,
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+                        .fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                if (trade.from.email.equals(sessionViewModel.user?.email)) {
+                    // yo envie la solicitud
+                    SummaryFromMe(trade)
+                } else {
+                    // yo recibi la solicitud
+                    SummaryToMe(trade)
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = "Detalle del canje",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Grey,
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+                        .fillMaxWidth()
+                )
+                ForYouSection(
+                    albumName = trade.albumName,
+                    traderName = trade.to.username,
+                    stickers = trade.stickers,
+                    selectedStickers = selectedFromYou,
+                    onStickerClick = { sticker ->
+                        if (selectedFromYou.contains(sticker)) {
+                            selectedFromYou.remove(sticker)
+                        } else {
+                            selectedFromYou.add(sticker)
+                        }
+                    }
+                )
+                ForTraderSection(
+                    albumName = trade.albumName,
+                    traderName = trade.to.username,
+                    stickers = trade.toGive,
+                    selectedStickers = selectedToTrade,
+                    onStickerClick = { sticker ->
+                        if (selectedToTrade.contains(sticker)) {
+                            selectedToTrade.remove(sticker)
+                        } else {
+                            selectedToTrade.add(sticker)
+                        }
+                    }
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "No hay información de canje disponible",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Grey,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}

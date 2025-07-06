@@ -130,7 +130,7 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tr
             }
             IconButton(onClick = {
                 tradeViewModel.selectedTrade.value = trade
-                navHostController.navigate("trader/{1}")
+                navHostController.navigate("trader")
             }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
