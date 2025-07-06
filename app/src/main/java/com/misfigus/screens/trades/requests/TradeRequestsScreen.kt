@@ -1,11 +1,15 @@
 package com.misfigus.screens.trades.requests
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -13,36 +17,124 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.misfigus.dto.mappings.TradeRequestMapper
-import com.misfigus.models.trades.TradeRequest
+import com.misfigus.dto.TradeRequestDto
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
 import com.misfigus.network.TradeApi
-import com.misfigus.screens.album.NewTag
+import com.misfigus.screens.trades.TradeViewModel
 import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.LightPurple
+import com.misfigus.ui.theme.Purple
+import getUserProfilePictureId
+
+@Composable
+fun TradeRequestCard(
+    request: TradeRequestDto,
+    subtitle: String,
+    isPendingAndUnseen: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box {
+            Image(
+                painter = painterResource(id = getUserProfilePictureId(request.to.username)),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+                contentScale = ContentScale.Crop
+            )
+
+            if (isPendingAndUnseen) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .align(Alignment.TopEnd)
+                        .offset(x = 2.dp, y = (-2).dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = request.to.email.split("@")[0].replaceFirstChar { it.uppercase() },
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Text(
+                text = subtitle,
+                fontSize = 14.sp,
+                color = if (isPendingAndUnseen) MaterialTheme.colorScheme.primary else Color.Gray
+            )
+        }
+
+        Text("→", fontSize = 20.sp, modifier = Modifier.padding(end = 8.dp))
+    }
+}
+
+@Composable
+fun NewTag(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (isSelected) Purple else Color.Transparent
+    val contentColor = if (isSelected) Color.White else Purple
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .clip(RoundedCornerShape(50))
+            .background(backgroundColor)
+            .clickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = contentColor,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
 
 @Composable
 fun TradeRequestsScreen(
     navHostController: NavHostController,
-    sessionViewModel: SessionViewModel
+    sessionViewModel: SessionViewModel,
+    tradeViewModel: TradeViewModel
 ) {
     var selectedTab by remember { mutableStateOf("Recibidas") }
     val user by remember { derivedStateOf { sessionViewModel.user } }
-    var allRequests by remember { mutableStateOf<List<TradeRequest>>(emptyList()) }
+    var allRequests by remember { mutableStateOf<List<TradeRequestDto>>(emptyList()) }
     val currentUserEmail = user?.email ?: ""
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         try {
             val api = TradeApi.getService(context)
-            val fetched = api.getAllTradeRequests()
-            fetched.forEach { println(it) }
-            allRequests = fetched.map(TradeRequestMapper::fromDto)
+            allRequests = api.getAllTradeRequests()
         } catch (e: Exception) {
             println("ERROR al cargar solicitudes")
             e.printStackTrace()
@@ -50,14 +142,14 @@ fun TradeRequestsScreen(
     }
 
     val filteredRequests = when (selectedTab) {
-        "Recibidas" -> allRequests.filter { it.toUserEmail == currentUserEmail }
-        "Enviadas" -> allRequests.filter { it.fromUserEmail == currentUserEmail }
-        "Todas" -> allRequests.filter { it.toUserEmail == currentUserEmail || it.fromUserEmail == currentUserEmail}
+        "Recibidas" -> allRequests.filter { it.to.email == currentUserEmail }
+        "Enviadas" -> allRequests.filter { it.from.email == currentUserEmail }
+        "Todas" -> allRequests.filter { it.to.email == currentUserEmail || it.from.email == currentUserEmail}
         else -> emptyList()
     }
 
     Scaffold(
-        topBar = { BackButton(navHostController, title = "Detalle de solicitud") }
+        topBar = { BackButton(navHostController, title = "Canje") }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -104,7 +196,7 @@ fun TradeRequestsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text("No hay solicitudes ${selectedTab.lowercase()}.")
+                    Text("No hay solicitudes")
                 }
             } else {
                 LazyVerticalGrid(
@@ -124,7 +216,7 @@ fun TradeRequestsScreen(
                                 TradeRequestStatus.PENDING -> "Tienes una solicitud pendiente"
                             }
                             "Todas" -> {
-                                val isSender = request.fromUserEmail == currentUserEmail
+                                val isSender = request.from.email == currentUserEmail
                                 when (request.status) {
                                     TradeRequestStatus.ACCEPTED ->
                                         if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
@@ -140,10 +232,10 @@ fun TradeRequestsScreen(
                         TradeRequestCard(
                             request = request,
                             subtitle = subtitle,
-                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING && !request.seen,
+                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING,
                             onClick = {
-                                request.seen = true
-                                navHostController.navigate("trade_request_detail/${request.id}")
+                                tradeViewModel.selectedTradeRequest.value = request
+                                navHostController.navigate("trade_request_detail")
                             }
                         )
                     }

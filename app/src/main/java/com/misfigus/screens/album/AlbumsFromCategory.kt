@@ -162,11 +162,12 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCate
                         columns = GridCells.Fixed(1),
                         modifier = Modifier.fillMaxWidth().fillMaxHeight().padding(16.dp)
                     ) {
-                        val filteredAlbums = albums.filter { it.albumId?.contains(searchQuery, ignoreCase = true) == true}
-                        items(filteredAlbums) { abm ->
+                        val filteredAlbums = albums.filter { it.name?.contains(searchQuery, ignoreCase = true) == true}
+                        items(filteredAlbums, key = { it.name ?: it.hashCode() }) { abm ->
                             AlbumItem(
                                 album = abm,
-                                onClick = { navHostController.navigate("details/${abm.albumId}") })
+                                onClick = { navHostController.navigate("details/${abm.albumId}") }
+                            )
                         }
                     }
 
