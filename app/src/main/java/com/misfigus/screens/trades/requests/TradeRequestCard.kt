@@ -12,15 +12,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.misfigus.dto.TradeRequestDto
 import com.misfigus.models.trades.TradeRequest
+import getUserProfilePictureId
 
 @Composable
 fun TradeRequestCard(
-    request: TradeRequest,
+    request: TradeRequestDto,
     subtitle: String,
     isPendingAndUnseen: Boolean,
     onClick: () -> Unit
@@ -29,7 +33,6 @@ fun TradeRequestCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                request.seen = true
                 onClick()
             }
             .padding(vertical = 12.dp),
@@ -37,12 +40,12 @@ fun TradeRequestCard(
     ) {
         Box {
             Image(
-                painter = rememberAsyncImagePainter("https://randomuser.me/api/portraits/women/1.jpg"),
-                contentDescription = null,
+                painter = painterResource(id = getUserProfilePictureId(request.from.username)),
+                contentDescription = "Profile Picture",
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Color.LightGray)
+                    .width(40.dp)
+                    .height(40.dp),
+                contentScale = ContentScale.Crop
             )
 
             if (isPendingAndUnseen) {
@@ -60,7 +63,7 @@ fun TradeRequestCard(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = request.fromUserEmail.split("@")[0].replaceFirstChar { it.uppercase() },
+                text = request.from.email.split("@")[0].replaceFirstChar { it.uppercase() },
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black

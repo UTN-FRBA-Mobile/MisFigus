@@ -1,7 +1,5 @@
 package com.misfigus.screens.trades
 
-import android.util.Log
-import com.example.misfigus.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

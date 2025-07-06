@@ -15,18 +15,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.misfigus.dto.ChangePasswordDto
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
-import com.misfigus.network.fetchProtectedImageBytes
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.launch
@@ -75,10 +72,6 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
     val currentUser = sessionViewModel.user!!
     var fullName by remember { mutableStateOf(currentUser.fullName) }
     var username by remember { mutableStateOf(currentUser.username) }
-
-    LaunchedEffect(currentUser.profileImageUrl) {
-        profileImageBytes = fetchProtectedImageBytes(context, currentUser.profileImageUrl!!)
-    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()

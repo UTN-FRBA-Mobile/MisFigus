@@ -328,23 +328,19 @@ fun ConfirmTradeButton(
                 
                 coroutineScope.launch {
                     try {
-                        // Obtener el usuario actual
                         val currentUser = AuthApi.getService(context).getCurrentUser()
                         
-                        // Crear el TradeRequestDto
                         val tradeRequest = TradeRequestDto(
                             album = trade.album,
                             albumName = trade.albumName,
-                            from = currentUser,
-                            to = trade.from,
+                            from = trade.from,
+                            to = currentUser,
                             stickers = selectedFromYou,
                             toGive = selectedToTrade,
                             status = TradeRequestStatus.PENDING
                         )
                         
-                        // Enviar la solicitud
                         TradeApi.getService(context).postNewTradeRequest(tradeRequest)
-                        
                         showDialog = true
                     } catch (e: Exception) {
                         println("ERROR al enviar solicitud")

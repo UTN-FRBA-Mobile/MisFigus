@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.misfigus.dto.TradeRequestDto
 import com.misfigus.models.trades.TradeRequest
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
@@ -32,15 +33,14 @@ fun TradeRequestsScreen(
 ) {
     var selectedTab by remember { mutableStateOf("Recibidas") }
     val user by remember { derivedStateOf { sessionViewModel.user } }
-    var allRequests by remember { mutableStateOf<List<TradeRequest>>(emptyList()) }
+    var allRequests by remember { mutableStateOf<List<TradeRequestDto>>(emptyList()) }
     val currentUserEmail = user?.email ?: ""
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         try {
             val api = TradeApi.getService(context)
-            val allRequests = api.getAllTradeRequests()
-            allRequests.forEach { println(it) }
+            allRequests = api.getAllTradeRequests()
         } catch (e: Exception) {
             println("ERROR al cargar solicitudes")
             e.printStackTrace()
@@ -48,9 +48,9 @@ fun TradeRequestsScreen(
     }
 
     val filteredRequests = when (selectedTab) {
-        "Recibidas" -> allRequests.filter { it.toUserEmail == currentUserEmail }
-        "Enviadas" -> allRequests.filter { it.fromUserEmail == currentUserEmail }
-        "Todas" -> allRequests.filter { it.toUserEmail == currentUserEmail || it.fromUserEmail == currentUserEmail}
+        "Recibidas" -> allRequests.filter { it.to.email == currentUserEmail }
+        "Enviadas" -> allRequests.filter { it.from.email == currentUserEmail }
+        "Todas" -> allRequests.filter { it.to.email == currentUserEmail || it.from.email == currentUserEmail}
         else -> emptyList()
     }
 
@@ -122,7 +122,7 @@ fun TradeRequestsScreen(
                                 TradeRequestStatus.PENDING -> "Tienes una solicitud pendiente"
                             }
                             "Todas" -> {
-                                val isSender = request.fromUserEmail == currentUserEmail
+                                val isSender = request.from.email == currentUserEmail
                                 when (request.status) {
                                     TradeRequestStatus.ACCEPTED ->
                                         if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
@@ -138,10 +138,9 @@ fun TradeRequestsScreen(
                         TradeRequestCard(
                             request = request,
                             subtitle = subtitle,
-                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING && !request.seen,
+                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING,
                             onClick = {
-                                request.seen = true
-                                navHostController.navigate("trade_request_detail/${request.id}")
+                                navHostController.navigate("trade_request_detail/1")
                             }
                         )
                     }
