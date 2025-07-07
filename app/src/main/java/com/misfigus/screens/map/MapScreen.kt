@@ -602,20 +602,24 @@ fun MapScreen() {
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("🛒 Precio por paquete: \$${kiosk.price}", color = MaterialTheme.colorScheme.primary)
-
-                            Spacer(modifier = Modifier.height(12.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "Volver",
-                                    color = Color(0xFF6A1B9A),
-                                    fontSize = 14.sp
+                                    text = "🛒 Precio por paquete: \$${kiosk.price}",
+                                    color = MaterialTheme.colorScheme.primary
                                 )
 
+                                Text(
+                                    text = "Volver",
+                                    color = Color(0xFF6A1B9A),
+                                    fontSize = 14.sp,
+                                    modifier = Modifier
+                                        .clickable { kioskDetailShown = null }
+                                        .padding(start = 12.dp)
+                                )
                             }
 
                         }
