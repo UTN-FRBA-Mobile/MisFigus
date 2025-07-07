@@ -1,5 +1,6 @@
 package com.misfigus.screens.trades
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -133,7 +134,7 @@ fun IntercambioScreen(
 ) {
 
     var possibleTrades by remember { mutableStateOf(emptyList<PossibleTradeDto>()) }
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         try {
             val api = TradeApi.getService(context)

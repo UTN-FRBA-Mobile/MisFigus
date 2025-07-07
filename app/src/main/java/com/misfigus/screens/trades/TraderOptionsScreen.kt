@@ -74,6 +74,7 @@ import com.misfigus.network.AuthApi
 import com.misfigus.network.TradeApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
+import com.misfigus.ui.theme.BorderColor
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
