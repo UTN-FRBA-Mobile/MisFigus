@@ -46,13 +46,25 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 
 ## 📸 Capturas de pantalla
 
-| Pantalla de presentación | Seguimiento de álbum | Mis álbumes | Mis figuritas|
-|--------------------|----------------------|-------------|----------------|
-| ![image](https://github.com/user-attachments/assets/18bb52a6-4395-4093-af54-288c54d14b0e) | ![image](https://github.com/user-attachments/assets/0b3f6e85-0574-42e8-83d6-b54849b80045) | ![image](https://github.com/user-attachments/assets/0955b2fc-49aa-4e5e-ae98-2da67b763ebe) | ![image](https://github.com/user-attachments/assets/83cfe8f4-2373-4612-b9a8-27228bc06d6d) |
+| Pantalla de presentación | Iniciar sesión | Registrarse |
+|--------------------|----------------------|-------------|
+| ![image](https://github.com/user-attachments/assets/37ba1315-6f61-471e-b2b7-5fc978b0ec36) | ![image](https://github.com/user-attachments/assets/377442c3-ddbd-4a49-8ae3-a6b03599bace) | ![image](https://github.com/user-attachments/assets/7d607e2d-e675-4f99-b300-0687b4439d04) |
 
-| Canjeá | Canjeá | Mapa de kioscos | Kiosco | Ver reseñas |
-|--------|--------|-----------------|--------|-----------|
-| ![image](https://github.com/user-attachments/assets/7746acd4-0073-4b46-be33-ee3e4b0eb1bc) | ![image](https://github.com/user-attachments/assets/6c98e874-86cf-420a-858e-8b8823a18fff) | ![image](https://github.com/user-attachments/assets/a422bf27-3b96-4f11-9239-95b9386a7468) | ![image](https://github.com/user-attachments/assets/2aa89c12-d2c9-4edd-8e66-9124a513dea3) |![image](https://github.com/user-attachments/assets/06d4423a-917b-413b-a4af-c58b840104fd)
+| Mapa de kioscos | Kiosco | Ver reseñas |
+|--------------------|----------------------|-------------|
+| ![image](https://github.com/user-attachments/assets/a422bf27-3b96-4f11-9239-95b9386a7468) | ![image](https://github.com/user-attachments/assets/2aa89c12-d2c9-4edd-8e66-9124a513dea3) |![image](https://github.com/user-attachments/assets/06d4423a-917b-413b-a4af-c58b840104fd)
+
+| Mis álbumes | Álbumes de una categoría | Mis figuritas |
+|----------------------|-------------|----------------|
+| ![image](https://github.com/user-attachments/assets/7a68c0b2-4b05-4211-88fe-992ea3fcee07) | ![image](https://github.com/user-attachments/assets/0955b2fc-49aa-4e5e-ae98-2da67b763ebe) | ![image](https://github.com/user-attachments/assets/83cfe8f4-2373-4612-b9a8-27228bc06d6d) |
+
+
+| Canjes posibles | Inicio de canje | Solicitudes | Aceptar o rechazar solicitud |
+|--------|--------|--------------------|----------------------|
+| ![image](https://github.com/user-attachments/assets/9a638d4a-1596-472c-b152-a5bc4dc4a1fb) | ![image](https://github.com/user-attachments/assets/8865924c-d6ec-4d62-9adc-51142ce5dceb) | ![image](https://github.com/user-attachments/assets/d66ce391-9545-4766-a35b-82f823ec1260) | ![image](https://github.com/user-attachments/assets/75190909-e060-46e8-8cf6-0dc81e7ca9b6)
+
+
+ 
 
 ## 🚀 Próximamente en:
 
