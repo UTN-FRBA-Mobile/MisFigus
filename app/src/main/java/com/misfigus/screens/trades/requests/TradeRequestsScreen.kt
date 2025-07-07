@@ -60,13 +60,6 @@ fun TradeRequestCard(
                     .height(40.dp),
                 contentScale = ContentScale.Crop
             )
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = 2.dp, y = (-2).dp)
-                    .background(MaterialTheme.colorScheme.primary, CircleShape)
-            )
         }
 
         Spacer(modifier = Modifier.width(16.dp))

@@ -318,7 +318,7 @@ fun ConfirmTradeButton(
             confirmButton = {
                 TextButton(onClick = {
                     showDialog = false
-                    navHostController.navigate("trade_requests")
+                    navHostController.navigate("trading")
                 }) {
                     Text("Ok")
                 }
