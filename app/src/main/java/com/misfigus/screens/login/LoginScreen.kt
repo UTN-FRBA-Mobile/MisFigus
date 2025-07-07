@@ -1,6 +1,7 @@
 package com.misfigus.screens.login
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -42,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.misfigus.R
-import com.misfigus.screens.TopBackgroundCurves
 import com.misfigus.dto.UserLoginDto
 import com.misfigus.navigation.Screen
 import com.misfigus.network.AuthApi
@@ -63,16 +64,18 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
     var passwordVisible by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf<String?>(null) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves()
-    }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(MaterialTheme.colorScheme.background)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
         Text(
             text = "Bienvenido,",
             fontSize = 46.sp,
@@ -82,7 +85,7 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
         )
 
         Text(
-            text = "Inicia sesión para continuar",
+            text = "Iniciá sesión para continuar",
             fontSize = 26.sp,
             color = colorResource(id = R.color.regular),
             modifier = Modifier
@@ -206,7 +209,7 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Iniciar Sesión", color = Color.White)
+            Text("Iniciar sesión", color = Color.White)
         }
         loginError?.let {
             Spacer(modifier = Modifier.height(8.dp))
@@ -220,18 +223,19 @@ fun LoginScreen(navController: NavController, sessionViewModel: SessionViewModel
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Row {
-            Text("¿No tenés una cuenta?", color = colorResource(id = R.color.regular), fontSize = 16.sp)
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "Registrate",
-                color = colorResource(id = R.color.purple),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                modifier = Modifier.clickable {
-                    navController.navigate("register")
-                }
-            )
+            Row {
+                Text("¿No tenés una cuenta?", color = colorResource(id = R.color.regular), fontSize = 16.sp)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Registrate",
+                    color = colorResource(id = R.color.purple),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable {
+                        navController.navigate("register")
+                    }
+                )
+            }
         }
     }
 }
