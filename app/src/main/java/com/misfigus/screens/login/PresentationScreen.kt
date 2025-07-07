@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,64 +30,53 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.misfigus.R
+import com.misfigus.ui.theme.Background
 
 @Composable
 fun PresentationScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Background)
     ) {
-        // Background with curves and title
-        Box(
+        
+        Text(
+            text = "misFigus",
+            fontSize = 50.sp,
+            fontWeight = FontWeight.Bold,
+            color = colorResource(id = R.color.regular),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.presentation_curve_background_pink),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().fillMaxHeight()
-            )
-            Image(
-                painter = painterResource(id = R.drawable.presentation_curve_background_red),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize().fillMaxHeight()
-            )
-            Text(
-                text = "misFigus",
-                fontSize = 50.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.regular),
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(top = 150.dp, start= 50.dp)
-            )
-        }
+                .align(Alignment.TopCenter)
+                .padding(top = 60.dp)
+        )
 
-        // Main content
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .padding(top = 220.dp),
+                .padding(top = 100.dp, bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.presentation_illustration),
                 contentDescription = "Ilustración presentación",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(280.dp)
+                    .padding(horizontal = 24.dp)
             )
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            ) {
                 Text(
                     text = "Ubicá paquetes en los kioskos de tu zona",
                     color = colorResource(id = R.color.red),
                     fontSize = 26.sp,
-                    textAlign = TextAlign.Left,
+                    textAlign = TextAlign.Center,
                     fontWeight = FontWeight.SemiBold
                 )
 
@@ -94,13 +84,17 @@ fun PresentationScreen(navController: NavController) {
                     text = "¡También podés registrar el progreso de tu colección y canjear con otros usuarios!",
                     color = colorResource(id = R.color.regular),
                     fontSize = 22.sp,
-                    textAlign = TextAlign.Left,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
+            Spacer(modifier = Modifier.height(32.dp))
+
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Button(
@@ -114,7 +108,7 @@ fun PresentationScreen(navController: NavController) {
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Iniciar Sesión",
+                        text = "Iniciar sesión",
                         color = Color.White,
                         fontSize = 16.sp
                     )
@@ -123,8 +117,6 @@ fun PresentationScreen(navController: NavController) {
                     Text("Registrarse", color = colorResource(id = R.color.regular), fontSize = 16.sp)
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

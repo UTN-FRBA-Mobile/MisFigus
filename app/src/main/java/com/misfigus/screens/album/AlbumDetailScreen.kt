@@ -67,11 +67,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
     var modifiedCards by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
     var selectedTab by remember { mutableStateOf(CardFilterTab.ALL) }
     var showDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getUserAlbum(initialAlbum.id.toString())
-    }
-
+    
     Scaffold(
         topBar = {
             TopAppBar(
@@ -128,6 +124,16 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                 is AlbumUserUiState.Success -> {
                     val album = albumUserUiState.album
 
+                    val updatedCards = album.tradingCards.map { card ->
+                        val modifiedQuantity = modifiedCards[card.number.toString()]
+                        val currentQuantity = modifiedQuantity ?: if (card.obtained) card.repeatedQuantity + 1 else 0
+
+                        card.copy(
+                            obtained = currentQuantity > 0,
+                            repeatedQuantity = if (currentQuantity > 1) currentQuantity - 1 else 0
+                        )
+                    }
+
                     Text(
                         text = album.name,
                         style = MaterialTheme.typography.titleLarge,
@@ -154,9 +160,9 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         }
                     }
                     var filteredCards = when (selectedTab) {
-                        CardFilterTab.ALL -> album.tradingCards
-                        CardFilterTab.MISSING -> album.tradingCards.filter { !it.obtained }
-                        CardFilterTab.REPEATED -> album.tradingCards.filter { it.repeatedQuantity > 1 }
+                        CardFilterTab.ALL -> updatedCards
+                        CardFilterTab.MISSING -> updatedCards.filter { !it.obtained }
+                        CardFilterTab.REPEATED -> updatedCards.filter { it.repeatedQuantity >= 1 }
                     }
                     SearchBar(
                         query = searchQuery,
@@ -170,22 +176,32 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
-                        filteredCards = if("".equals(searchQuery)) filteredCards else filteredCards.filter { it.number.toString()?.contains(searchQuery, ignoreCase = true) == true}
+                        filteredCards = if (searchQuery.isBlank()) {
+                            filteredCards
+                        } else {
+                            filteredCards.filter { it.number.toString().contains(searchQuery, ignoreCase = true) }
+                        }
                         items(filteredCards) { tradeCard ->
-                            val currentQuantity = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
+                            val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
 
-                            TradingCardItem(tradingCard = tradeCard, isEditing = isEditing, currentQuantity = currentQuantity,
+                            TradingCardItem(
+                                tradingCard = tradeCard,
+                                isEditing = isEditing,
+                                currentQuantity = currentQuantity,
                             onAdd = {
-                                val current = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
+                                val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                    ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
                                 modifiedCards = modifiedCards.toMutableMap().apply {
-                                    put(tradeCard.number.toString(), current + 1)
+                                    put(tradeCard.number.toString(), currentQuantity + 1)
                                 }
                             },
                             onRemove = {
-                                val current = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
-                                if (current > 0) {
+                                val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                    ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
+                                if (currentQuantity > 0) {
                                     modifiedCards = modifiedCards.toMutableMap().apply {
-                                        put(tradeCard.number.toString(), current - 1)
+                                        put(tradeCard.number.toString(), currentQuantity - 1)
                                     }
                                 }
                             })

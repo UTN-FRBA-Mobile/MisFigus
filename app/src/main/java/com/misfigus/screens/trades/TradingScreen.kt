@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ import com.misfigus.dto.PossibleTradeDto
 import com.misfigus.network.TokenProvider
 import com.misfigus.network.TradeApi
 import com.misfigus.session.SessionViewModel
+import com.misfigus.ui.theme.BorderColor
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
@@ -75,9 +77,14 @@ fun TraderCard(
     tradeViewModel: TradeViewModel
 ) {
     Card(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(start = 16.dp, top = 10.dp, end = 16.dp)
+            .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        border = BorderStroke(1.dp, BorderColor)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -90,12 +97,18 @@ fun TraderCard(
             Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = trade.from.fullName,
+                    text = trade.from.fullName.capitalize(),
                     fontSize = 13.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(text = trade.albumName, fontSize = 13.sp, color = Red)
+                TextWithIcon(
+                    text = trade.albumName,
+                    textColor = Red,
+                    imageColor = Red,
+                    image = Icons.AutoMirrored.Outlined.MenuBook
+                )
                 Text(
                     text = "Tiene ${trade.stickers.size} figuritas que te faltan",
                     fontSize = 13.sp,
@@ -118,11 +131,6 @@ fun IntercambioScreen(
     sessionViewModel: SessionViewModel,
     tradeViewModel: TradeViewModel
 ) {
-    val context = LocalContext.current
-    val token = TokenProvider.token
-    val imageLoader = remember(token) {
-        token?.let { createImageLoaderWithToken(context, it) }
-    }
 
     var possibleTrades by remember { mutableStateOf(emptyList<PossibleTradeDto>()) }
 

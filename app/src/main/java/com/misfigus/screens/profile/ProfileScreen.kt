@@ -28,6 +28,7 @@ import com.misfigus.dto.ChangePasswordDto
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.screens.album.AlbumsViewModel
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import createImageLoaderWithToken
@@ -41,7 +42,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 @Composable
-fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {}) {
+fun ProfileScreen(sessionViewModel: SessionViewModel, albumsViewModel: AlbumsViewModel, onLogout: () -> Unit = {}) {
     val context = LocalContext.current
 
     val coroutineScope = rememberCoroutineScope()
@@ -147,6 +148,7 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
                     TokenProvider.token = null
                     UserSessionManager.clearToken(context)
                     sessionViewModel.logout(context)
+                    albumsViewModel.clearState()
                     onLogout()
                 }
             },

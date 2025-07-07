@@ -1,6 +1,7 @@
 package com.misfigus.screens.trades
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +50,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -69,8 +71,8 @@ import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
 import com.misfigus.network.ApiConfig
 import com.misfigus.network.AuthApi
-import com.misfigus.network.TokenProvider
 import com.misfigus.network.TradeApi
+import com.misfigus.network.TokenProvider
 import com.misfigus.session.UserSessionManager
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
@@ -127,13 +129,19 @@ fun TraderBanner(from: UserDto) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(
+                color = Color.White.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(16.dp)
+            ),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Canjeá con ${from.username}",
+                text = "Canjeá con ${from.username.capitalize()}",
                 fontSize = 30.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
@@ -238,7 +246,8 @@ fun TradeSection(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
-        )
+        ),
+        border = BorderStroke(1.dp, BorderColor)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -292,7 +301,7 @@ fun ForYouSection(
     TradeSection(
         traderName = "Vos",
         albumName = albumName,
-        message = "${traderName} tiene ${stickers.size} figuritas que te faltan",
+        message = "${traderName.capitalize()} tiene ${stickers.size} figuritas que te faltan",
         stickers = stickers,
         selectedStickers = selectedStickers,
         onStickerClick = onStickerClick
@@ -310,7 +319,7 @@ fun ForTraderSection(
     TradeSection(
         traderName = traderName,
         albumName = albumName,
-        message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
+        message = "Tenés ${stickers.size} figuritas que ${traderName.capitalize()} necesita",
         stickers = stickers,
         selectedStickers = selectedStickers,
         onStickerClick = onStickerClick
@@ -321,7 +330,8 @@ fun ForTraderSection(
 fun ConfirmTradeButton(
     selectedFromYou: List<Int>,
     selectedToTrade: List<Int>,
-    trade: PossibleTradeDto
+    trade: PossibleTradeDto,
+    navHostController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -331,12 +341,15 @@ fun ConfirmTradeButton(
         AlertDialog(
             onDismissRequest = { showDialog = false },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("OK")
+                TextButton(onClick = {
+                    showDialog = false
+                    navHostController.navigate("trading")
+                }) {
+                    Text("Ok")
                 }
             },
             title = { Text("Canje enviado") },
-            text = { Text("Tu solicitud de canje fue enviada a ${trade.from.username}.") }
+            text = { Text("Tu solicitud de canje fue enviada a ${trade.from.username.capitalize()}.") }
         )
     }
 
@@ -355,6 +368,7 @@ fun ConfirmTradeButton(
                         val currentUser = AuthApi.getService(context).getCurrentUser()
 
                         val tradeRequest = TradeRequestDto(
+                            id = "",
                             album = trade.album,
                             albumName = trade.albumName,
                             from = trade.from,
@@ -376,7 +390,7 @@ fun ConfirmTradeButton(
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier.padding(end = 16.dp, top = 20.dp)
         ) {
-            Text("Confirmar canje", color = Color.White, fontSize = 13.sp)
+            Text("Enviar solicitud", color = Color.White, fontSize = 13.sp)
         }
     }
 
@@ -438,7 +452,8 @@ fun TraderOptionsScreen(navHostController: NavHostController, tradeViewModel: Tr
             ConfirmTradeButton(
                 selectedFromYou = selectedFromYou,
                 selectedToTrade = selectedToTrade,
-                trade = trade
+                trade = trade,
+                navHostController = navHostController
             )
             Spacer(modifier = Modifier.height(32.dp))
         }

@@ -37,7 +37,8 @@ import com.misfigus.ui.theme.Red
 @Composable
 fun TradingCardItem(tradingCard: TradingCard, currentQuantity: Int, isEditing: Boolean, onClick: () -> Unit = {}, onAdd: () -> Unit, onRemove: () -> Unit,){
     Box(modifier = Modifier.padding(2.dp)) {
-        val obtained = currentQuantity > 0
+        val obtained = tradingCard.obtained
+        val repeatedCount = if (obtained) currentQuantity - 1 else currentQuantity
         Card(
             modifier = Modifier.padding(8.dp).size(width = 100.dp, height = 150.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -56,7 +57,7 @@ fun TradingCardItem(tradingCard: TradingCard, currentQuantity: Int, isEditing: B
                 )
             }
         }
-        if (currentQuantity > 0) {
+        if (repeatedCount > 0) {
             Box(
                 modifier = Modifier
                     .absoluteOffset(x = 85.dp, y = (-2).dp)
@@ -66,7 +67,7 @@ fun TradingCardItem(tradingCard: TradingCard, currentQuantity: Int, isEditing: B
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = currentQuantity.toString(),
+                    text = if(obtained)(currentQuantity - 1).toString() else currentQuantity.toString(),
                     style = MaterialTheme.typography.bodyLarge,
                     color = Red
                 )
