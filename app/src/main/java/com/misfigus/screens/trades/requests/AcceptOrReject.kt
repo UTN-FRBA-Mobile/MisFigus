@@ -53,8 +53,8 @@ import com.misfigus.screens.trades.ForYouSection
 import com.misfigus.screens.trades.TradeViewModel
 import com.misfigus.screens.trades.TraderBanner
 import com.misfigus.session.SessionViewModel
-import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Grey
+import com.misfigus.ui.theme.Green
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Red
 import java.util.UUID
@@ -147,10 +147,10 @@ fun Summary(firstCardText: String, secondCardText: String) {
 
 @Composable
 fun TradeStatusDisplay(status: TradeRequestStatus) {
-    val (statusText, statusColor) = when (status) {
-        TradeRequestStatus.PENDING -> "Pendiente" to Color.Gray
-        TradeRequestStatus.ACCEPTED -> "Aceptada" to Color.Green
-        TradeRequestStatus.REJECTED -> "Rechazada" to Red
+    val (statusText, statusColor, backgroundColor) = when (status) {
+        TradeRequestStatus.PENDING -> Triple("Pendiente", Grey, Color.LightGray)
+        TradeRequestStatus.ACCEPTED -> Triple("Aceptada", Color.White, Green)
+        TradeRequestStatus.REJECTED -> Triple("Rechazada", Color.White, Red)
     }
     
     Row(
@@ -161,7 +161,11 @@ fun TradeStatusDisplay(status: TradeRequestStatus) {
     ) {
         Button(
             onClick = { },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = backgroundColor,
+                disabledContainerColor = backgroundColor,
+                disabledContentColor = statusColor
+            ),
             shape = RoundedCornerShape(12.dp),
             enabled = false,
             modifier = Modifier.padding(end = 8.dp)
@@ -172,7 +176,7 @@ fun TradeStatusDisplay(status: TradeRequestStatus) {
 }
 
 @Composable
-fun AcceptOrRejectButton(trade: TradeRequestDto, tradeId: UUID) {
+fun AcceptOrRejectButton(trade: TradeRequestDto, tradeId: UUID, navHostController: NavHostController) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var showRejectDialog by remember { mutableStateOf(false) }
@@ -188,6 +192,9 @@ fun AcceptOrRejectButton(trade: TradeRequestDto, tradeId: UUID) {
                             val api = TradeApi.getService(context)
                             api.rejectTradeRequest(tradeId)
                             showRejectDialog = false
+                            navHostController.navigate("trade_requests") {
+                                popUpTo("trade_requests") { inclusive = true }
+                            }
                         } catch (e: Exception) {
                             println("ERROR al rechazar solicitud")
                             e.printStackTrace()
@@ -217,6 +224,9 @@ fun AcceptOrRejectButton(trade: TradeRequestDto, tradeId: UUID) {
                             val api = TradeApi.getService(context)
                             api.acceptTradeRequest(trade)
                             showAcceptDialog = false
+                            navHostController.navigate("trade_requests") {
+                                popUpTo("trade_requests") { inclusive = true }
+                            }
                         } catch (e: Exception) {
                             println("ERROR al aceptar solicitud")
                             e.printStackTrace()
@@ -284,7 +294,7 @@ fun AcceptOrReject(navHostController: NavHostController, tradeViewModel: TradeVi
             ) {
                 // Solo mostrar botones si YO recibí la solicitud
                 if (!isRequestSender && trade.status.equals(TradeRequestStatus.PENDING)) {
-                    AcceptOrRejectButton(trade = trade, tradeId = UUID.fromString(trade.id))
+                    AcceptOrRejectButton(trade = trade, tradeId = UUID.fromString(trade.id), navHostController)
                     Spacer(modifier = Modifier.height(20.dp))
                 } else {
                     TradeStatusDisplay(trade.status)

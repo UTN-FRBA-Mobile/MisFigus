@@ -118,7 +118,7 @@ fun TraderBanner(from : UserDto) {
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Canjeá con ${from.username}",
+                text = "Canjeá con ${from.username.capitalize()}",
                 fontSize = 30.sp,
                 color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
@@ -268,7 +268,7 @@ fun ForYouSection(
     TradeSection(
         traderName = "Vos",
         albumName = albumName,
-        message = "${traderName} tiene ${stickers.size} figuritas que te faltan",
+        message = "${traderName.capitalize()} tiene ${stickers.size} figuritas que te faltan",
         stickers = stickers,
         selectedStickers = selectedStickers,
         onStickerClick = onStickerClick
@@ -286,7 +286,7 @@ fun ForTraderSection(
     TradeSection(
         traderName = traderName,
         albumName = albumName,
-        message = "Tenés ${stickers.size} figuritas que ${traderName} necesita",
+        message = "Tenés ${stickers.size} figuritas que ${traderName.capitalize()} necesita",
         stickers = stickers,
         selectedStickers = selectedStickers,
         onStickerClick = onStickerClick
@@ -297,7 +297,8 @@ fun ForTraderSection(
 fun ConfirmTradeButton(
     selectedFromYou: List<Int>,
     selectedToTrade: List<Int>,
-    trade: PossibleTradeDto
+    trade: PossibleTradeDto,
+    navHostController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -307,12 +308,15 @@ fun ConfirmTradeButton(
         AlertDialog(
             onDismissRequest = { showDialog = false },
             confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("OK")
+                TextButton(onClick = {
+                    showDialog = false
+                    navHostController.navigate("trade_requests")
+                }) {
+                    Text("Ok")
                 }
             },
             title = { Text("Canje enviado") },
-            text = { Text("Tu solicitud de canje fue enviada a ${trade.from.username}.") }
+            text = { Text("Tu solicitud de canje fue enviada a ${trade.from.username.capitalize()}.") }
         )
     }
 
@@ -353,7 +357,7 @@ fun ConfirmTradeButton(
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier.padding(end = 16.dp, top = 20.dp)
         ) {
-            Text("Confirmar canje", color = Color.White, fontSize = 13.sp)
+            Text("Enviar solicitud", color = Color.White, fontSize = 13.sp)
         }
     }
 
@@ -415,7 +419,8 @@ fun TraderOptionsScreen(navHostController: NavHostController, tradeViewModel: Tr
             ConfirmTradeButton(
                 selectedFromYou = selectedFromYou,
                 selectedToTrade = selectedToTrade,
-                trade = trade
+                trade = trade,
+                navHostController = navHostController
             )
             Spacer(modifier = Modifier.height(32.dp))
         }
