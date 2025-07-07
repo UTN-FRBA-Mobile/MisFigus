@@ -1,27 +1,25 @@
 # 📱 MisFigus - ¡Completá tu álbum de figuritas sin estrés!
 
-**MisFigus** es la app ideal para los fanáticos de las figuritas.  
-Llevá el control total de tus álbumes, organizá tus repetidas y encontrá dónde canjear o comprar las que te faltan.  
-¡Todo desde tu celular, sin perder tiempo ni figuritas!
-
+¿Te faltan figuritas para completar tu álbum? ¿Estás cansado de repetir intercambios o llevar el control en papel?  
+📲 **MisFigus** es la app ideal para coleccionistas: organizá tus álbumes, cargá tus repetidas, y descubrí fácilmente dónde comprar o intercambiar las que te faltan.
 ---
 
 ## 🧩 ¿Qué podés hacer con MisFigus?
 
 ### 📘 Gestioná tus álbumes de manera simple
 
-- Agregá todos tus álbumes, nuevos o clásicos.
-- Cargá figuritas fácilmente: marcá las que ya tenés y las que te faltan.
+- Agregá todos tus álbumes (nuevos o clásicos).
+- Marcá las figuritas que tenés, las que te faltan y las repetidas.
 - Llevá el conteo de cuántas repetidas tenés de cada figurita.
 - Consultá tu progreso en tiempo real: sabé cuánto te falta para completar cada álbum.
 
 ### 🤝 Intercambiá figuritas con otros usuarios
 
-- Encontrá usuarios cercanos con las figuritas que te faltan.
+- Encontrá personas cerca con las figuritas que te faltan.
 - Mostrá tu lista de repetidas y organizá intercambios en persona o por mensaje.
 - ¡Completá tu álbum sin gastar de más!
 
-### 🗺️ Encontrá kioscos con figuritas cerca tuyo
+### 🗺️ Encontrá kioscos cercanos con figuritas
 
 - Activá tu ubicación y descubrí kioscos que venden las figuritas que necesitás.
 - Consultá horarios, dirección y stock actualizado (¡evitá caminatas innecesarias!).
@@ -41,6 +39,8 @@ Llevá el control total de tus álbumes, organizá tus repetidas y encontrá dó
 - Fans de los álbumes de fútbol, películas, series, animé y más.
 - Cualquier persona que esté cansada de perder figuritas, repetir intercambios o llevar todo en papel.
 
+🎉 **Completá tu álbum más rápido, sin estrés.  
+Descargá MisFigus y llevá tu colección a otro nivel.**
 ---
 
 ## 📸 Capturas de pantalla
@@ -74,5 +74,18 @@ Llevá el control total de tus álbumes, organizá tus repetidas y encontrá dó
 - Porque completás álbumes más rápido y de forma divertida.
 
 ---
+## 🛠️ Tecnologías Utilizadas
 
+- **Kotlin** para el desarrollo de la app Android  
+- **Java (Spring Boot)** para el backend
+- **Jetpack Compose** para la interfaz de usuario  
+- **Google Maps SDK** para geolocalización y visualización de kioscos  
+- **Retrofit + Kotlin Serialization** para la comunicación entre app y backend  
+- **DataStore** para persistencia local en el dispositivo  
+- **Material Design 3** para el diseño visual  
+- **MVVM Architecture** para estructurar lógica y presentación  
+- **Coil** para carga de imágenes
+- **OkHttp** para manejo de red y logs
+
+---
 **MisFigus** – Tu colección organizada, conectada y siempre con vos.
