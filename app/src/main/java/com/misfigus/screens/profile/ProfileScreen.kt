@@ -43,13 +43,6 @@ import java.net.URL
 @Composable
 fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {}) {
     val context = LocalContext.current
-    val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
-
-    LaunchedEffect(Unit) {
-        TokenProvider.token?.let {
-            imageLoaderState.value = createImageLoaderWithToken(context, it)
-        }
-    }
 
     val coroutineScope = rememberCoroutineScope()
     var error by remember { mutableStateOf<String?>(null) }
@@ -89,8 +82,6 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
     var fullName by remember { mutableStateOf(currentUser.fullName) }
     var username by remember { mutableStateOf(currentUser.username) }
 
-    val imageUrl = sessionViewModel.user?.profileImageUrl
-
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -127,14 +118,7 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
                 .clickable { showImageDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            if (imageLoaderState.value != null) {
-                ProfileImage(
-                    imageUrl = imageUrl,
-                    size = 100.dp,
-                    imageLoader = imageLoaderState.value!!
-                )
-            }
-
+            ProfileImage(imageUrl = currentUser.profileImageUrl, size = 70.dp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -190,13 +174,7 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
             },
             title = { Text("Foto de perfil") },
             text = {
-                if (imageLoaderState.value != null) {
-                    ProfileImage(
-                        imageUrl = imageUrl,
-                        size = 100.dp,
-                        imageLoader = imageLoaderState.value!!
-                    )
-                }
+                ProfileImage(imageUrl = currentUser.profileImageUrl, size = 70.dp)
             }
         )
     }

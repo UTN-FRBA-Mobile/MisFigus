@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PhotoAlbum
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -16,21 +16,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.misfigus.R
 import com.misfigus.network.ApiConfig
 import com.misfigus.network.TokenProvider
 import createImageLoaderWithToken
 
 @Composable
-fun ProfileImage(
+fun AlbumImage(
     imageUrl: String?,
     size: Dp,
-    imageLoader: ImageLoader? = null // Opcional
+    imageLoader: ImageLoader? = null
 ) {
     val context = LocalContext.current
 
@@ -50,25 +49,24 @@ fun ProfileImage(
 
         AsyncImage(
             model = request,
-            contentDescription = "Profile image",
+            contentDescription = "Imagen de álbum",
             imageLoader = loader,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(size)
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(8.dp))
         )
     } else {
-        // Fallback: imagen local o placeholder
         Box(
             modifier = Modifier
                 .size(size)
-                .clip(CircleShape)
-                .background(Color.Gray),
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.LightGray),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                Icons.Filled.Person,
-                contentDescription = null,
+                Icons.Filled.PhotoAlbum,
+                contentDescription = "Imagen no disponible",
                 tint = Color.White
             )
         }

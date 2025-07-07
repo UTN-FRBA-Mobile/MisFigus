@@ -166,14 +166,12 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCate
                         items(filteredAlbums, key = { it.name ?: it.hashCode() }) { abm ->
                             AlbumItem(
                                 album = abm,
-                                onClick = { navHostController.navigate("details/${abm.albumId}") }
+                                onClick = { navHostController.navigate("details/${abm.id}") }
                             )
                         }
                     }
-
                 }
             }
-
         }
     }
 }

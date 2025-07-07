@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.AlbumCompleted
 import com.misfigus.ui.theme.Background
@@ -56,22 +55,9 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                 .padding(2.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
-            val context = LocalContext.current
-            val resId = remember() {
-                context.resources.getIdentifier(
-                    album.cover.lowercase(),
-                    "drawable",
-                    context.packageName
-                )
-            }
-
-            Image(  // TODO arreglar que la imagen no queda bien cuando se filtra
-                painter = painterResource(id = resId),
-                contentDescription = "My Album",
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(59.dp),
-                contentScale = ContentScale.Crop
+            AlbumImage(
+                imageUrl = album.cover,
+                size = 59.dp
             )
             Column(
                 modifier = Modifier

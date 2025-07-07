@@ -67,6 +67,7 @@ import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.UserDto
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
+import com.misfigus.network.ApiConfig
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.network.TradeApi
@@ -112,18 +113,25 @@ fun TextWithIcon(text: String, textColor: Color, imageColor: Color, image: Image
 
 @Composable
 fun TraderBanner(from: UserDto) {
+    val context = LocalContext.current
+    val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
+
+    val token = TokenProvider.token
+
+    LaunchedEffect(token) {
+        if (token != null) {
+            imageLoaderState.value = createImageLoaderWithToken(context, token)
+        }
+    }
+
     Card(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Canjeá con ${from.username}",
                 fontSize = 30.sp,
@@ -131,28 +139,15 @@ fun TraderBanner(from: UserDto) {
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(bottom = 20.dp)
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
 
-                val context = LocalContext.current
-                val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
-
-                LaunchedEffect(Unit) {
-                    TokenProvider.token?.let {
-                        imageLoaderState.value = createImageLoaderWithToken(context, it)
-                    }
-                }
-
-                if (imageLoaderState.value != null) {
-                    ProfileImage(
-                        imageUrl = from.profileImageUrl,
-                        size = 100.dp,
-                        imageLoader = imageLoaderState.value!!
-                    )
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                ProfileImage(
+                    imageUrl = from.profileImageUrl,
+                    size = 70.dp
+                )
 
                 Spacer(modifier = Modifier.width(10.dp))
+
                 Column(modifier = Modifier.weight(1f)) {
                     TextWithIcon(
                         text = from.location ?: "Ubicación no especificada",
@@ -191,6 +186,7 @@ fun TraderBanner(from: UserDto) {
         }
     }
 }
+
 
 @Composable
 fun Sticker(name: String, number: String, isSelected: Boolean, onClick: () -> Unit) {

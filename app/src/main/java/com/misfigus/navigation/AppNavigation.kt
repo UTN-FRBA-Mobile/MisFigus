@@ -194,8 +194,10 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.AlbumDetails.route) { backStackEntry ->
                 val albumId = backStackEntry.arguments?.getString("albumId")
                 albumId?.let {
-                    val albumDetailed = getAlbumByName(it)
-                    if(albumDetailed != null) AlbumDetailScreen(navController, initialAlbum = albumDetailed, albumsViewModel)
+                    val albumDetailed = getAlbumById(it)
+                    if (albumDetailed != null) {
+                        AlbumDetailScreen(navController, initialAlbum = albumDetailed, albumsViewModel)
+                    }
                 }
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->
@@ -216,8 +218,8 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
 }
 
 @Composable
-fun getAlbumByName(name: String): Album? {
-    return mockedAlbums().find { it.albumId == name }
+fun getAlbumById(id: String): Album? {
+    return mockedAlbums().find { it.albumId == id }
 }
 
 @Composable
