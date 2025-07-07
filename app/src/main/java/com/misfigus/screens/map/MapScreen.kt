@@ -1,6 +1,7 @@
 package com.misfigus.screens.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -66,6 +67,7 @@ fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Dou
     return earthRadius * c
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun MapScreen() {
     val context = LocalContext.current
@@ -150,7 +152,6 @@ fun MapScreen() {
             } catch (e: Exception) {
                 false
             }
-
             val matchesSearch = searchText.isBlank() ||
                     kiosk.name.lowercase().removePrefix("kiosco ").contains(searchText.trim().lowercase())
 
@@ -173,8 +174,11 @@ fun MapScreen() {
             mapView.getMapAsync { googleMap: GoogleMap ->
                 googleMap.uiSettings.isMyLocationButtonEnabled = false
                 googleMap.setOnMarkerClickListener { marker ->
-                    selectedKiosk = kiosks.find { it.name == marker.title }
-                    marker.showInfoWindow()
+                    val kiosk = kiosks.find { it.name == marker.title }
+                    if (kiosk != null) {
+                        selectedKiosk = kiosk
+                        kioskDetailShown = kiosk // <-- esto abre la vista detallada directamente
+                    }
                     true
                 }
                 if (hasLocationPermission) {

@@ -170,10 +170,14 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
-                        filteredCards = if("".equals(searchQuery)) filteredCards else filteredCards.filter { it.number.toString()?.contains(searchQuery, ignoreCase = true) == true}
+                        filteredCards = if (searchQuery.isBlank()) {
+                            filteredCards
+                        } else {
+                            filteredCards.filter { it.number.toString().contains(searchQuery, ignoreCase = true) }
+                        }
                         items(filteredCards) { tradeCard ->
                             val currentQuantity = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
-
+                            
                             TradingCardItem(tradingCard = tradeCard, isEditing = isEditing, currentQuantity = currentQuantity,
                             onAdd = {
                                 val current = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity

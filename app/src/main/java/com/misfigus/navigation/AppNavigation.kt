@@ -175,7 +175,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.Login.route) { LoginScreen(navController, sessionViewModel) }
             composable(Screen.Register.route) { RegisterScreen(navController, sessionViewModel) }
             composable(Screen.Search.route) { MapScreen() }
-            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel.categoriesUiState, albumsViewModel.albumsUserUiState) }
+            composable(Screen.Albums.route) { MyAlbums(navController, albumsViewModel, sessionViewModel) }
             composable(Screen.Trading.route) { IntercambioScreen(navController, sessionViewModel, tradeViewModel) }
             composable("trader") {
                 TraderOptionsScreen(navHostController = navController, tradeViewModel = tradeViewModel)
@@ -183,6 +183,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     sessionViewModel = sessionViewModel,
+                    albumsViewModel = albumsViewModel,
                     onLogout = {
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }

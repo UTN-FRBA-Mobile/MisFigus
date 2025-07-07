@@ -62,11 +62,6 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
     var updateAlbumUiState: UpdateAlbumUiState by mutableStateOf(UpdateAlbumUiState.Loading)
         private set
 
-    init {
-        getAlbumCountByCategory()
-        getUserAlbums()
-    }
-
     fun getAlbumCountByCategory() {
         viewModelScope.launch {
             categoriesUiState = try {
@@ -147,5 +142,13 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
                 UpdateAlbumUiState.Error
             }
         }
+    }
+
+    fun clearState() {
+        albumsUserUiState = AlbumsUserUiState.Loading
+        categoriesUiState = CategoriesUiState.Loading
+        albumsUserCategoryUiState = AlbumsUserCategoryUiState.Loading
+        albumUserUiState = AlbumUserUiState.Loading
+        albumsUserCategoryUiState = AlbumsUserCategoryUiState.Loading
     }
 }

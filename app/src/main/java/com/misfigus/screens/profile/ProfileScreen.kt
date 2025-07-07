@@ -24,6 +24,7 @@ import com.misfigus.dto.ChangePasswordDto
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
+import com.misfigus.screens.album.AlbumsViewModel
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
-fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {}) {
+fun ProfileScreen(sessionViewModel: SessionViewModel, albumsViewModel: AlbumsViewModel, onLogout: () -> Unit = {}) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var error by remember { mutableStateOf<String?>(null) }
@@ -147,6 +148,7 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
                     TokenProvider.token = null
                     UserSessionManager.clearToken(context)
                     sessionViewModel.logout(context)
+                    albumsViewModel.clearState()
                     onLogout()
                 }
             },
