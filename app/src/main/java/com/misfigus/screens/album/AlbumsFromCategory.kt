@@ -170,10 +170,8 @@ fun AlbumsFromCategory(navHostController: NavHostController, category: AlbumCate
                             )
                         }
                     }
-
                 }
             }
-
         }
     }
 }

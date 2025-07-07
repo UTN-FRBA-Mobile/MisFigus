@@ -239,3 +239,27 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
         }
     }
 }
+
+@Composable
+fun getAlbumById(id: String): Album? {
+    return mockedAlbums().find { it.albumId == id }
+}
+
+@Composable
+fun mockedAlbums(): List<Album> {
+    val tradingCardsQatar = listOf(
+        TradingCard(1, "Qatar 2022", obtained = true, 3),
+        TradingCard(2, "Qatar 2022", obtained = false, repeatedQuantity = 0),
+        TradingCard(3, "Qatar 2022", obtained = true, repeatedQuantity = 0)
+    )
+    val tradingCardsSouthAfrica = listOf(
+        TradingCard(1, "South Africa 2010", obtained = true, 2),
+        TradingCard(2, "South Africa 2010", obtained = true, repeatedQuantity = 0),
+    )
+
+    return listOf(
+        Album(1, "Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 670),
+        Album(2, "South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 638),
+        Album(3, "Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 332)
+    )
+}

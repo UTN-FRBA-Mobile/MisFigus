@@ -55,21 +55,9 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                 .padding(2.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
-            val context = LocalContext.current
-            val resId = remember() {
-                context.resources.getIdentifier(
-                    album.cover.lowercase(),
-                    "drawable",
-                    context.packageName
-                )
-            }
-            Image(  // TODO arreglar que la imagen no queda bien cuando se filtra
-                painter = painterResource(id = resId),
-                contentDescription = "My Album",
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(59.dp),
-                contentScale = ContentScale.Crop
+            AlbumImage(
+                imageUrl = album.cover,
+                size = 59.dp
             )
             Column(
                 modifier = Modifier
