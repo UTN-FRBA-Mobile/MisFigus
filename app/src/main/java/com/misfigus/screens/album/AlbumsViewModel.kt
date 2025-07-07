@@ -127,9 +127,16 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
             updateAlbumUiState = try {
                 val context = getApplication<Application>().applicationContext
                 val currentUser = AuthApi.getService(context).getCurrentUser()
-                val updates = changes.map { (cardId, qty) ->
-                    val obtained = if(qty > 0) true else false
-                    TradingCard(number = cardId.toInt(), albumId = album.albumId, repeatedQuantity = qty, obtained = obtained)
+                val updates = changes.map { (cardId, totalQty) ->
+                    val obtained = totalQty > 0
+                    val repeated = if (obtained) totalQty - 1 else 0
+
+                    TradingCard(
+                        number = cardId.toInt(),
+                        albumId = album.albumId,
+                        repeatedQuantity = repeated,
+                        obtained = obtained
+                    )
                 }
                 val listResult = AlbumApi.getService(context).updateUserCardsForAlbum(album.id.toString(), currentUser.email, updates)
                 Log.d("API_RESPONSE", listResult.toString())

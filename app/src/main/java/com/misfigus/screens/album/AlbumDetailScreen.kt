@@ -176,20 +176,26 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                             filteredCards.filter { it.number.toString().contains(searchQuery, ignoreCase = true) }
                         }
                         items(filteredCards) { tradeCard ->
-                            val currentQuantity = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
-                            
-                            TradingCardItem(tradingCard = tradeCard, isEditing = isEditing, currentQuantity = currentQuantity,
+                            val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
+
+                            TradingCardItem(
+                                tradingCard = tradeCard,
+                                isEditing = isEditing,
+                                currentQuantity = currentQuantity,
                             onAdd = {
-                                val current = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
+                                val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                    ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
                                 modifiedCards = modifiedCards.toMutableMap().apply {
-                                    put(tradeCard.number.toString(), current + 1)
+                                    put(tradeCard.number.toString(), currentQuantity + 1)
                                 }
                             },
                             onRemove = {
-                                val current = modifiedCards[tradeCard.number.toString()] ?: tradeCard.repeatedQuantity
-                                if (current > 0) {
+                                val currentQuantity = modifiedCards[tradeCard.number.toString()]
+                                    ?: if (tradeCard.obtained) tradeCard.repeatedQuantity + 1 else 0
+                                if (currentQuantity > 0) {
                                     modifiedCards = modifiedCards.toMutableMap().apply {
-                                        put(tradeCard.number.toString(), current - 1)
+                                        put(tradeCard.number.toString(), currentQuantity - 1)
                                     }
                                 }
                             })

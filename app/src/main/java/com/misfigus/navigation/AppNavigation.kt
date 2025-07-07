@@ -16,7 +16,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,7 @@ import com.misfigus.models.trades.TradingCard
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.screens.album.AlbumDetailScreen
+import com.misfigus.screens.album.AlbumUserUiState
 import com.misfigus.screens.album.AlbumsFromCategory
 import com.misfigus.screens.album.AlbumsViewModel
 import com.misfigus.screens.albums.MyAlbums
@@ -61,7 +64,7 @@ sealed class Screen(val route: String, val iconType: IconType? = null) {
     data object AlbumCategory : Screen("category/{category}", IconType.Drawable(R.drawable.album_icon))
     data object Trading : Screen("trading", IconType.Drawable(R.drawable.trading_icon))
     data object Profile : Screen("profile", IconType.Drawable(R.drawable.profile_icon))
-    data object AlbumDetails : Screen("details/{albumId}", IconType.Drawable(R.drawable.album_icon))
+    data object AlbumDetails : Screen("details/{id}", IconType.Drawable(R.drawable.album_icon))
     data object Albums: Screen("album", IconType.Drawable(R.drawable.album_icon))
     data object TradeRequests : Screen("trade_requests")
     data object TradeRequestDetail : Screen("trade_request_detail")
@@ -193,14 +196,34 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             }
 
             composable(Screen.AlbumDetails.route) { backStackEntry ->
-                val albumId = backStackEntry.arguments?.getString("albumId")
-                albumId?.let {
-                    val albumDetailed = getAlbumByName(it)
-                    if(albumDetailed != null) AlbumDetailScreen(navController, initialAlbum = albumDetailed, albumsViewModel)
+                val albumId = backStackEntry.arguments?.getString("id")
+                if(albumId != null){
+                    val albumUiState = albumsViewModel.albumUserUiState
+
+                    LaunchedEffect(albumId) {
+                        albumsViewModel.getUserAlbum(albumId)
+                    }
+
+                    when (albumUiState) {
+                        is AlbumUserUiState.Loading -> {
+                            Text(text = "Api call loading... [GET ALBUM BY ID]")
+                        }
+
+                        is AlbumUserUiState.Success -> {
+                            albumId?.let {
+                                AlbumDetailScreen(navController, initialAlbum = albumUiState.album, albumsViewModel)
+                            }
+                        }
+                        is AlbumUserUiState.Error -> {
+                            Text(text = "Api call error [GET ALBUM BY ID]")
+                        }
+
+                    }
                 }
+
             }
             composable(Screen.AlbumCategory.route) { backStackEntry ->
-                val categoryName = backStackEntry.arguments?.getString("category") // @Orne
+                val categoryName = backStackEntry.arguments?.getString("category")
                 val categoryEnum = categoryName?.let { AlbumCategoryEnum.valueOf(it) }
                 categoryEnum?.let {
                     AlbumsFromCategory(navController, it, albumsViewModel)
@@ -214,28 +237,4 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
             }
         }
     }
-}
-
-@Composable
-fun getAlbumByName(name: String): Album? {
-    return mockedAlbums().find { it.albumId == name }
-}
-
-@Composable
-fun mockedAlbums(): List<Album> {
-    val tradingCardsQatar = listOf(
-        TradingCard(1, "Qatar 2022", obtained = true, 3),
-        TradingCard(2, "Qatar 2022", obtained = false, repeatedQuantity = 0),
-        TradingCard(3, "Qatar 2022", obtained = true, repeatedQuantity = 0)
-    )
-    val tradingCardsSouthAfrica = listOf(
-        TradingCard(1, "South Africa 2010", obtained = true, 2),
-        TradingCard(2, "South Africa 2010", obtained = true, repeatedQuantity = 0),
-    )
-
-    return listOf(
-        Album(1, "Qatar 2022", "Fifa World Cup Qatar 2022", tradingCardsQatar, false, AlbumCategoryEnum.FOOTBALL, "qatar", 2022, 670),
-        Album(2, "South Africa 2010", "Fifa World Cup South Africa 2010", tradingCardsSouthAfrica, true, AlbumCategoryEnum.FOOTBALL, "south_africa", 2010, 638),
-        Album(3, "Ice Age", "La Era de Hielo: Choque de Mundos", emptyList(), false, AlbumCategoryEnum.MOVIES, "ice_age", 2022, 332)
-    )
 }
