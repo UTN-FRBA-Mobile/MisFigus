@@ -52,7 +52,7 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 
 | Mapa de kioscos | Kiosco | Ver reseñas |
 |--------------------|----------------------|-------------|
-| ![image](https://github.com/user-attachments/assets/a422bf27-3b96-4f11-9239-95b9386a7468) | ![image](https://github.com/user-attachments/assets/2aa89c12-d2c9-4edd-8e66-9124a513dea3) |![image](https://github.com/user-attachments/assets/06d4423a-917b-413b-a4af-c58b840104fd)
+| ![image](https://github.com/user-attachments/assets/26986b32-43f9-4a15-aff8-a29d6054ee5b) | ![image](https://github.com/user-attachments/assets/2aa89c12-d2c9-4edd-8e66-9124a513dea3) |![image](https://github.com/user-attachments/assets/06d4423a-917b-413b-a4af-c58b840104fd)
 
 | Mis álbumes | Álbumes de una categoría | Mis figuritas |
 |----------------------|-------------|----------------|
@@ -64,9 +64,10 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 | ![image](https://github.com/user-attachments/assets/9a638d4a-1596-472c-b152-a5bc4dc4a1fb) | ![image](https://github.com/user-attachments/assets/8865924c-d6ec-4d62-9adc-51142ce5dceb) | ![image](https://github.com/user-attachments/assets/a6d05fc2-fecb-44c6-9dc3-a63db2c0b7cb) | 
 
 
-| Solicitudes | Detalle de solicitud |
-|--------|--------|
-| ![image](https://github.com/user-attachments/assets/d66ce391-9545-4766-a35b-82f823ec1260) | ![image](https://github.com/user-attachments/assets/75190909-e060-46e8-8cf6-0dc81e7ca9b6) |
+| Solicitudes | Detalle de solicitud | Profile  |
+|--------|--------|--------|
+| ![image](https://github.com/user-attachments/assets/d66ce391-9545-4766-a35b-82f823ec1260) | ![image](https://github.com/user-attachments/assets/75190909-e060-46e8-8cf6-0dc81e7ca9b6) | ![image](https://github.com/user-attachments/assets/352f48a3-c5c7-411e-93a2-1df04827c51c)
+
 
 
  
@@ -107,3 +108,5 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 
 ---
 **MisFigus** – Tu colección organizada, conectada y siempre con vos.
+
+**Backend** Link: https://github.com/CarolinaSeoane/swap-app-backend-api
