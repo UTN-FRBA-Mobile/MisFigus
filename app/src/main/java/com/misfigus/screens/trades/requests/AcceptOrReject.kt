@@ -62,14 +62,14 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SummaryToMe(trade: TradeRequestDto) {
-    val firstCardText = trade.from.username + " te \nofrece " + trade.toGive.size + "\nfiguritas"
+    val firstCardText = trade.from.username.capitalize() + " te \nofrece " + trade.toGive.size + "\nfiguritas"
     val secondCardText = "A cambio\nquiere " + trade.stickers.size + "\nfiguritas"
     Summary(firstCardText, secondCardText)
 }
 
 @Composable
 fun SummaryFromMe(trade: TradeRequestDto) {
-    val firstCardText = "Le pediste\n" + trade.stickers.size + " figuritas\na " + trade.to.username
+    val firstCardText = "Le pediste\n" + trade.stickers.size + " figuritas\na " + trade.to.username.capitalize()
     val secondCardText = "A cambio\nle ofrecés\n" + trade.toGive.size + " figuritas"
     Summary(firstCardText, secondCardText)
 }
