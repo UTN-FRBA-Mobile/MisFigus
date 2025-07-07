@@ -54,6 +54,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.misfigus.dto.mappings.KioskAssetsMapper
 fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
     val earthRadius = 6371e3
@@ -113,6 +114,8 @@ fun MapScreen() {
     var showRatingDialog by remember { mutableStateOf(false) }
     var ratingValue by remember { mutableStateOf(0) }
     var ratingComment by remember { mutableStateOf("") }
+    var googleMapInstance by remember { mutableStateOf<GoogleMap?>(null) }
+
 
     DisposableEffect(mapView) {
         mapView.onCreate(Bundle())
@@ -170,7 +173,8 @@ fun MapScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }) {
 
-            mapView.getMapAsync { googleMap: GoogleMap ->
+            mapView.getMapAsync { googleMap ->
+                googleMapInstance = googleMap
                 googleMap.uiSettings.isMyLocationButtonEnabled = false
                 googleMap.setOnMarkerClickListener { marker ->
                     selectedKiosk = kiosks.find { it.name == marker.title }
@@ -216,6 +220,40 @@ fun MapScreen() {
                     }
                 }
 
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 90.dp, end = 16.dp), // Ajustá si hay solapamiento con la barra de búsqueda
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    googleMapInstance?.let {
+                        val currentZoom = it.cameraPosition.zoom
+                        it.animateCamera(CameraUpdateFactory.zoomTo(currentZoom + 1))
+                    }
+                },
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            ) {
+                Text("+", color = Color.White, fontSize = 24.sp)
+            }
+            IconButton(
+                onClick = {
+                    googleMapInstance?.let {
+                        val currentZoom = it.cameraPosition.zoom
+                        it.animateCamera(CameraUpdateFactory.zoomTo(currentZoom - 1))
+                    }
+                },
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(MaterialTheme.colorScheme.primary, CircleShape)
+            ) {
+                Text("-", color = Color.White, fontSize = 24.sp)
             }
         }
 
@@ -320,30 +358,59 @@ fun MapScreen() {
                             }
                         }
                         Spacer(modifier = Modifier.width(4.dp))
-                        if (hasStock) {
+                        Column(
+                            modifier = Modifier
+                                .width(80.dp)
+                                .fillMaxHeight(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            // Indicador de stock
+                            if (hasStock) {
+                                Text(
+                                    text = "Unidades\ndisponibles",
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 12.sp
+                                )
+                            } else {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(
+                                        text = "Sin unidades",
+                                        fontSize = 10.sp,
+                                        color = Color.Red,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Canvas(modifier = Modifier.size(10.dp)) {
+                                        val strokeWidth = 2.dp.toPx()
+                                        drawLine(Color.Red, Offset(0f, 0f), Offset(size.width, size.height), strokeWidth)
+                                        drawLine(Color.Red, Offset(size.width, 0f), Offset(0f, size.height), strokeWidth)
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            // Botón "Ver detalles"
                             Button(
                                 onClick = { kioskDetailShown = kiosk },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                                shape = RoundedCornerShape(8.dp),
-                                modifier = Modifier.width(90.dp).height(40.dp)
-                            ) {
-                                Text("STOCK", color = Color.White, style = MaterialTheme.typography.labelMedium)
-                            }
-                        } else {
-                            Box(
+                                shape = RoundedCornerShape(6.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 modifier = Modifier
-                                    .width(90.dp)
-                                    .height(40.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(0xFFFFC0C0)),
-                                contentAlignment = Alignment.Center
+                                    .width(100.dp)
+                                    .height(28.dp),
+                                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
                             ) {
-                                Text("STOCK", color = Color.White, style = MaterialTheme.typography.labelMedium)
-                                Canvas(modifier = Modifier.matchParentSize()) {
-                                    val strokeWidth = 2.dp.toPx()
-                                    drawLine(Color.White, Offset(0f, 0f), Offset(size.width, size.height), strokeWidth)
-                                    drawLine(Color.White, Offset(size.width, 0f), Offset(0f, size.height), strokeWidth)
-                                }
+                                Text(
+                                    "Ver detalles",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    maxLines = 1
+                                )
                             }
                         }
                     }
@@ -485,27 +552,27 @@ fun MapScreen() {
                                 }
                             }
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text("Hoy abierto hasta las ${kiosk.openUntil} hs", color = Color.Red)
+                            Text("Hoy abierto hasta las ${kiosk.openUntil} hs", color = MaterialTheme.colorScheme.primary)
                             Text("Horario semanal:", fontWeight = FontWeight.Bold)
-                            val days = listOf("Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
-                            val todayIndex = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).dayOfWeek.value
+                            val days = listOf("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado")
+                            val todayIndex = ZonedDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires")).dayOfWeek.value % 7
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     days.forEachIndexed { index, day ->
-                                        val isToday = (index + 1) == todayIndex
+                                        val isToday = index == todayIndex
                                         Row(modifier = Modifier.padding(vertical = 2.dp)) {
                                             Text(
                                                 text = "$day:",
                                                 modifier = Modifier.width(90.dp),
-                                                color = if (isToday) Color.Red else Color(0xFF444444),
+                                                color = if (isToday) MaterialTheme.colorScheme.primary else Color(0xFF444444),
                                                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
                                             )
                                             Text(
                                                 text = "${kiosk.openFrom} - ${kiosk.openUntil}",
-                                                color = if (isToday) Color.Red else Color.Gray,
+                                                color = if (isToday) MaterialTheme.colorScheme.primary else Color.Gray,
                                                 fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal
                                             )
                                         }
@@ -516,12 +583,12 @@ fun MapScreen() {
                                         .padding(start = 16.dp)
                                         .width(120.dp)
                                         .height(90.dp)
-                                        .border(2.dp, Color.Red, RoundedCornerShape(12.dp)),
+                                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp)),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = "QUEDAN\nPOCAS\nUNIDADES",
-                                        color = Color.Red,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.sp,
                                         lineHeight = 16.sp,
@@ -531,7 +598,7 @@ fun MapScreen() {
                             }
 
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text("🛒 Precio por paquete: \$${kiosk.price}", color = Color.Red)
+                            Text("🛒 Precio por paquete: \$${kiosk.price}", color = MaterialTheme.colorScheme.primary)
 
                             Spacer(modifier = Modifier.height(12.dp))
                             Row(
