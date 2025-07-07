@@ -152,7 +152,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                     var filteredCards = when (selectedTab) {
                         CardFilterTab.ALL -> album.tradingCards
                         CardFilterTab.MISSING -> album.tradingCards.filter { !it.obtained }
-                        CardFilterTab.REPEATED -> album.tradingCards.filter { it.repeatedQuantity > 1 }
+                        CardFilterTab.REPEATED -> album.tradingCards.filter { it.repeatedQuantity >= 1 }
                     }
                     SearchBar(
                         query = searchQuery,
