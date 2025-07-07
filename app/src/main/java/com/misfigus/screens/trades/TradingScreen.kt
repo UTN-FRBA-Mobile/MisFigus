@@ -31,13 +31,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.ImageLoader
+import com.misfigus.components.ProfileImage
 import com.misfigus.dto.PossibleTradeDto
+import com.misfigus.network.TokenProvider
+import com.misfigus.network.TokenProvider.token
 import com.misfigus.network.TradeApi
 import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
-import getUserProfilePictureId
+import createImageLoaderWithToken
 
 @Composable
 fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
@@ -85,27 +89,27 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
 }
 
 @Composable
-fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tradeViewModel: TradeViewModel) {
+fun TraderCard(
+    trade: PossibleTradeDto,
+    navHostController: NavHostController,
+    tradeViewModel: TradeViewModel,
+    imageLoader: coil.ImageLoader
+) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, top = 20.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = getUserProfilePictureId(trade.from.username)),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-                contentScale = ContentScale.Crop
+            ProfileImage(
+                imageUrl = trade.from.profileImageUrl,
+                size = 70.dp,
+                imageLoader = imageLoader
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -140,13 +144,24 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tr
             }
         }
     }
-
 }
 
+
 @Composable
-fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: SessionViewModel, tradeViewModel: TradeViewModel) {
+fun IntercambioScreen(
+    navHostController: NavHostController,
+    sessionViewModel: SessionViewModel,
+    tradeViewModel: TradeViewModel
+) {
     var possibleTrades by remember { mutableStateOf<List<PossibleTradeDto>>(emptyList()) }
     val context = LocalContext.current
+    val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
+
+    LaunchedEffect(Unit) {
+        TokenProvider.token?.let {
+            imageLoaderState.value = createImageLoaderWithToken(context, it)
+        }
+    }
 
     LaunchedEffect(Unit) {
         try {
@@ -167,11 +182,14 @@ fun IntercambioScreen(navHostController: NavHostController, sessionViewModel: Se
             )
         }
         items(possibleTrades) { trade ->
-            TraderCard(
-                trade = trade,
-                navHostController = navHostController,
-                tradeViewModel = tradeViewModel
-            )
+            if (imageLoaderState.value != null) {
+                TraderCard(
+                    trade = trade,
+                    navHostController = navHostController,
+                    tradeViewModel = tradeViewModel,
+                    imageLoader = imageLoaderState.value!!
+                )
+            }
         }
     }
 }

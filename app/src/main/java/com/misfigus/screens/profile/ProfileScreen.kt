@@ -1,5 +1,6 @@
 package com.misfigus.screens.profile
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,23 +21,38 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
+import coil.request.ImageRequest
+import com.misfigus.components.ProfileImage
 import com.misfigus.dto.ChangePasswordDto
 import com.misfigus.dto.UserDto
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TokenProvider
 import com.misfigus.session.SessionViewModel
 import com.misfigus.session.UserSessionManager
+import createImageLoaderWithToken
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.net.HttpURLConnection
+import java.net.URL
 
 @Composable
 fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {}) {
     val context = LocalContext.current
+    val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
+
+    LaunchedEffect(Unit) {
+        TokenProvider.token?.let {
+            imageLoaderState.value = createImageLoaderWithToken(context, it)
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
     var error by remember { mutableStateOf<String?>(null) }
-    var profileImageBytes by remember { mutableStateOf<ByteArray?>(null) }
 
     var showImageDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
@@ -73,13 +89,15 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
     var fullName by remember { mutableStateOf(currentUser.fullName) }
     var username by remember { mutableStateOf(currentUser.username) }
 
+    val imageUrl = sessionViewModel.user?.profileImageUrl
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
             coroutineScope.launch {
                 val stream = context.contentResolver.openInputStream(uri) ?: return@launch
-                val requestBody = stream.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                val requestBody = stream.readBytes().toRequestBody("images/*".toMediaTypeOrNull())
                 val fileName = (currentUser.fullName ?: "imagen") + ".jpg"
                 val multipart = MultipartBody.Part.createFormData("image", fileName, requestBody)
 
@@ -100,6 +118,7 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Box(
             modifier = Modifier
                 .size(100.dp)
@@ -108,17 +127,14 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
                 .clickable { showImageDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            if (profileImageBytes != null) {
-                Image(
-                    bitmap = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes!!.size).asImageBitmap(),
-                    contentDescription = "Foto de perfil",
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(CircleShape)
+            if (imageLoaderState.value != null) {
+                ProfileImage(
+                    imageUrl = imageUrl,
+                    size = 100.dp,
+                    imageLoader = imageLoaderState.value!!
                 )
-            } else {
-                CircularProgressIndicator()
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -174,16 +190,12 @@ fun ProfileScreen(sessionViewModel: SessionViewModel, onLogout: () -> Unit = {})
             },
             title = { Text("Foto de perfil") },
             text = {
-                if (profileImageBytes != null) {
-                    Image(
-                        bitmap = BitmapFactory.decodeByteArray(profileImageBytes, 0, profileImageBytes!!.size).asImageBitmap(),
-                        contentDescription = "Foto de perfil",
-                        modifier = Modifier
-                            .size(100.dp)
-                            .clip(CircleShape)
+                if (imageLoaderState.value != null) {
+                    ProfileImage(
+                        imageUrl = imageUrl,
+                        size = 100.dp,
+                        imageLoader = imageLoaderState.value!!
                     )
-                } else {
-                    CircularProgressIndicator()
                 }
             }
         )

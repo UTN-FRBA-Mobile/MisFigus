@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateListOf
@@ -57,17 +58,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
+import coil.request.ImageRequest
+import com.example.misfigus.R
+import com.misfigus.components.ProfileImage
 import com.misfigus.dto.PossibleTradeDto
 import com.misfigus.dto.TradeRequestDto
 import com.misfigus.dto.UserDto
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
 import com.misfigus.network.AuthApi
+import com.misfigus.network.TokenProvider
 import com.misfigus.network.TradeApi
+import com.misfigus.session.UserSessionManager
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
-import getUserProfilePictureId
+import createImageLoaderWithToken
 import kotlinx.coroutines.launch
 
 fun getAlbumInitials(albumName: String): String {
@@ -127,14 +134,24 @@ fun TraderBanner(from: UserDto) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = getUserProfilePictureId(from.username)),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(70.dp),
-                    contentScale = ContentScale.Crop
-                )
+
+                val context = LocalContext.current
+                val imageLoaderState = remember { mutableStateOf<ImageLoader?>(null) }
+
+                LaunchedEffect(Unit) {
+                    TokenProvider.token?.let {
+                        imageLoaderState.value = createImageLoaderWithToken(context, it)
+                    }
+                }
+
+                if (imageLoaderState.value != null) {
+                    ProfileImage(
+                        imageUrl = from.profileImageUrl,
+                        size = 100.dp,
+                        imageLoader = imageLoaderState.value!!
+                    )
+                }
+
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     TextWithIcon(
@@ -336,11 +353,11 @@ fun ConfirmTradeButton(
             onClick = {
                 Log.d("TradeSubmit", "You selected: $selectedFromYou")
                 Log.d("TradeSubmit", "${trade.from.username} gets: $selectedToTrade")
-                
+
                 coroutineScope.launch {
                     try {
                         val currentUser = AuthApi.getService(context).getCurrentUser()
-                        
+
                         val tradeRequest = TradeRequestDto(
                             album = trade.album,
                             albumName = trade.albumName,
@@ -350,7 +367,7 @@ fun ConfirmTradeButton(
                             toGive = selectedToTrade,
                             status = TradeRequestStatus.PENDING
                         )
-                        
+
                         TradeApi.getService(context).postNewTradeRequest(tradeRequest)
                         showDialog = true
                     } catch (e: Exception) {

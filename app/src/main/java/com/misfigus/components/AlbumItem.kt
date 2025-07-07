@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.misfigus.models.Album
 import com.misfigus.ui.theme.AlbumCompleted
 import com.misfigus.ui.theme.Background
@@ -63,6 +64,7 @@ fun AlbumItem(album: Album, onClick: () -> Unit = {}){
                     context.packageName
                 )
             }
+
             Image(  // TODO arreglar que la imagen no queda bien cuando se filtra
                 painter = painterResource(id = resId),
                 contentDescription = "My Album",

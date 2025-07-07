@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.misfigus.components.ProfileImage
 import com.misfigus.dto.TradeRequestDto
 import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
@@ -32,7 +33,6 @@ import com.misfigus.screens.trades.TradeViewModel
 import com.misfigus.session.SessionViewModel
 import com.misfigus.ui.theme.LightPurple
 import com.misfigus.ui.theme.Purple
-import getUserProfilePictureId
 
 @Composable
 fun TradeRequestCard(
@@ -51,13 +51,10 @@ fun TradeRequestCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box {
-            Image(
-                painter = painterResource(id = getUserProfilePictureId(request.to.username)),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-                contentScale = ContentScale.Crop
+
+            ProfileImage(
+                imageUrl = request.from.profileImageUrl,
+                size = 40.dp
             )
 
             if (isPendingAndUnseen) {
