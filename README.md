@@ -52,7 +52,11 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 
 | Pantalla principal | Seguimiento de álbum | Intercambio | Mapa de kioscos |
 |--------------------|----------------------|-------------|-----------------|
-| ![Inicio](screenshots/inicio.png) | ![Álbum](screenshots/album.png) | ![Intercambio](screenshots/intercambio.png) | ![Mapa](screenshots/kiosco.png) |
+| ![Inicio](screenshots/inicio.png) | ![Álbum](![image](https://github.com/user-attachments/assets/0b3f6e85-0574-42e8-83d6-b54849b80045)
+) | ![Intercambio](![image](https://github.com/user-attachments/assets/7746acd4-0073-4b46-be33-ee3e4b0eb1bc)
+) | ![Mapa](![image](https://github.com/user-attachments/assets/a422bf27-3b96-4f11-9239-95b9386a7468)
+) |
+![Uploading image.png…]()
 
 ---
 
