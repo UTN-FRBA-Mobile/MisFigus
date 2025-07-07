@@ -103,7 +103,6 @@ fun TraderCard(
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(text = trade.albumName, fontSize = 13.sp, color = Red)
                 TextWithIcon(
                     text = trade.albumName,
                     textColor = Red,
