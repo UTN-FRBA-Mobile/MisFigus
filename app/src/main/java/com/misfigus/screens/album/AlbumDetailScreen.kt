@@ -124,6 +124,16 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                 is AlbumUserUiState.Success -> {
                     val album = albumUserUiState.album
 
+                    val updatedCards = album.tradingCards.map { card ->
+                        val modifiedQuantity = modifiedCards[card.number.toString()]
+                        val currentQuantity = modifiedQuantity ?: if (card.obtained) card.repeatedQuantity + 1 else 0
+
+                        card.copy(
+                            obtained = currentQuantity > 0,
+                            repeatedQuantity = if (currentQuantity > 1) currentQuantity - 1 else 0
+                        )
+                    }
+
                     Text(
                         text = album.name,
                         style = MaterialTheme.typography.titleLarge,
@@ -150,9 +160,9 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
                         }
                     }
                     var filteredCards = when (selectedTab) {
-                        CardFilterTab.ALL -> album.tradingCards
-                        CardFilterTab.MISSING -> album.tradingCards.filter { !it.obtained }
-                        CardFilterTab.REPEATED -> album.tradingCards.filter { it.repeatedQuantity > 1 }
+                        CardFilterTab.ALL -> updatedCards
+                        CardFilterTab.MISSING -> updatedCards.filter { !it.obtained }
+                        CardFilterTab.REPEATED -> updatedCards.filter { it.repeatedQuantity >= 1 }
                     }
                     SearchBar(
                         query = searchQuery,
