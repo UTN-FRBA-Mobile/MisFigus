@@ -50,6 +50,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.runtime.LaunchedEffect
+import com.misfigus.models.Album
 import com.misfigus.screens.album.AlbumsViewModel
 import com.misfigus.session.SessionViewModel
 
@@ -93,7 +94,16 @@ fun MyCollectionStats(albumsUserUiState: AlbumsUserUiState) {
 
         is AlbumsUserUiState.Success -> {
             val albums = albumsUserUiState.albums
-            val visibleAlbums = if (expanded) albums.take(4) else albums.take(2)
+
+            val sortedAlbums = albums.sortedWith(
+                compareByDescending<Album> { album ->
+                    val obtained = album.tradingCards.count { it.obtained }
+                    obtained.toFloat() / album.totalCards.toFloat()
+                }.thenBy { it.name.lowercase() }
+            )
+
+            val visibleAlbums = if (expanded) sortedAlbums.take(4) else sortedAlbums.take(2)
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
