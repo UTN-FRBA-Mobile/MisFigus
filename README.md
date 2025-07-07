@@ -46,9 +46,9 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 
 ## 📸 Capturas de pantalla
 
-| Pantalla principal | Seguimiento de álbum | Mis álbumes | Mis figuritas|
+| Pantalla de presentación | Seguimiento de álbum | Mis álbumes | Mis figuritas|
 |--------------------|----------------------|-------------|----------------|
-| ![image](https://github.com/user-attachments/assets/798f057b-9114-4077-80c2-27cd6f04821d) | ![image](https://github.com/user-attachments/assets/0b3f6e85-0574-42e8-83d6-b54849b80045) | ![image](https://github.com/user-attachments/assets/0955b2fc-49aa-4e5e-ae98-2da67b763ebe) | ![image](https://github.com/user-attachments/assets/83cfe8f4-2373-4612-b9a8-27228bc06d6d) |
+| ![image](https://github.com/user-attachments/assets/18bb52a6-4395-4093-af54-288c54d14b0e) | ![image](https://github.com/user-attachments/assets/0b3f6e85-0574-42e8-83d6-b54849b80045) | ![image](https://github.com/user-attachments/assets/0955b2fc-49aa-4e5e-ae98-2da67b763ebe) | ![image](https://github.com/user-attachments/assets/83cfe8f4-2373-4612-b9a8-27228bc06d6d) |
 
 | Canjeá | Canjeá | Mapa de kioscos | Kiosco | Ver reseñas |
 |--------|--------|-----------------|--------|-----------|
