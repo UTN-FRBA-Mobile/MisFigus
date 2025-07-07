@@ -1,6 +1,7 @@
 package com.misfigus.screens.trades
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -64,6 +66,7 @@ import com.misfigus.models.trades.TradeRequestStatus
 import com.misfigus.navigation.BackButton
 import com.misfigus.network.AuthApi
 import com.misfigus.network.TradeApi
+import com.misfigus.ui.theme.BorderColor
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Grey
 import com.misfigus.ui.theme.Purple
@@ -108,10 +111,14 @@ fun TraderBanner(from : UserDto) {
     Card(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(
+                color = Color.White.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(16.dp)
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = Color.Transparent
         )
     ) {
         Column(
@@ -214,7 +221,8 @@ fun TradeSection(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
-        )
+        ),
+        border = BorderStroke(1.dp, BorderColor)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

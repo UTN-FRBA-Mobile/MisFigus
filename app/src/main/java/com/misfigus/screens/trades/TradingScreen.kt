@@ -1,5 +1,6 @@
 package com.misfigus.screens.trades
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -34,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.misfigus.dto.PossibleTradeDto
 import com.misfigus.network.TradeApi
 import com.misfigus.session.SessionViewModel
+import com.misfigus.ui.theme.BorderColor
 import com.misfigus.ui.theme.Red
 import com.misfigus.ui.theme.Purple
 import com.misfigus.ui.theme.Grey
@@ -88,12 +91,13 @@ fun TradingBanner(totalTrades: Int, onNavigateToSolicitudes: () -> Unit) {
 fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tradeViewModel: TradeViewModel) {
     Card(
         modifier = Modifier
-            .padding(start = 16.dp, top = 20.dp, end = 16.dp)
+            .padding(start = 16.dp, top = 10.dp, end = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
-        )
+        ),
+        border = BorderStroke(1.dp, BorderColor)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -110,17 +114,17 @@ fun TraderCard(trade: PossibleTradeDto, navHostController: NavHostController, tr
             Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = trade.from.fullName,
+                    text = trade.from.fullName.capitalize(),
                     fontSize = 13.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
-                Text(
+                TextWithIcon(
                     text = trade.albumName,
-                    fontSize = 13.sp,
-                    color = Red,
-                    modifier = Modifier.padding(bottom = 3.dp)
+                    textColor = Red,
+                    imageColor = Red,
+                    image = Icons.AutoMirrored.Outlined.MenuBook
                 )
                 Text(
                     text = "Tiene ${trade.stickers.size} figuritas que te faltan",
