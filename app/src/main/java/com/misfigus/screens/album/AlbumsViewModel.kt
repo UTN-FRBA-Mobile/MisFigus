@@ -158,4 +158,8 @@ class AlbumsViewModel(application: Application) : AndroidViewModel(application) 
         albumUserUiState = AlbumUserUiState.Loading
         albumsUserCategoryUiState = AlbumsUserCategoryUiState.Loading
     }
+
+    fun clearAlbumState(){
+        albumUserUiState = AlbumUserUiState.Loading
+    }
 }

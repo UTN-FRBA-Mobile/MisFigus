@@ -201,6 +201,7 @@ fun AppNavigation(navController: NavHostController, sessionViewModel: SessionVie
                     val albumUiState = albumsViewModel.albumUserUiState
 
                     LaunchedEffect(albumId) {
+                        albumsViewModel.clearAlbumState()
                         albumsViewModel.getUserAlbum(albumId)
                     }
 
