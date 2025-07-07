@@ -59,9 +59,14 @@ Descargá MisFigus y llevá tu colección a otro nivel.**
 | ![image](https://github.com/user-attachments/assets/7a68c0b2-4b05-4211-88fe-992ea3fcee07) | ![image](https://github.com/user-attachments/assets/0955b2fc-49aa-4e5e-ae98-2da67b763ebe) | ![image](https://github.com/user-attachments/assets/83cfe8f4-2373-4612-b9a8-27228bc06d6d) |
 
 
-| Canjes posibles | Inicio de canje | Solicitudes | Aceptar o rechazar solicitud |
-|--------|--------|--------------------|----------------------|
-| ![image](https://github.com/user-attachments/assets/9a638d4a-1596-472c-b152-a5bc4dc4a1fb) | ![image](https://github.com/user-attachments/assets/8865924c-d6ec-4d62-9adc-51142ce5dceb) | ![image](https://github.com/user-attachments/assets/d66ce391-9545-4766-a35b-82f823ec1260) | ![image](https://github.com/user-attachments/assets/75190909-e060-46e8-8cf6-0dc81e7ca9b6)
+| Canjes posibles | Inicio de canje | Figuritas para el canje |
+|--------|--------|--------------------|
+| ![image](https://github.com/user-attachments/assets/9a638d4a-1596-472c-b152-a5bc4dc4a1fb) | ![image](https://github.com/user-attachments/assets/8865924c-d6ec-4d62-9adc-51142ce5dceb) | ![image](https://github.com/user-attachments/assets/a6d05fc2-fecb-44c6-9dc3-a63db2c0b7cb) | 
+
+
+| Solicitudes | Detalle de solicitud |
+|--------|--------|
+| ![image](https://github.com/user-attachments/assets/d66ce391-9545-4766-a35b-82f823ec1260) | ![image](https://github.com/user-attachments/assets/75190909-e060-46e8-8cf6-0dc81e7ca9b6) |
 
 
  
