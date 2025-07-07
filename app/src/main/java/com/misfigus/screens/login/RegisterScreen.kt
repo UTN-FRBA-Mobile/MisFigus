@@ -1,5 +1,6 @@
 package com.misfigus.screens.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -43,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.misfigus.R
-import com.misfigus.screens.TopBackgroundCurves
 import com.misfigus.dto.UserRegisterDto
 import com.misfigus.navigation.Screen
 import com.misfigus.network.AuthApi
@@ -67,15 +68,16 @@ fun RegisterScreen(navController: NavController, sessionViewModel: SessionViewMo
     var registrationError by remember { mutableStateOf<String?>(null) }
     var registrationSuccess by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        TopBackgroundCurves()
-
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
-                .padding(top = 240.dp),
-            verticalArrangement = Arrangement.Top,
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
