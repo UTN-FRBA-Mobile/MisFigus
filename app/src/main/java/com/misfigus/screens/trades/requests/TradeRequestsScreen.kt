@@ -36,7 +36,7 @@ import com.misfigus.ui.theme.Purple
 
 @Composable
 fun TradeRequestCard(
-    request: TradeRequestDto,
+    imageUrl: String,
     userName: String,
     subtitle: String,
     isPendingAndUnseen: Boolean,
@@ -51,7 +51,7 @@ fun TradeRequestCard(
     ) {
         Box {
             ProfileImage(
-                imageUrl = request.from.profileImageUrl,
+                imageUrl = imageUrl,
                 size = 40.dp
             )
 
@@ -84,6 +84,7 @@ fun TradeRequestCard(
         Text("→", fontSize = 20.sp, modifier = Modifier.padding(end = 8.dp))
     }
 }
+
 
 
 @Composable
@@ -199,45 +200,50 @@ fun TradeRequestsScreen(
                     modifier = Modifier.fillMaxHeight()
                 ) {
                     items(filteredRequests) { request ->
-                        val (userName, subtitle) = when (selectedTab) {
+                        val (imageUrl, userName, subtitle) = when (selectedTab) {
                             "Enviadas" -> {
                                 val targetUser = request.to
-                                when (request.status) {
-                                    TradeRequestStatus.ACCEPTED -> targetUser.fullName to "Aceptó mi solicitud de canje"
-                                    TradeRequestStatus.REJECTED -> targetUser.fullName to "Rechazó mi solicitud de canje"
-                                    TradeRequestStatus.PENDING -> targetUser.fullName to "La solicitud enviada está pendiente"
+                                val message = when (request.status) {
+                                    TradeRequestStatus.ACCEPTED -> "Aceptó mi solicitud de canje"
+                                    TradeRequestStatus.REJECTED -> "Rechazó mi solicitud de canje"
+                                    TradeRequestStatus.PENDING -> "La solicitud enviada está pendiente"
                                 }
+                                Triple(targetUser.profileImageUrl, targetUser.fullName, message)
                             }
                             "Recibidas" -> {
                                 val sourceUser = request.from
-                                when (request.status) {
-                                    TradeRequestStatus.ACCEPTED -> sourceUser.fullName to "Aceptaste la solicitud de canje"
-                                    TradeRequestStatus.REJECTED -> sourceUser.fullName to "Rechazaste la solicitud de canje"
-                                    TradeRequestStatus.PENDING -> sourceUser.fullName to "Tenés una solicitud pendiente"
+                                val message = when (request.status) {
+                                    TradeRequestStatus.ACCEPTED -> "Aceptaste la solicitud de canje"
+                                    TradeRequestStatus.REJECTED -> "Rechazaste la solicitud de canje"
+                                    TradeRequestStatus.PENDING -> "Tenés una solicitud pendiente"
                                 }
+                                Triple(sourceUser.profileImageUrl, sourceUser.fullName, message)
                             }
                             "Todas" -> {
                                 val isSender = request.from.email == currentUserEmail
                                 val targetUser = if (isSender) request.to else request.from
-                                when (request.status) {
-                                    TradeRequestStatus.ACCEPTED -> targetUser.fullName to if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
-                                    TradeRequestStatus.REJECTED -> targetUser.fullName to if (isSender) "Rechazó mi solicitud de canje" else "Rechazaste la solicitud de canje"
-                                    TradeRequestStatus.PENDING -> targetUser.fullName to if (isSender) "La solicitud enviada está pendiente" else "Tenés una solicitud pendiente"
+                                val message = when (request.status) {
+                                    TradeRequestStatus.ACCEPTED -> if (isSender) "Aceptó mi solicitud de canje" else "Aceptaste la solicitud de canje"
+                                    TradeRequestStatus.REJECTED -> if (isSender) "Rechazó mi solicitud de canje" else "Rechazaste la solicitud de canje"
+                                    TradeRequestStatus.PENDING -> if (isSender) "La solicitud enviada está pendiente" else "Tenés una solicitud pendiente"
                                 }
+                                Triple(targetUser.profileImageUrl, targetUser.fullName, message)
                             }
-                            else -> "Usuario desconocido" to ""
+                            else -> Triple("", "Usuario desconocido", "")
                         }
 
-                        TradeRequestCard(
-                            request = request,
-                            userName = userName,
-                            subtitle = subtitle,
-                            isPendingAndUnseen = request.status == TradeRequestStatus.PENDING && selectedTab == "Recibidas",
-                            onClick = {
-                                tradeViewModel.selectedTradeRequest.value = request
-                                navHostController.navigate("trade_request_detail")
-                            }
-                        )
+                        if (imageUrl != null) {
+                            TradeRequestCard(
+                                imageUrl = imageUrl,
+                                userName = userName,
+                                subtitle = subtitle,
+                                isPendingAndUnseen = request.status == TradeRequestStatus.PENDING && selectedTab == "Recibidas",
+                                onClick = {
+                                    tradeViewModel.selectedTradeRequest.value = request
+                                    navHostController.navigate("trade_request_detail")
+                                }
+                            )
+                        }
                     }
                 }
             }
