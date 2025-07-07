@@ -67,11 +67,7 @@ fun AlbumDetailScreen(navHostController: NavHostController, initialAlbum: Album,
     var modifiedCards by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
     var selectedTab by remember { mutableStateOf(CardFilterTab.ALL) }
     var showDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getUserAlbum(initialAlbum.id.toString())
-    }
-
+    
     Scaffold(
         topBar = {
             TopAppBar(
