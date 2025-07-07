@@ -49,6 +49,9 @@ import com.misfigus.ui.theme.Purple
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.runtime.LaunchedEffect
+import com.misfigus.screens.album.AlbumsViewModel
+import com.misfigus.session.SessionViewModel
 
 val progressColors = listOf(
     Color(0xFF6A1B9A), // púrpura
@@ -58,11 +61,20 @@ val progressColors = listOf(
 )
 
 @Composable
-fun MyAlbums(navHostController: NavHostController, categoriesUiState: CategoriesUiState, albumsUserUiState: AlbumsUserUiState) {
+fun MyAlbums(navHostController: NavHostController, albumsViewModel: AlbumsViewModel, sessionViewModel: SessionViewModel) {
+    val user = sessionViewModel.user
+
+    LaunchedEffect(user?.email) {
+        if (user != null) {
+            albumsViewModel.getUserAlbums()
+            albumsViewModel.getAlbumCountByCategory()
+        }
+    }
+
     Column(modifier = Modifier.padding(20.dp)) {
         Text("Mis Álbumes", style = MaterialTheme.typography.titleLarge, color = Grey)
-        MyCollectionStats(albumsUserUiState)
-        CategoryScreen(navHostController, categoriesUiState)
+        MyCollectionStats(albumsViewModel.albumsUserUiState)
+        CategoryScreen(navHostController, albumsViewModel.categoriesUiState)
     }
 }
 
